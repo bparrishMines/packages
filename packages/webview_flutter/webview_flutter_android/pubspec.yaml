@@ -27,7 +27,11 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   mockito: 5.4.3
-  pigeon: ^11.0.0
+  pigeon:
+    git:
+      url: https://github.com/bparrishMines/packages.git
+      path: packages/pigeon
+      ref: pigeon_wrapper_kotlin
 
 topics:
   - html
