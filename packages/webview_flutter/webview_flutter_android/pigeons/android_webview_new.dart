@@ -84,6 +84,7 @@ enum ConsoleMessageLevel {
   kotlinOptions: KotlinProxyApiOptions(
     fullClassName: 'android.webkit.WebResourceRequest',
   ),
+  versionRequirements: VersionRequirements(minAndroidApi: 16),
 )
 abstract class WebResourceRequest {
   late String url;
@@ -98,6 +99,7 @@ abstract class WebResourceRequest {
   kotlinOptions: KotlinProxyApiOptions(
     fullClassName: 'android.webkit.WebResourceError',
   ),
+  versionRequirements: VersionRequirements(minAndroidApi: 23),
 )
 abstract class WebResourceError {
   late int errorCode;
@@ -256,7 +258,7 @@ abstract class WebSettings {
 
 @ProxyApi(
   kotlinOptions: KotlinProxyApiOptions(
-    fullClassName: 'io.flutter.plugins.webviewflutter.newGen.JavaScriptChannel',
+    fullClassName: 'io.flutter.plugins.webviewflutter.JavaScriptChannel',
   ),
 )
 abstract class JavaScriptChannel {
@@ -378,7 +380,7 @@ abstract class WebChromeClient {
 @ProxyApi(
   kotlinOptions: KotlinProxyApiOptions(
     fullClassName:
-        'io.flutter.plugins.webviewflutter.newGen.FlutterAssetManager',
+        'io.flutter.plugins.webviewflutter.FlutterAssetManager',
   ),
 )
 abstract class FlutterAssetManager {
@@ -408,6 +410,7 @@ abstract class WebStorage {
   kotlinOptions: KotlinProxyApiOptions(
     fullClassName: 'android.webkit.WebChromeClient.FileChooserParams',
   ),
+  versionRequirements: VersionRequirements(minAndroidApi: 21),
 )
 abstract class FileChooserParams {
   late bool isCaptureEnabled;
@@ -427,6 +430,7 @@ abstract class FileChooserParams {
   kotlinOptions: KotlinProxyApiOptions(
     fullClassName: 'android.webkit.PermissionRequest',
   ),
+  versionRequirements: VersionRequirements(minAndroidApi: 21),
 )
 abstract class PermissionRequest {
   late List<String> resources;
