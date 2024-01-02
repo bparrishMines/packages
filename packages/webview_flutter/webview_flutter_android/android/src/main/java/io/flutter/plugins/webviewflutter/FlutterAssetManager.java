@@ -12,7 +12,7 @@ import java.io.IOException;
 
 /** Provides access to the assets registered as part of the App bundle. */
 @SuppressWarnings({"deprecation", "DeprecatedIsStillUsed"})
-abstract class FlutterAssetManager {
+public abstract class FlutterAssetManager {
   final AssetManager assetManager;
 
   /**
@@ -33,7 +33,7 @@ abstract class FlutterAssetManager {
    * Therefore, the returned path is appropriate to pass to Android's AssetManager, but the path is
    * not appropriate to load as an absolute path.
    */
-  abstract String getAssetFilePathByName(String name);
+  public abstract String getAssetFilePathByName(String name);
 
   /**
    * Returns a String array of all the assets at the given path.
@@ -83,7 +83,7 @@ abstract class FlutterAssetManager {
    * Provides access to assets using the {@link FlutterPlugin.FlutterAssets} for looking up file
    * paths to Flutter assets.
    */
-  static class PluginBindingFlutterAssetManager extends FlutterAssetManager {
+  public static class PluginBindingFlutterAssetManager extends FlutterAssetManager {
     final FlutterPlugin.FlutterAssets flutterAssets;
 
     /**
@@ -95,7 +95,7 @@ abstract class FlutterAssetManager {
      *     io.flutter.embedding.engine.plugins.FlutterPlugin.FlutterAssets} used to look up file
      *     paths to assets registered by Flutter.
      */
-    PluginBindingFlutterAssetManager(
+    public PluginBindingFlutterAssetManager(
         AssetManager assetManager, FlutterPlugin.FlutterAssets flutterAssets) {
       super(assetManager);
       this.flutterAssets = flutterAssets;

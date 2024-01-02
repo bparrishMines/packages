@@ -4,6 +4,9 @@
 
 import 'package:pigeon/pigeon.dart';
 
+// TODO: the check in kotlin host methods should also remove api
+// TODO: unattached fields dont have the requires api
+
 @ConfigurePigeon(
   PigeonOptions(
     dartOut: 'lib/src/android_webview_new.g.dart',
@@ -84,7 +87,7 @@ enum ConsoleMessageLevel {
   kotlinOptions: KotlinProxyApiOptions(
     fullClassName: 'android.webkit.WebResourceRequest',
   ),
-  versionRequirements: VersionRequirements(minAndroidApi: 16),
+  versionRequirements: VersionRequirements(minAndroidApi: 21),
 )
 abstract class WebResourceRequest {
   late String url;
@@ -206,6 +209,7 @@ abstract class WebView extends View {
 
   WebViewPoint getScrollPosition();
 
+  @static
   void setWebContentsDebuggingEnabled(bool enabled);
 
   void setWebViewClient(WebViewClient? client);
@@ -262,7 +266,8 @@ abstract class WebSettings {
   ),
 )
 abstract class JavaScriptChannel {
-  JavaScriptChannel();
+  // ignore: avoid_unused_constructor_parameters
+  JavaScriptChannel(String channelName);
 
   late void Function(String message) postMessage;
 }
@@ -307,7 +312,7 @@ abstract class WebViewClient {
 
   late void Function(
     WebView webView,
-    int httpAuthHandlerInstanceId,
+    HttpAuthHandler handler,
     String host,
     String realm,
   )? onReceivedHttpAuthRequest;
@@ -379,15 +384,15 @@ abstract class WebChromeClient {
 
 @ProxyApi(
   kotlinOptions: KotlinProxyApiOptions(
-    fullClassName:
-        'io.flutter.plugins.webviewflutter.FlutterAssetManager',
+    fullClassName: 'io.flutter.plugins.webviewflutter.FlutterAssetManager',
   ),
 )
 abstract class FlutterAssetManager {
   @static
+  late FlutterAssetManager instance;
+
   List<String> list(String path);
 
-  @static
   String getAssetFilePathByName(String name);
 }
 

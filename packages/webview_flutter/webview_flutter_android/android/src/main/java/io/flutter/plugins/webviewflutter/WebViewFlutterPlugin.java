@@ -7,8 +7,13 @@ package io.flutter.plugins.webviewflutter;
 import android.content.Context;
 import android.os.Build;
 import android.os.Handler;
+import android.webkit.WebResourceRequest;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
+import java.util.Map;
+
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
 import io.flutter.embedding.engine.plugins.activity.ActivityAware;
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding;
@@ -29,6 +34,28 @@ import io.flutter.plugins.webviewflutter.GeneratedAndroidWebView.WebSettingsHost
 import io.flutter.plugins.webviewflutter.GeneratedAndroidWebView.WebStorageHostApi;
 import io.flutter.plugins.webviewflutter.GeneratedAndroidWebView.WebViewClientHostApi;
 import io.flutter.plugins.webviewflutter.GeneratedAndroidWebView.WebViewHostApi;
+import io.flutter.plugins.webviewflutter.newGen.ConsoleMessage_Api;
+import io.flutter.plugins.webviewflutter.newGen.CookieManager_Api;
+import io.flutter.plugins.webviewflutter.newGen.CustomViewCallback_Api;
+import io.flutter.plugins.webviewflutter.newGen.DownloadListener_Api;
+import io.flutter.plugins.webviewflutter.newGen.FileChooserParams_Api;
+import io.flutter.plugins.webviewflutter.newGen.FlutterAssetManager_Api;
+import io.flutter.plugins.webviewflutter.newGen.GeolocationPermissionsCallback_Api;
+import io.flutter.plugins.webviewflutter.newGen.HttpAuthHandler_Api;
+import io.flutter.plugins.webviewflutter.newGen.JavaScriptChannel_Api;
+import io.flutter.plugins.webviewflutter.newGen.PermissionRequest_Api;
+import io.flutter.plugins.webviewflutter.newGen.Pigeon_InstanceManager;
+import io.flutter.plugins.webviewflutter.newGen.Pigeon_InstanceManagerApi;
+import io.flutter.plugins.webviewflutter.newGen.Pigeon_ProxyApiBaseCodec;
+import io.flutter.plugins.webviewflutter.newGen.View_Api;
+import io.flutter.plugins.webviewflutter.newGen.WebChromeClient_Api;
+import io.flutter.plugins.webviewflutter.newGen.WebResourceError_Api;
+import io.flutter.plugins.webviewflutter.newGen.WebResourceRequest_Api;
+import io.flutter.plugins.webviewflutter.newGen.WebSettings_Api;
+import io.flutter.plugins.webviewflutter.newGen.WebStorage_Api;
+import io.flutter.plugins.webviewflutter.newGen.WebViewClient_Api;
+import io.flutter.plugins.webviewflutter.newGen.WebViewPoint_Api;
+import io.flutter.plugins.webviewflutter.newGen.WebView_Api;
 
 /**
  * Java platform implementation of the webview_flutter plugin.
@@ -39,6 +66,7 @@ import io.flutter.plugins.webviewflutter.GeneratedAndroidWebView.WebViewHostApi;
  */
 public class WebViewFlutterPlugin implements FlutterPlugin, ActivityAware {
   @Nullable private InstanceManager instanceManager;
+  private Pigeon_InstanceManager instanceManager2;
 
   private FlutterPluginBinding pluginBinding;
   private WebViewHostApiImpl webViewHostApi;
@@ -158,6 +186,166 @@ public class WebViewFlutterPlugin implements FlutterPlugin, ActivityAware {
         binding.getApplicationContext(),
         new FlutterAssetManager.PluginBindingFlutterAssetManager(
             binding.getApplicationContext().getAssets(), binding.getFlutterAssets()));
+
+    final Pigeon_InstanceManagerApi api = new Pigeon_InstanceManagerApi(binding.getBinaryMessenger());
+    instanceManager2 = Pigeon_InstanceManager.Companion.create(api);
+
+    final Pigeon_ProxyApiBaseCodec codec = new ProxyApiCodec(binding.getBinaryMessenger(), instanceManager2);
+    codec.setUpMessageHandlers();
+  }
+
+  static class ProxyApiCodec extends Pigeon_ProxyApiBaseCodec {
+    public ProxyApiCodec(@NonNull BinaryMessenger binaryMessenger, @NonNull Pigeon_InstanceManager instanceManager) {
+      super(binaryMessenger, instanceManager);
+    }
+
+    @NonNull
+    @Override
+    public WebResourceRequest_Api getWebResourceRequest_Api() {
+      return new WebResourceRequest_Api() {
+        @NonNull
+        @Override
+        public String url(@NonNull WebResourceRequest pigeon_instance) {
+          return null;
+        }
+
+        @Override
+        public boolean isForMainFrame(@NonNull WebResourceRequest pigeon_instance) {
+          return false;
+        }
+
+        @Nullable
+        @Override
+        public Boolean isRedirect(@NonNull WebResourceRequest pigeon_instance) {
+          return null;
+        }
+
+        @Override
+        public boolean hasGesture(@NonNull WebResourceRequest pigeon_instance) {
+          return false;
+        }
+
+        @NonNull
+        @Override
+        public String method(@NonNull WebResourceRequest pigeon_instance) {
+          return null;
+        }
+
+        @Nullable
+        @Override
+        public Map<String, String> requestHeaders(@NonNull WebResourceRequest pigeon_instance) {
+          return null;
+        }
+      };
+    }
+
+    @NonNull
+    @Override
+    public WebResourceError_Api getWebResourceError_Api() {
+      return null;
+    }
+
+    @NonNull
+    @Override
+    public WebViewPoint_Api getWebViewPoint_Api() {
+      return null;
+    }
+
+    @NonNull
+    @Override
+    public ConsoleMessage_Api getConsoleMessage_Api() {
+      return null;
+    }
+
+    @NonNull
+    @Override
+    public CookieManager_Api getCookieManager_Api() {
+      return null;
+    }
+
+    @NonNull
+    @Override
+    public WebView_Api getWebView_Api() {
+      return null;
+    }
+
+    @NonNull
+    @Override
+    public WebSettings_Api getWebSettings_Api() {
+      return null;
+    }
+
+    @NonNull
+    @Override
+    public JavaScriptChannel_Api getJavaScriptChannel_Api() {
+      return null;
+    }
+
+    @NonNull
+    @Override
+    public WebViewClient_Api getWebViewClient_Api() {
+      return null;
+    }
+
+    @NonNull
+    @Override
+    public DownloadListener_Api getDownloadListener_Api() {
+      return null;
+    }
+
+    @NonNull
+    @Override
+    public WebChromeClient_Api getWebChromeClient_Api() {
+      return null;
+    }
+
+    @NonNull
+    @Override
+    public FlutterAssetManager_Api getFlutterAssetManager_Api() {
+      return null;
+    }
+
+    @NonNull
+    @Override
+    public WebStorage_Api getWebStorage_Api() {
+      return null;
+    }
+
+    @NonNull
+    @Override
+    public FileChooserParams_Api getFileChooserParams_Api() {
+      return null;
+    }
+
+    @NonNull
+    @Override
+    public PermissionRequest_Api getPermissionRequest_Api() {
+      return null;
+    }
+
+    @NonNull
+    @Override
+    public CustomViewCallback_Api getCustomViewCallback_Api() {
+      return null;
+    }
+
+    @NonNull
+    @Override
+    public View_Api getView_Api() {
+      return null;
+    }
+
+    @NonNull
+    @Override
+    public GeolocationPermissionsCallback_Api getGeolocationPermissionsCallback_Api() {
+      return null;
+    }
+
+    @NonNull
+    @Override
+    public HttpAuthHandler_Api getHttpAuthHandler_Api() {
+      return null;
+    }
   }
 
   @Override

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'android_webview.dart' as android_webview;
+import 'android_webview_new.g.dart' as android_webview;
 
 /// Handles constructing objects and calling static methods for the Android
 /// WebView native library.
@@ -19,19 +19,25 @@ class AndroidWebViewProxy {
     this.createAndroidWebView = android_webview.WebView.new,
     this.createAndroidWebChromeClient = android_webview.WebChromeClient.new,
     this.createAndroidWebViewClient = android_webview.WebViewClient.new,
-    this.createFlutterAssetManager = android_webview.FlutterAssetManager.new,
+    this.createFlutterAssetManager = _createFlutterAssetManager,
     this.createJavaScriptChannel = android_webview.JavaScriptChannel.new,
     this.createDownloadListener = android_webview.DownloadListener.new,
   });
+
+  static android_webview.FlutterAssetManager _createFlutterAssetManager() {
+    return android_webview.FlutterAssetManager.instance;
+  }
 
   /// Constructs a [android_webview.WebView].
   final android_webview.WebView Function() createAndroidWebView;
 
   /// Constructs a [android_webview.WebChromeClient].
   final android_webview.WebChromeClient Function({
-    void Function(android_webview.WebView webView, int progress)?
+    void Function(android_webview.WebChromeClient instance,
+            android_webview.WebView webView, int progress)?
         onProgressChanged,
     Future<List<String>> Function(
+      android_webview.WebChromeClient instance,
       android_webview.WebView webView,
       android_webview.FileChooserParams params,
     )? onShowFileChooser,
@@ -39,7 +45,9 @@ class AndroidWebViewProxy {
       android_webview.WebChromeClient instance,
       android_webview.PermissionRequest request,
     )? onPermissionRequest,
-    Future<void> Function(String origin,
+    Future<void> Function(
+            android_webview.WebChromeClient instance,
+            String origin,
             android_webview.GeolocationPermissionsCallback callback)?
         onGeolocationPermissionsShowPrompt,
     void Function(android_webview.WebChromeClient instance)?
@@ -57,28 +65,39 @@ class AndroidWebViewProxy {
 
   /// Constructs a [android_webview.WebViewClient].
   final android_webview.WebViewClient Function({
-    void Function(android_webview.WebView webView, String url)? onPageStarted,
-    void Function(android_webview.WebView webView, String url)? onPageFinished,
+    void Function(android_webview.WebViewClient instance,
+            android_webview.WebView webView, String url)?
+        onPageStarted,
+    void Function(android_webview.WebViewClient instance,
+            android_webview.WebView webView, String url)?
+        onPageFinished,
     void Function(
+      android_webview.WebViewClient instance,
       android_webview.WebView webView,
       android_webview.WebResourceRequest request,
       android_webview.WebResourceError error,
     )? onReceivedRequestError,
     @Deprecated('Only called on Android version < 23.')
     void Function(
+      android_webview.WebViewClient instance,
       android_webview.WebView webView,
       int errorCode,
       String description,
       String failingUrl,
     )? onReceivedError,
     void Function(
+      android_webview.WebViewClient instance,
       android_webview.WebView webView,
       android_webview.WebResourceRequest request,
     )? requestLoading,
-    void Function(android_webview.WebView webView, String url)? urlLoading,
-    void Function(android_webview.WebView webView, String url, bool isReload)?
+    void Function(android_webview.WebViewClient instance,
+            android_webview.WebView webView, String url)?
+        urlLoading,
+    void Function(android_webview.WebViewClient instance,
+            android_webview.WebView webView, String url, bool isReload)?
         doUpdateVisitedHistory,
     void Function(
+      android_webview.WebViewClient instance,
       android_webview.WebView webView,
       android_webview.HttpAuthHandler handler,
       String host,
@@ -91,14 +110,17 @@ class AndroidWebViewProxy {
       createFlutterAssetManager;
 
   /// Constructs a [android_webview.JavaScriptChannel].
-  final android_webview.JavaScriptChannel Function(
-    String channelName, {
-    required void Function(String) postMessage,
+  final android_webview.JavaScriptChannel Function({
+    required String channelName,
+    required void Function(
+            android_webview.JavaScriptChannel instance, String message)
+        postMessage,
   }) createJavaScriptChannel;
 
   /// Constructs a [android_webview.DownloadListener].
   final android_webview.DownloadListener Function({
     required void Function(
+      android_webview.DownloadListener instance,
       String url,
       String userAgent,
       String contentDisposition,
