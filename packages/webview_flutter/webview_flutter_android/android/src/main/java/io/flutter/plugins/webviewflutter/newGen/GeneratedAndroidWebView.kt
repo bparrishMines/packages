@@ -485,18 +485,18 @@ abstract class Pigeon_ProxyApiBaseCodec(val binaryMessenger: BinaryMessenger, va
 
   fun setUpMessageHandlers() {
     CookieManager_Api.setUpMessageHandlers(binaryMessenger, getCookieManager_Api())
-    WebView_Api.setUpMessageHandlers(binaryMessenger, getWebView_Api())
-    WebSettings_Api.setUpMessageHandlers(binaryMessenger, getWebSettings_Api())
-    JavaScriptChannel_Api.setUpMessageHandlers(binaryMessenger, getJavaScriptChannel_Api())
-    WebViewClient_Api.setUpMessageHandlers(binaryMessenger, getWebViewClient_Api())
-    DownloadListener_Api.setUpMessageHandlers(binaryMessenger, getDownloadListener_Api())
-    WebChromeClient_Api.setUpMessageHandlers(binaryMessenger, getWebChromeClient_Api())
-    FlutterAssetManager_Api.setUpMessageHandlers(binaryMessenger, getFlutterAssetManager_Api())
-    WebStorage_Api.setUpMessageHandlers(binaryMessenger, getWebStorage_Api())
-    PermissionRequest_Api.setUpMessageHandlers(binaryMessenger, getPermissionRequest_Api())
-    CustomViewCallback_Api.setUpMessageHandlers(binaryMessenger, getCustomViewCallback_Api())
-    GeolocationPermissionsCallback_Api.setUpMessageHandlers(binaryMessenger, getGeolocationPermissionsCallback_Api())
-    HttpAuthHandler_Api.setUpMessageHandlers(binaryMessenger, getHttpAuthHandler_Api())
+//    WebView_Api.setUpMessageHandlers(binaryMessenger, getWebView_Api())
+//    WebSettings_Api.setUpMessageHandlers(binaryMessenger, getWebSettings_Api())
+//    JavaScriptChannel_Api.setUpMessageHandlers(binaryMessenger, getJavaScriptChannel_Api())
+//    WebViewClient_Api.setUpMessageHandlers(binaryMessenger, getWebViewClient_Api())
+//    DownloadListener_Api.setUpMessageHandlers(binaryMessenger, getDownloadListener_Api())
+//    WebChromeClient_Api.setUpMessageHandlers(binaryMessenger, getWebChromeClient_Api())
+//    FlutterAssetManager_Api.setUpMessageHandlers(binaryMessenger, getFlutterAssetManager_Api())
+//    WebStorage_Api.setUpMessageHandlers(binaryMessenger, getWebStorage_Api())
+//    PermissionRequest_Api.setUpMessageHandlers(binaryMessenger, getPermissionRequest_Api())
+//    CustomViewCallback_Api.setUpMessageHandlers(binaryMessenger, getCustomViewCallback_Api())
+//    GeolocationPermissionsCallback_Api.setUpMessageHandlers(binaryMessenger, getGeolocationPermissionsCallback_Api())
+//    HttpAuthHandler_Api.setUpMessageHandlers(binaryMessenger, getHttpAuthHandler_Api())
   }
   override fun readValueOfType(type: Byte, buffer: ByteBuffer): Any? {
     return when (type) {
@@ -662,16 +662,22 @@ enum class ConsoleMessageLevel(val raw: Int) {
 }
 @Suppress("ClassName", "UNCHECKED_CAST")
 abstract class WebResourceRequest_Api(val codec: Pigeon_ProxyApiBaseCodec) {
+  @androidx.annotation.RequiresApi(api = 21)
   abstract fun url(pigeon_instance: android.webkit.WebResourceRequest): String
 
+  @androidx.annotation.RequiresApi(api = 21)
   abstract fun isForMainFrame(pigeon_instance: android.webkit.WebResourceRequest): Boolean
 
+  @androidx.annotation.RequiresApi(api = 21)
   abstract fun isRedirect(pigeon_instance: android.webkit.WebResourceRequest): Boolean?
 
+  @androidx.annotation.RequiresApi(api = 21)
   abstract fun hasGesture(pigeon_instance: android.webkit.WebResourceRequest): Boolean
 
+  @androidx.annotation.RequiresApi(api = 21)
   abstract fun method(pigeon_instance: android.webkit.WebResourceRequest): String
 
+  @androidx.annotation.RequiresApi(api = 21)
   abstract fun requestHeaders(pigeon_instance: android.webkit.WebResourceRequest): Map<String, String>?
 
   @Suppress("LocalVariableName", "FunctionName")
@@ -709,8 +715,10 @@ abstract class WebResourceRequest_Api(val codec: Pigeon_ProxyApiBaseCodec) {
 }
 @Suppress("ClassName", "UNCHECKED_CAST")
 abstract class WebResourceError_Api(val codec: Pigeon_ProxyApiBaseCodec) {
+  @androidx.annotation.RequiresApi(api = 23)
   abstract fun errorCode(pigeon_instance: android.webkit.WebResourceError): Long
 
+  @androidx.annotation.RequiresApi(api = 23)
   abstract fun description(pigeon_instance: android.webkit.WebResourceError): String
 
   @Suppress("LocalVariableName", "FunctionName")
@@ -2680,12 +2688,16 @@ abstract class WebStorage_Api(val codec: Pigeon_ProxyApiBaseCodec) {
  */
 @Suppress("ClassName", "UNCHECKED_CAST")
 abstract class FileChooserParams_Api(val codec: Pigeon_ProxyApiBaseCodec) {
+  @androidx.annotation.RequiresApi(api = 21)
   abstract fun isCaptureEnabled(pigeon_instance: android.webkit.WebChromeClient.FileChooserParams): Boolean
 
+  @androidx.annotation.RequiresApi(api = 21)
   abstract fun acceptTypes(pigeon_instance: android.webkit.WebChromeClient.FileChooserParams): List<String>
 
+  @androidx.annotation.RequiresApi(api = 21)
   abstract fun mode(pigeon_instance: android.webkit.WebChromeClient.FileChooserParams): FileChooserMode
 
+  @androidx.annotation.RequiresApi(api = 21)
   abstract fun filenameHint(pigeon_instance: android.webkit.WebChromeClient.FileChooserParams): String?
 
   @Suppress("LocalVariableName", "FunctionName")
@@ -2730,12 +2742,15 @@ abstract class FileChooserParams_Api(val codec: Pigeon_ProxyApiBaseCodec) {
  */
 @Suppress("ClassName", "UNCHECKED_CAST")
 abstract class PermissionRequest_Api(val codec: Pigeon_ProxyApiBaseCodec) {
+  @androidx.annotation.RequiresApi(api = 21)
   abstract fun resources(pigeon_instance: android.webkit.PermissionRequest): List<String>
 
   /** Handles Dart method `PermissionRequest.grant`. */
+  @androidx.annotation.RequiresApi(api = 21)
   abstract fun grant(pigeon_instance: android.webkit.PermissionRequest, resources: List<String>)
 
   /** Handles Dart method `PermissionRequest.deny`. */
+  @androidx.annotation.RequiresApi(api = 21)
   abstract fun deny(pigeon_instance: android.webkit.PermissionRequest)
 
   companion object {

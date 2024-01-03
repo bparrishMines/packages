@@ -6,6 +6,7 @@ import 'package:pigeon/pigeon.dart';
 
 // TODO: the check in kotlin host methods should also remove api
 // TODO: unattached fields dont have the requires api
+// TODO: use UnsupportedOperationException for version failures
 
 @ConfigurePigeon(
   PigeonOptions(

@@ -1,3 +1,3 @@
 package io.flutter.plugins.webviewflutter.newGen
 
-class WebViewPoint(x: Long, y: Long)
+class WebViewPoint(val x: Long, val y: Long)
