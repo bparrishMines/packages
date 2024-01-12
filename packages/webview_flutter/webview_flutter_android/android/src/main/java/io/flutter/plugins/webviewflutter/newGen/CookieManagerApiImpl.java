@@ -32,14 +32,14 @@ public class CookieManagerApiImpl extends CookieManager_Api {
   public void removeAllCookies(@NonNull CookieManager pigeon_instance, @NonNull Function1<? super Result<Boolean>, Unit> callback) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
       pigeon_instance.removeAllCookies(aBoolean -> {
-        ResultCompat.Companion.successBoolean(aBoolean, callback);
+        ResultCompat.Companion.success(aBoolean, callback);
       });
     } else {
       final boolean hasCookies = pigeon_instance.hasCookies();
       if (hasCookies) {
         pigeon_instance.removeAllCookie();
       }
-      ResultCompat.Companion.successBoolean(hasCookies, callback);
+      ResultCompat.Companion.success(hasCookies, callback);
     }
   }
 
