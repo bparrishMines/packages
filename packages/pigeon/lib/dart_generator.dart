@@ -483,6 +483,85 @@ final BinaryMessenger? ${_varNamePrefix}binaryMessenger;
     Indent indent,
   ) {
     indent.format(proxyApiBaseCodec);
+
+    final cb.Class proxy = cb.Class((cb.ClassBuilder builder) => builder
+      ..name = 'InteractiveMediaAdsProxy'
+      ..docs.addAll(
+        asDocumentationComments(
+          <String>[
+            'Handles constructing objects and calling static methods for the Android',
+            'Interactive Media Ads native library.',
+            '',
+            'This class provides dependency injection for the implementations of the',
+            'platform interface classes. Improving the ease of unit testing and/or',
+            'overriding the underlying Android classes.',
+            '',
+            'By default each function calls the default constructor of the class it',
+            'intends to return.',
+          ],
+          _docCommentSpec,
+        ),
+      )
+      ..constructors.add(cb.Constructor((cb.ConstructorBuilder builder) {
+        builder
+          ..docs.add('/// Constructs an [InteractiveMediaAdsProxy].')
+          ..constant = true
+          ..optionalParameters.addAll(
+            <cb.Parameter>[
+              for (final AstProxyApi api in root.apis.whereType<AstProxyApi>())
+                for (final Constructor constructor in api.constructors)
+                  cb.Parameter(
+                    (cb.ParameterBuilder builder) {
+                      final String constructorName =
+                          constructor.name.isEmpty ? 'new' : constructor.name;
+                      builder
+                        ..name = '$constructorName${api.name}'
+                        ..defaultTo = cb.Code('${api.name}.$constructorName')
+                        ..toThis = true;
+                    },
+                  ),
+              for (final AstProxyApi api in root.apis.whereType<AstProxyApi>())
+                for (final Method method
+                    in api.methods.where((Method m) => m.isStatic))
+                  cb.Parameter(
+                    (cb.ParameterBuilder builder) {
+                      builder
+                        ..name = '${method.name}${api.name}'
+                        ..defaultTo = cb.Code('${method.name}.${api.name}')
+                        ..toThis = true;
+                    },
+                  ),
+              for (final AstProxyApi api in root.apis.whereType<AstProxyApi>())
+                for (final ApiField field
+                    in api.attachedFields.where((ApiField f) => f.isStatic))
+                  cb.Parameter(
+                    (cb.ParameterBuilder builder) {
+                      builder
+                        ..name = '${field.name}${api.name}'
+                        ..defaultTo = cb.Code('_${field.name}${api.name}')
+                        ..toThis = true;
+                    },
+                  ),
+            ],
+          );
+      }))
+      ..methods.addAll(<cb.Method>[
+        for (final AstProxyApi api in root.apis.whereType<AstProxyApi>())
+          for (final ApiField field
+              in api.attachedFields.where((ApiField f) => f.isStatic))
+            cb.Method(
+              (cb.MethodBuilder builder) {
+                builder
+                  ..name = '_${field.name}${api.name}'
+                  ..static = true
+                  ..returns = cb.refer(field.type.baseName)
+                  ..body = cb.Code('${api.name}.${field.name}');
+              },
+            ),
+      ]));
+
+    final cb.DartEmitter emitter = cb.DartEmitter(useNullSafetySyntax: true);
+    indent.format(DartFormatter().format('${proxy.accept(emitter)}'));
   }
 
   @override
