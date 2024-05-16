@@ -391,6 +391,72 @@ class _PigeonProxyApiBaseCodec extends StandardMessageCodec {
   }
 }
 
+/// Handles constructing objects and calling static methods for the Android
+/// Interactive Media Ads native library.
+///
+/// This class provides dependency injection for the implementations of the
+/// platform interface classes. Improving the ease of unit testing and/or
+/// overriding the underlying Android classes.
+///
+/// By default each function calls the default constructor of the class it
+/// intends to return.
+class InteractiveMediaAdsProxy {
+  /// Constructs an [InteractiveMediaAdsProxy].
+  const InteractiveMediaAdsProxy({
+    this.newProxyApiTestClass = ProxyApiTestClass.new,
+    this.newProxyApiSuperClass = ProxyApiSuperClass.new,
+    this.staticNoopProxyApiTestClass = ProxyApiTestClass.staticNoop,
+    this.echoStaticStringProxyApiTestClass = ProxyApiTestClass.echoStaticString,
+    this.staticAsyncNoopProxyApiTestClass = ProxyApiTestClass.staticAsyncNoop,
+    this.staticAttachedFieldProxyApiTestClass =
+        _staticAttachedFieldProxyApiTestClass,
+  });
+
+  final ProxyApiTestClass Function({
+    required bool boolParam,
+    required int intParam,
+    required double doubleParam,
+    required String stringParam,
+    required Uint8List aUint8ListParam,
+    required List<Object?> listParam,
+    required Map<String?, Object?> mapParam,
+    required ProxyApiTestEnum enumParam,
+    required ProxyApiSuperClass proxyApiParam,
+    required bool aBool,
+    required int anInt,
+    required double aDouble,
+    required String aString,
+    required Uint8List aUint8List,
+    required List<Object?> aList,
+    required Map<String?, Object?> aMap,
+    required ProxyApiTestEnum anEnum,
+    required ProxyApiSuperClass aProxyApi,
+    bool? nullableBoolParam,
+    int? nullableIntParam,
+    double? nullableDoubleParam,
+    String? nullableStringParam,
+    Uint8List? nullableUint8ListParam,
+    List<Object?>? nullableListParam,
+    Map<String?, Object?>? nullableMapParam,
+    ProxyApiTestEnum? nullableEnumParam,
+    ProxyApiSuperClass? nullableProxyApiParam,
+    bool? aNullableBool,
+    int? aNullableInt,
+    double? aNullableDouble,
+    String? aNullableString,
+    Uint8List? aNullableUint8List,
+    List<Object?>? aNullableList,
+    Map<String?, Object?>? aNullableMap,
+    ProxyApiTestEnum? aNullableEnum,
+    ProxyApiSuperClass? aNullableProxyApi,
+  }) newProxyApiTestClass;
+
+  final ProxyApiSuperClass Function() newProxyApiSuperClass;
+
+  static ProxyApiSuperClass _staticAttachedFieldProxyApiTestClass() =>
+      ProxyApiTestClass.staticAttachedField;
+}
+
 enum ProxyApiTestEnum {
   one,
   two,

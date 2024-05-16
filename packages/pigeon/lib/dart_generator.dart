@@ -516,6 +516,7 @@ final BinaryMessenger? ${_varNamePrefix}binaryMessenger;
                           constructor.name.isEmpty ? 'new' : constructor.name;
                       builder
                         ..name = '$constructorName${api.name}'
+                        ..named = true
                         ..defaultTo = cb.Code('${api.name}.$constructorName')
                         ..toThis = true;
                     },
@@ -527,7 +528,8 @@ final BinaryMessenger? ${_varNamePrefix}binaryMessenger;
                     (cb.ParameterBuilder builder) {
                       builder
                         ..name = '${method.name}${api.name}'
-                        ..defaultTo = cb.Code('${method.name}.${api.name}')
+                        ..named = true
+                        ..defaultTo = cb.Code('${api.name}.${method.name}')
                         ..toThis = true;
                     },
                   ),
@@ -538,6 +540,7 @@ final BinaryMessenger? ${_varNamePrefix}binaryMessenger;
                     (cb.ParameterBuilder builder) {
                       builder
                         ..name = '${field.name}${api.name}'
+                        ..named = true
                         ..defaultTo = cb.Code('_${field.name}${api.name}')
                         ..toThis = true;
                     },
@@ -554,8 +557,82 @@ final BinaryMessenger? ${_varNamePrefix}binaryMessenger;
                 builder
                   ..name = '_${field.name}${api.name}'
                   ..static = true
+                  ..lambda = true
                   ..returns = cb.refer(field.type.baseName)
                   ..body = cb.Code('${api.name}.${field.name}');
+              },
+            ),
+      ])
+      ..fields.addAll(<cb.Field>[
+        for (final AstProxyApi api in root.apis.whereType<AstProxyApi>())
+          for (final Constructor constructor in api.constructors)
+            cb.Field(
+              (cb.FieldBuilder builder) {
+                final String constructorName =
+                    constructor.name.isEmpty ? 'new' : constructor.name;
+                builder
+                  ..name = '$constructorName${api.name}'
+                  ..modifier = cb.FieldModifier.final$
+                  ..type = cb.FunctionType(
+                    (cb.FunctionTypeBuilder builder) => builder
+                      ..returnType = cb.refer(api.name)
+                      ..isNullable = false
+                      ..namedRequiredParameters.addAll(
+                        <String, cb.Reference>{
+                          for (final Parameter parameter in constructor
+                              .parameters
+                              .where((Parameter p) => !p.type.isNullable))
+                            parameter.name: _refer(parameter.type),
+                          for (final Method method in api.flutterMethods
+                              .where((Method m) => m.isRequired))
+                            method.name: cb.FunctionType(
+                                (cb.FunctionTypeBuilder builder) {
+                              builder
+                                ..returnType = _refer(
+                                  method.returnType,
+                                  asFuture: method.isAsynchronous,
+                                )
+                                ..requiredParameters.addAll(<cb.Reference>[
+                                  cb.refer(api.name),
+                                  for (final Parameter parameter
+                                      in method.parameters)
+                                    _refer(parameter.type),
+                                ]);
+                            }),
+                          for (final ApiField field in api.unattachedFields
+                              .where((ApiField f) => !f.type.isNullable))
+                            field.name: _refer(field.type)
+                        },
+                      )
+                      ..namedParameters.addAll(
+                        <String, cb.Reference>{
+                          for (final Parameter parameter in constructor
+                              .parameters
+                              .where((Parameter p) => p.type.isNullable))
+                            parameter.name: _refer(parameter.type),
+                          for (final Method method in api.flutterMethods
+                              .where((Method m) => m.isRequired))
+                            method.name: cb.FunctionType(
+                                (cb.FunctionTypeBuilder builder) {
+                              builder
+                                ..isNullable = true
+                                ..returnType = _refer(
+                                  method.returnType,
+                                  asFuture: method.isAsynchronous,
+                                )
+                                ..requiredParameters.addAll(<cb.Reference>[
+                                  cb.refer(api.name),
+                                  for (final Parameter parameter
+                                      in method.parameters)
+                                    _refer(parameter.type),
+                                ]);
+                            }),
+                          for (final ApiField field in api.unattachedFields
+                              .where((ApiField f) => f.type.isNullable))
+                            field.name: _refer(field.type)
+                        },
+                      ),
+                  );
               },
             ),
       ]));
