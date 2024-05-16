@@ -573,6 +573,7 @@ final BinaryMessenger? ${_varNamePrefix}binaryMessenger;
                 builder
                   ..name = '$constructorName${api.name}'
                   ..modifier = cb.FieldModifier.final$
+                  ..docs.add('/// Constructs [${api.name}].')
                   ..type = cb.FunctionType(
                     (cb.FunctionTypeBuilder builder) => builder
                       ..returnType = cb.refer(api.name)
@@ -635,6 +636,25 @@ final BinaryMessenger? ${_varNamePrefix}binaryMessenger;
                   );
               },
             ),
+      ])
+      ..fields.addAll(<cb.Field>[
+        for (final AstProxyApi api in root.apis.whereType<AstProxyApi>())
+          for (final Method method
+              in api.methods.where((Method m) => m.isStatic))
+            cb.Field((cb.FieldBuilder builder) {
+              builder
+                ..name = '${method.name}${api.name}'
+                ..modifier = cb.FieldModifier.final$
+                ..docs.add('/// Calls to [${api.name}.${method.name}].')
+                ..type = cb.FunctionType((cb.FunctionTypeBuilder builder) {
+                  builder
+                    ..returnType = _refer(method.returnType, asFuture: true)
+                    ..requiredParameters.addAll(<cb.Reference>[
+                      for (final Parameter parameter in method.parameters)
+                        _refer(parameter.type),
+                    ]);
+                });
+            }),
       ]));
 
     final cb.DartEmitter emitter = cb.DartEmitter(useNullSafetySyntax: true);

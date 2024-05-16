@@ -412,6 +412,7 @@ class InteractiveMediaAdsProxy {
         _staticAttachedFieldProxyApiTestClass,
   });
 
+  /// Constructs [ProxyApiTestClass].
   final ProxyApiTestClass Function({
     required bool boolParam,
     required int intParam,
@@ -451,7 +452,17 @@ class InteractiveMediaAdsProxy {
     ProxyApiSuperClass? aNullableProxyApi,
   }) newProxyApiTestClass;
 
+  /// Constructs [ProxyApiSuperClass].
   final ProxyApiSuperClass Function() newProxyApiSuperClass;
+
+  /// Calls to [ProxyApiTestClass.staticNoop].
+  final Future<void> Function() staticNoopProxyApiTestClass;
+
+  /// Calls to [ProxyApiTestClass.echoStaticString].
+  final Future<String> Function(String) echoStaticStringProxyApiTestClass;
+
+  /// Calls to [ProxyApiTestClass.staticAsyncNoop].
+  final Future<void> Function() staticAsyncNoopProxyApiTestClass;
 
   static ProxyApiSuperClass _staticAttachedFieldProxyApiTestClass() =>
       ProxyApiTestClass.staticAttachedField;
