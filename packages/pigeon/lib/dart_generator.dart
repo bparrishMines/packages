@@ -612,7 +612,7 @@ final BinaryMessenger? ${_varNamePrefix}binaryMessenger;
                               .where((Parameter p) => p.type.isNullable))
                             parameter.name: _refer(parameter.type),
                           for (final Method method in api.flutterMethods
-                              .where((Method m) => m.isRequired))
+                              .where((Method m) => !m.isRequired))
                             method.name: cb.FunctionType(
                                 (cb.FunctionTypeBuilder builder) {
                               builder
