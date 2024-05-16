@@ -655,6 +655,20 @@ final BinaryMessenger? ${_varNamePrefix}binaryMessenger;
                     ]);
                 });
             }),
+      ])
+      ..fields.addAll(<cb.Field>[
+        for (final AstProxyApi api in root.apis.whereType<AstProxyApi>())
+          for (final ApiField field
+              in api.attachedFields.where((ApiField f) => f.isStatic))
+            cb.Field((cb.FieldBuilder builder) {
+              builder
+                ..name = '${field.name}${api.name}'
+                ..modifier = cb.FieldModifier.final$
+                ..docs.add('/// Calls to [${api.name}.${field.name}].')
+                ..type = cb.FunctionType((cb.FunctionTypeBuilder builder) {
+                  builder.returnType = _refer(field.type);
+                });
+            }),
       ]));
 
     final cb.DartEmitter emitter = cb.DartEmitter(useNullSafetySyntax: true);

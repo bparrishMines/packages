@@ -464,6 +464,9 @@ class InteractiveMediaAdsProxy {
   /// Calls to [ProxyApiTestClass.staticAsyncNoop].
   final Future<void> Function() staticAsyncNoopProxyApiTestClass;
 
+  /// Calls to [ProxyApiTestClass.staticAttachedField].
+  final ProxyApiSuperClass Function() staticAttachedFieldProxyApiTestClass;
+
   static ProxyApiSuperClass _staticAttachedFieldProxyApiTestClass() =>
       ProxyApiTestClass.staticAttachedField;
 }
