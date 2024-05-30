@@ -98,12 +98,20 @@ void main() {
       expect(code, contains(r'class PigeonInstanceManager'));
       expect(code, contains(r'class PigeonInstanceManagerApi'));
 
+      // API registrar
+      expect(
+        code,
+        contains(
+          'abstract class PigeonProxyApiRegistrar(val binaryMessenger: BinaryMessenger)',
+        ),
+      );
+
       // Codec and class
       expect(code, contains('class PigeonProxyApiBaseCodec'));
       expect(
         code,
         contains(
-          r'abstract class PigeonApiApi(val pigeonRegistrar: PigeonProxyApiRegistrar)',
+          r'abstract class PigeonApiApi(open val pigeonRegistrar: PigeonProxyApiRegistrar)',
         ),
       );
 
@@ -299,7 +307,7 @@ void main() {
         expect(
           code,
           contains(
-            'abstract class PigeonApiApi(val pigeonRegistrar: PigeonProxyApiRegistrar) ',
+            'abstract class PigeonApiApi(open val pigeonRegistrar: PigeonProxyApiRegistrar) ',
           ),
         );
         expect(
@@ -401,7 +409,7 @@ void main() {
         expect(
           code,
           contains(
-            'abstract class PigeonApiApi(val pigeonRegistrar: PigeonProxyApiRegistrar) ',
+            'abstract class PigeonApiApi(open val pigeonRegistrar: PigeonProxyApiRegistrar) ',
           ),
         );
         expect(

@@ -87,13 +87,10 @@ class KotlinOptions {
 /// ProxyApi.
 class KotlinProxyApiOptions {
   /// Construct a [KotlinProxyApiOptions].
-  const KotlinProxyApiOptions({
-    required this.fullClassName,
-    this.minAndroidApi,
-  });
+  const KotlinProxyApiOptions({this.fullClassName, this.minAndroidApi});
 
   /// The name of the full runtime Kotlin class name (including the package).
-  final String fullClassName;
+  final String? fullClassName;
 
   /// The minimum Android api version.
   ///
@@ -510,10 +507,104 @@ class KotlinGenerator extends StructuredGenerator<KotlinOptions> {
     Indent indent, {
     required String dartPackageName,
   }) {
-    indent.format(instanceManagerApiTemplate(
+    const String instanceManagerApiName = '${instanceManagerClassName}Api';
+
+    final String removeStrongReferenceName = makeChannelNameWithStrings(
+      apiName: instanceManagerApiName,
+      methodName: 'removeStrongReference',
       dartPackageName: dartPackageName,
-      errorClassName: _getErrorClassName(generatorOptions),
-    ));
+    );
+    final String clearName = makeChannelNameWithStrings(
+      apiName: instanceManagerApiName,
+      methodName: 'clear',
+      dartPackageName: dartPackageName,
+    );
+
+    indent.writeln('/**');
+    indent.writeln(
+        '* Generated API for managing the Dart and native `$instanceManagerClassName`s.');
+    indent.writeln('*/');
+    indent.writeScoped(
+      'private class $instanceManagerApiName(val binaryMessenger: BinaryMessenger) {',
+      '}',
+      () {
+        indent.writeScoped('companion object {', '}', () {
+          indent.writeln('/** The codec used by $instanceManagerApiName. */');
+          indent.writeScoped('val codec: MessageCodec<Any?> by lazy {', '}',
+              () {
+            indent.writeln('StandardMessageCodec()');
+          });
+          indent.newln();
+
+          indent.writeln('/**');
+          indent.writeln(
+              '* Sets up an instance of `$instanceManagerApiName` to handle messages from the');
+          indent.writeln('* `binaryMessenger`.');
+          indent.writeln('*/');
+          indent.writeScoped(
+            'fun setUpMessageHandlers(binaryMessenger: BinaryMessenger, instanceManager: $instanceManagerClassName?) {',
+            '}',
+            () {
+              const String setHandlerCondition = 'instanceManager != null';
+              _writeHostMethodMessageHandler(
+                indent,
+                name: 'removeStrongReference',
+                channelName: removeStrongReferenceName,
+                taskQueueType: TaskQueueType.serial,
+                parameters: <Parameter>[
+                  Parameter(
+                    name: 'identifier',
+                    type: const TypeDeclaration(
+                      baseName: 'int',
+                      isNullable: false,
+                    ),
+                  ),
+                ],
+                returnType: const TypeDeclaration.voidDeclaration(),
+                setHandlerCondition: setHandlerCondition,
+                onCreateCall: (
+                  List<String> safeArgNames, {
+                  required String apiVarName,
+                }) {
+                  return 'instanceManager.remove<Any?>(${safeArgNames.single})';
+                },
+              );
+              _writeHostMethodMessageHandler(
+                indent,
+                name: 'clear',
+                channelName: clearName,
+                taskQueueType: TaskQueueType.serial,
+                parameters: <Parameter>[],
+                returnType: const TypeDeclaration.voidDeclaration(),
+                setHandlerCondition: setHandlerCondition,
+                onCreateCall: (
+                  List<String> safeArgNames, {
+                  required String apiVarName,
+                }) {
+                  return 'instanceManager.clear()';
+                },
+              );
+            },
+          );
+        });
+        indent.newln();
+
+        _writeFlutterMethod(
+          indent,
+          generatorOptions: generatorOptions,
+          name: 'removeStrongReference',
+          parameters: <Parameter>[
+            Parameter(
+              name: 'identifier',
+              type: const TypeDeclaration(baseName: 'int', isNullable: false),
+            )
+          ],
+          returnType: const TypeDeclaration.voidDeclaration(),
+          channelName: removeStrongReferenceName,
+          dartPackageName: dartPackageName,
+        );
+      },
+    );
   }
 
   @override
@@ -546,14 +637,13 @@ class KotlinGenerator extends StructuredGenerator<KotlinOptions> {
     final List<AstProxyApi> sortedApis = topologicalSort(
       allProxyApis,
       (AstProxyApi api) {
-        final List<AstProxyApi> edges = <AstProxyApi>[
+        return <AstProxyApi>[
           if (api.superClass?.associatedProxyApi != null)
             api.superClass!.associatedProxyApi!,
           ...api.interfaces.map(
             (TypeDeclaration interface) => interface.associatedProxyApi!,
           ),
         ];
-        return edges;
       },
     );
 
@@ -629,8 +719,13 @@ class KotlinGenerator extends StructuredGenerator<KotlinOptions> {
       _docCommentSpec,
     );
     indent.writeln('@Suppress("UNCHECKED_CAST")');
+    // The API only needs to be abstract if there are methods to override.
+    final String classModifier =
+        api.hasAnyHostMessageCalls() || api.unattachedFields.isNotEmpty
+            ? 'abstract'
+            : 'open';
     indent.writeScoped(
-      'abstract class $kotlinApiName(open val pigeonRegistrar: ${classNamePrefix}ProxyApiRegistrar) {',
+      '$classModifier class $kotlinApiName(open val pigeonRegistrar: ${classNamePrefix}ProxyApiRegistrar) {',
       '}',
       () {
         final String fullKotlinClassName =
@@ -850,6 +945,7 @@ class KotlinGenerator extends StructuredGenerator<KotlinOptions> {
     List<String> documentationComments = const <String>[],
     int? minApiRequirement,
     bool isAsynchronous = false,
+    bool isOpen = false,
     bool isAbstract = false,
     String Function(int index, NamedType type) getArgumentName =
         _getArgumentName,
@@ -882,16 +978,21 @@ class KotlinGenerator extends StructuredGenerator<KotlinOptions> {
       );
     }
 
+    final String openKeyword = isOpen ? 'open ' : '';
     final String abstractKeyword = isAbstract ? 'abstract ' : '';
 
     if (isAsynchronous) {
       argSignature.add('callback: (Result<$resultType>) -> Unit');
-      indent.writeln('${abstractKeyword}fun $name(${argSignature.join(', ')})');
+      indent.writeln(
+        '$openKeyword${abstractKeyword}fun $name(${argSignature.join(', ')})',
+      );
     } else if (returnType.isVoid) {
-      indent.writeln('${abstractKeyword}fun $name(${argSignature.join(', ')})');
+      indent.writeln(
+        '$openKeyword${abstractKeyword}fun $name(${argSignature.join(', ')})',
+      );
     } else {
       indent.writeln(
-        '${abstractKeyword}fun $name(${argSignature.join(', ')}): $returnTypeString',
+        '$openKeyword${abstractKeyword}fun $name(${argSignature.join(', ')}): $returnTypeString',
       );
     }
   }
@@ -903,6 +1004,7 @@ class KotlinGenerator extends StructuredGenerator<KotlinOptions> {
     required TaskQueueType taskQueueType,
     required List<Parameter> parameters,
     required TypeDeclaration returnType,
+    String setHandlerCondition = 'api != null',
     bool isAsynchronous = false,
     String Function(List<String> safeArgNames, {required String apiVarName})?
         onCreateCall,
@@ -926,7 +1028,7 @@ class KotlinGenerator extends StructuredGenerator<KotlinOptions> {
         indent.addln(')');
       }
 
-      indent.write('if (api != null) ');
+      indent.write('if ($setHandlerCondition) ');
       indent.addScoped('{', '}', () {
         final String messageVarName = parameters.isNotEmpty ? 'message' : '_';
 
@@ -1105,6 +1207,7 @@ class KotlinGenerator extends StructuredGenerator<KotlinOptions> {
     required Iterable<AstProxyApi> allProxyApis,
   }) {
     const String registrarName = '${classNamePrefix}ProxyApiRegistrar';
+    const String instanceManagerApiName = '${instanceManagerClassName}Api';
 
     indent.format(
       '/**\n'
@@ -1116,7 +1219,7 @@ class KotlinGenerator extends StructuredGenerator<KotlinOptions> {
       'abstract class $registrarName(val binaryMessenger: BinaryMessenger) {',
       '}',
       () {
-        indent.writeln('val instanceManager: PigeonInstanceManager');
+        indent.writeln('val instanceManager: $instanceManagerClassName');
         indent.format(
           'private var _codec: StandardMessageCodec? = null\n'
           'val codec: StandardMessageCodec\n'
@@ -1129,10 +1232,10 @@ class KotlinGenerator extends StructuredGenerator<KotlinOptions> {
         );
         indent.format(
           'init {\n'
-          '  val api = PigeonInstanceManagerApi(binaryMessenger)\n'
+          '  val api = $instanceManagerApiName(binaryMessenger)\n'
           '  instanceManager =\n'
-          '    PigeonInstanceManager.create(\n'
-          '      object : PigeonInstanceManager.PigeonFinalizationListener {\n'
+          '    $instanceManagerClassName.create(\n'
+          '      object : $instanceManagerClassName.PigeonFinalizationListener {\n'
           '        override fun onFinalize(identifier: Long) {\n'
           '          api.removeStrongReference(identifier) {\n'
           '            if (it.isFailure) {\n'
@@ -1150,7 +1253,10 @@ class KotlinGenerator extends StructuredGenerator<KotlinOptions> {
           _writeMethodDeclaration(
             indent,
             name: 'get$hostProxyApiPrefix${api.name}',
-            isAbstract: true,
+            isAbstract:
+                api.hasAnyHostMessageCalls() || api.unattachedFields.isNotEmpty,
+            isOpen:
+                !api.hasAnyHostMessageCalls() && api.unattachedFields.isEmpty,
             documentationComments: <String>[
               'An implementation of [$hostProxyApiPrefix${api.name}] used to add a new Dart instance of',
               '`${api.name}` to the Dart `InstanceManager`.'
@@ -1161,12 +1267,20 @@ class KotlinGenerator extends StructuredGenerator<KotlinOptions> {
             ),
             parameters: <Parameter>[],
           );
+
+          // Use the default API implementation if this API does not have any
+          // methods to implement.
+          if (!api.hasAnyHostMessageCalls() && api.unattachedFields.isEmpty) {
+            indent.writeScoped('{', '}', () {
+              indent.writeln('return $hostProxyApiPrefix${api.name}(this)');
+            });
+          }
           indent.newln();
         }
 
         indent.writeScoped('fun setUp() {', '}', () {
           indent.writeln(
-            'PigeonInstanceManagerApi.setUpMessageHandlers(binaryMessenger, instanceManager)',
+            '$instanceManagerApiName.setUpMessageHandlers(binaryMessenger, instanceManager)',
           );
           for (final AstProxyApi api in allProxyApis) {
             final bool hasHostMessageCalls = api.constructors.isNotEmpty ||
@@ -1182,13 +1296,10 @@ class KotlinGenerator extends StructuredGenerator<KotlinOptions> {
 
         indent.writeScoped('fun tearDown() {', '}', () {
           indent.writeln(
-            'PigeonInstanceManagerApi.setUpMessageHandlers(binaryMessenger, null)',
+            '$instanceManagerApiName.setUpMessageHandlers(binaryMessenger, null)',
           );
           for (final AstProxyApi api in allProxyApis) {
-            final bool hasHostMessageCalls = api.constructors.isNotEmpty ||
-                api.attachedFields.isNotEmpty ||
-                api.hostMethods.isNotEmpty;
-            if (hasHostMessageCalls) {
+            if (api.hasAnyHostMessageCalls()) {
               indent.writeln(
                 '$hostProxyApiPrefix${api.name}.setUpMessageHandlers(binaryMessenger, null)',
               );
