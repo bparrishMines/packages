@@ -468,6 +468,7 @@ class KotlinGenerator extends StructuredGenerator<KotlinOptions> {
         });
         indent.writeln(
             '/** Sets up an instance of `$apiName` to handle messages through the `binaryMessenger`. */');
+        indent.writeln('@JvmOverloads');
         indent.write(
             'fun setUp(binaryMessenger: BinaryMessenger, api: $apiName?, messageChannelSuffix: String = "") ');
         indent.addScoped('{', '}', () {
@@ -520,27 +521,37 @@ class KotlinGenerator extends StructuredGenerator<KotlinOptions> {
       dartPackageName: dartPackageName,
     );
 
-    indent.writeln('/**');
-    indent.writeln(
-        '* Generated API for managing the Dart and native `$instanceManagerClassName`s.');
-    indent.writeln('*/');
+    addDocumentationComments(
+      indent,
+      <String>[
+        'Generated API for managing the Dart and native `$instanceManagerClassName`s.',
+      ],
+      _docCommentSpec,
+    );
     indent.writeScoped(
       'private class $instanceManagerApiName(val binaryMessenger: BinaryMessenger) {',
       '}',
       () {
         indent.writeScoped('companion object {', '}', () {
-          indent.writeln('/** The codec used by $instanceManagerApiName. */');
+          addDocumentationComments(
+            indent,
+            <String>['The codec used by $instanceManagerApiName.'],
+            _docCommentSpec,
+          );
           indent.writeScoped('val codec: MessageCodec<Any?> by lazy {', '}',
               () {
             indent.writeln('StandardMessageCodec()');
           });
           indent.newln();
 
-          indent.writeln('/**');
-          indent.writeln(
-              '* Sets up an instance of `$instanceManagerApiName` to handle messages from the');
-          indent.writeln('* `binaryMessenger`.');
-          indent.writeln('*/');
+          addDocumentationComments(
+            indent,
+            <String>[
+              'Sets up an instance of `$instanceManagerApiName` to handle messages from the',
+              '`binaryMessenger`.',
+            ],
+            _docCommentSpec,
+          );
           indent.writeScoped(
             'fun setUpMessageHandlers(binaryMessenger: BinaryMessenger, instanceManager: $instanceManagerClassName?) {',
             '}',
@@ -622,7 +633,7 @@ class KotlinGenerator extends StructuredGenerator<KotlinOptions> {
 
     // Sort APIs where edges are an API's super class and interfaces.
     //
-    // This sorts the apis to have child classes be listed before their parent
+    // This sorts the APIs to have child classes be listed before their parent
     // classes. This prevents the scenario where a method might return the super
     // class of the actual class, so the incorrect Dart class gets created
     // because the 'value is <SuperClass>' was checked first in the codec. For
@@ -652,15 +663,17 @@ class KotlinGenerator extends StructuredGenerator<KotlinOptions> {
       '}',
       () {
         indent.format(
-          'override fun readValueOfType(type: Byte, buffer: ByteBuffer): Any? {\n'
-          '  return when (type) {\n'
-          '    128.toByte() -> {\n'
-          '      return registrar.instanceManager.getInstance(\n'
-          '          readValue(buffer).let { if (it is Int) it.toLong() else it as Long })\n'
-          '    }\n'
-          '    else -> super.readValueOfType(type, buffer)\n'
-          '  }\n'
-          '}',
+          '''
+          override fun readValueOfType(type: Byte, buffer: ByteBuffer): Any? {
+            return when (type) {
+              128.toByte() -> {
+                return registrar.instanceManager.getInstance(
+                    readValue(buffer).let { if (it is Int) it.toLong() else it as Long })
+              }
+              else -> super.readValueOfType(type, buffer)
+            }
+          }''',
+          trimIndentation: true,
         );
         indent.newln();
 
@@ -680,22 +693,26 @@ class KotlinGenerator extends StructuredGenerator<KotlinOptions> {
                     : '';
 
                 indent.format(
-                  '${index > 0 ? ' else ' : ''}if (${versionCheck}value is $className) {\n'
-                  '  registrar.get$hostProxyApiPrefix${api.name}().${classMemberNamePrefix}newInstance(value) { }\n'
-                  '}',
+                  '''
+                  ${index > 0 ? ' else ' : ''}if (${versionCheck}value is $className) {
+                    registrar.get$hostProxyApiPrefix${api.name}().${classMemberNamePrefix}newInstance(value) { }
+                  }''',
+                  trimIndentation: true,
                 );
               },
             );
             indent.newln();
 
             indent.format(
-              'when {\n'
-              '  registrar.instanceManager.containsInstance(value) -> {\n'
-              '    stream.write(128)\n'
-              '    writeValue(stream, registrar.instanceManager.getIdentifierForStrongReference(value))\n'
-              '  }\n'
-              '  else -> super.writeValue(stream, value)\n'
-              '}',
+              '''
+              when {
+                registrar.instanceManager.containsInstance(value) -> {
+                  stream.write(128)
+                  writeValue(stream, registrar.instanceManager.getIdentifierForStrongReference(value))
+                }
+                else -> super.writeValue(stream, value)
+              }''',
+              trimIndentation: true,
             );
           },
         );
@@ -1209,45 +1226,48 @@ class KotlinGenerator extends StructuredGenerator<KotlinOptions> {
     const String registrarName = '${classNamePrefix}ProxyApiRegistrar';
     const String instanceManagerApiName = '${instanceManagerClassName}Api';
 
-    indent.format(
-      '/**\n'
-      ' * Provides implementations for each ProxyApi implementation and provides access to resources\n'
-      ' * needed by any implementation.\n'
-      ' */',
+    addDocumentationComments(
+      indent,
+      <String>[
+        'Provides implementations for each ProxyApi implementation and provides access to resources',
+        'needed by any implementation.',
+      ],
+      _docCommentSpec,
     );
     indent.writeScoped(
       'abstract class $registrarName(val binaryMessenger: BinaryMessenger) {',
       '}',
       () {
-        indent.writeln('val instanceManager: $instanceManagerClassName');
         indent.format(
-          'private var _codec: StandardMessageCodec? = null\n'
-          'val codec: StandardMessageCodec\n'
-          '  get() {\n'
-          '    if (_codec == null) {\n '
-          '      _codec = PigeonProxyApiBaseCodec(this)\n'
-          '    }\n'
-          '    return _codec!!\n'
-          '  }\n',
-        );
-        indent.format(
-          'init {\n'
-          '  val api = $instanceManagerApiName(binaryMessenger)\n'
-          '  instanceManager =\n'
-          '    $instanceManagerClassName.create(\n'
-          '      object : $instanceManagerClassName.PigeonFinalizationListener {\n'
-          '        override fun onFinalize(identifier: Long) {\n'
-          '          api.removeStrongReference(identifier) {\n'
-          '            if (it.isFailure) {\n'
-          '              Log.e(\n'
-          '                "$registrarName",\n'
-          '                "Failed to remove Dart strong reference with identifier: \$identifier"\n'
-          '              )\n'
-          '            }\n'
-          '          }\n'
-          '        }\n'
-          '      })\n'
-          '}\n',
+          '''
+          val instanceManager: $instanceManagerClassName
+          private var _codec: StandardMessageCodec? = null
+          val codec: StandardMessageCodec
+            get() {
+              if (_codec == null) {
+                _codec = PigeonProxyApiBaseCodec(this)
+              }
+              return _codec!!
+            }
+
+          init {
+            val api = $instanceManagerApiName(binaryMessenger)
+            instanceManager = $instanceManagerClassName.create(
+              object : $instanceManagerClassName.PigeonFinalizationListener {
+                override fun onFinalize(identifier: Long) {
+                  api.removeStrongReference(identifier) {
+                    if (it.isFailure) {
+                      Log.e(
+                        "$registrarName",
+                        "Failed to remove Dart strong reference with identifier: \$identifier"
+                      )
+                    }
+                  }
+                }
+              }
+            )
+          }''',
+          trimIndentation: true,
         );
         for (final AstProxyApi api in allProxyApis) {
           _writeMethodDeclaration(
@@ -1473,20 +1493,22 @@ class KotlinGenerator extends StructuredGenerator<KotlinOptions> {
                       .type.associatedProxyApi!.kotlinOptions?.fullClassName ??
                   typeWithRequirement.type.baseName;
               indent.format(
-                'val channel = BasicMessageChannel<Any?>(\n'
-                '  binaryMessenger,\n'
-                '  "$channelName",\n'
-                '  codec\n'
-                ')\n'
-                'if (api != null) {\n'
-                '  channel.setMessageHandler { _, reply ->\n'
-                '    reply.reply(wrapError(\n'
-                '      UnsupportedOperationException(\n'
-                '        "Call references class `$className`, which requires api version $apiRequirement.")))\n'
-                '  }\n'
-                '} else {\n'
-                '  channel.setMessageHandler(null)\n'
-                '}',
+                '''
+                val channel = BasicMessageChannel<Any?>(
+                  binaryMessenger,
+                  "$channelName",
+                  codec
+                )
+                if (api != null) {
+                  channel.setMessageHandler { _, reply ->
+                    reply.reply(wrapError(UnsupportedOperationException(
+                      "Call references class `$className`, which requires api version $apiRequirement."
+                    )))
+                  }
+                } else {
+                  channel.setMessageHandler(null)
+                }''',
+                trimIndentation: true,
               );
             });
           } else {
