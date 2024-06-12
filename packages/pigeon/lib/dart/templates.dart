@@ -262,13 +262,13 @@ abstract class $proxyApiBaseClassName {
 /// adds support to convert instances to their corresponding identifier from an
 /// `InstanceManager` and vice versa.
 const String proxyApiBaseCodec = '''
-class $_proxyApiCodecName extends StandardMessageCodec {
+class $_proxyApiCodecName extends _PigeonCodec {
  const $_proxyApiCodecName(this.instanceManager);
  final $instanceManagerClassName instanceManager;
  @override
  void writeValue(WriteBuffer buffer, Object? value) {
    if (value is $proxyApiBaseClassName) {
-     buffer.putUint8(128);
+     buffer.putUint8($proxyApiCodecInstanceManagerKey);
      writeValue(buffer, instanceManager.getIdentifier(value));
    } else {
      super.writeValue(buffer, value);
@@ -277,7 +277,7 @@ class $_proxyApiCodecName extends StandardMessageCodec {
  @override
  Object? readValueOfType(int type, ReadBuffer buffer) {
    switch (type) {
-     case 128:
+     case $proxyApiCodecInstanceManagerKey:
        return instanceManager
            .getInstanceWithWeakReference(readValue(buffer)! as int);
      default:
