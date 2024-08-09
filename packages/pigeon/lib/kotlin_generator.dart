@@ -1926,6 +1926,34 @@ class KotlinGenerator extends StructuredGenerator<KotlinOptions> {
     );
     indent.newln();
 
+    String getDefaultTestValue(TypeDeclaration type) {
+      if (type.isProxyApi) {
+        return 'mock<${type.baseName}>()';
+      }
+
+      if (type.isEnum) {
+        return '${type.baseName}.${type.associatedEnum!.members.first.name.replaceAllMapped(RegExp(r'(?<=[a-z])[A-Z]'), (Match m) => '_${m.group(0)}').toUpperCase()}';
+      }
+
+      return switch (type.baseName) {
+        'bool' => 'true',
+        'String' => '"myString"',
+        'int' => '0',
+        'double' => '1.0',
+        'Uint8List' => 'byteArrayOf(0xA1.toByte())',
+        'List' => 'listOf(${getDefaultTestValue(type.typeArguments[0])})',
+        'Map' =>
+          'mapOf(${getDefaultTestValue(type.typeArguments[0])} to ${getDefaultTestValue(type.typeArguments[1])}})',
+        _ => '-1'
+      };
+    }
+
+    String getParameterValues(Iterable<Parameter> parameters) {
+      return parameters
+          .map((Parameter parameter) => getDefaultTestValue(parameter.type))
+          .join(', ');
+    }
+
     String getParameterNames(Iterable<Parameter> parameters) {
       return parameters.map((Parameter parameter) => parameter.name).join(', ');
     }
@@ -1953,35 +1981,13 @@ class KotlinGenerator extends StructuredGenerator<KotlinOptions> {
         indent.writeScoped('fun $constructorName() {', '}', () {
           writeApiVar(indent);
 
-          final String parameterNames = getParameterNames(
+          final String parameterValues = getParameterValues(
             constructor.parameters,
           );
           indent.writeln(
-            'assertTrue(api.$constructorName($parameterNames) is ${api.name}ProxyApi.${api.name}${hasInterfaceImpl(api) ? 'Impl' : ''})',
+            'assertTrue(api.$constructorName($parameterValues) is ${api.name}ProxyApi.${api.name}${hasInterfaceImpl(api) ? 'Impl' : ''})',
           );
         });
-      }
-
-      String getDefaultTestValue(TypeDeclaration type) {
-        if (type.isProxyApi) {
-          return 'mock<${type.baseName}>()';
-        }
-
-        if (type.isEnum) {
-          return '${type.baseName}.${type.associatedEnum!.members.first.name.replaceAllMapped(RegExp(r'(?<=[a-z])[A-Z]'), (Match m) => '_${m.group(0)}').toUpperCase()}';
-        }
-
-        return switch (type.baseName) {
-          'bool' => 'true',
-          'String' => '"myString"',
-          'int' => '0',
-          'double' => '1.0',
-          'Uint8List' => 'byteArrayOf(0xA1.toByte())',
-          'List' => 'listOf(${getDefaultTestValue(type.typeArguments[0])})',
-          'Map' =>
-            'mapOf(${getDefaultTestValue(type.typeArguments[0])} to ${getDefaultTestValue(type.typeArguments[1])}})',
-          _ => '-1'
-        };
       }
 
       for (final ApiField field in api.unattachedFields) {
@@ -1997,6 +2003,89 @@ class KotlinGenerator extends StructuredGenerator<KotlinOptions> {
           indent.newln();
 
           indent.writeln('assertEquals(value, api.${field.name}(instance))');
+        });
+      }
+
+      for (final ApiField field
+          in api.attachedFields.where((ApiField f) => !f.isStatic)) {
+        indent.writeln('@Test');
+        indent.writeScoped('fun ${field.name}() {', '}', () {
+          writeApiVar(indent);
+
+          indent.writeln('val instance = mock<${api.name}>()');
+          indent.writeln('val value = ${getDefaultTestValue(field.type)}');
+          indent.writeln(
+            'whenever(instance.${field.name}).thenReturn(value)',
+          );
+          indent.newln();
+
+          indent.writeln('assertEquals(value, api.${field.name}(instance))');
+        });
+      }
+
+      for (final Method method
+          in api.hostMethods.where((Method m) => !m.isStatic)) {
+        indent.writeln('@Test');
+        indent.writeScoped('fun ${method.name}() {', '}', () {
+          writeApiVar(indent);
+
+          indent.writeln('val instance = mock<${api.name}>()');
+
+          final String parameterNames = getParameterNames(method.parameters);
+
+          for (final Parameter parameter in method.parameters) {
+            indent.writeln(
+              'val ${parameter.name} = ${getDefaultTestValue(parameter.type)}',
+            );
+          }
+
+          if (method.returnType.isVoid) {
+            indent.writeln('api.${method.name}(instance, $parameterNames)');
+            indent.newln();
+
+            indent.writeln('verify(instance).${method.name}($parameterNames)');
+          } else {
+            indent.writeln(
+                'val value = ${getDefaultTestValue(method.returnType)}');
+            indent.writeln(
+              'whenever(instance.${method.name}($parameterNames)).thenReturn(value)',
+            );
+            indent.newln();
+
+            indent.writeln(
+              'assertEquals(value, api.${method.name}(instance, $parameterNames))',
+            );
+          }
+        });
+      }
+
+      for (final Method method in api.flutterMethods) {
+        indent.writeln('@Test');
+        indent.writeScoped('fun ${method.name}() {', '}', () {
+          indent.writeln('val mockApi = mock<${api.name}ProxyApi>()');
+          indent.writeln(
+            'whenever(mockApi.pigeonRegistrar).thenReturn(TestProxyApiRegistrar())',
+          );
+          indent.newln();
+
+          indent.writeln('val instance = ${api.name}Impl(mockApi)');
+          for (final Parameter parameter in method.parameters) {
+            indent.writeln(
+              'val ${parameter.name} = ${getDefaultTestValue(parameter.type)}',
+            );
+          }
+
+          final String parameterNames = getParameterNames(method.parameters);
+          indent.writeln('instance.${method.name}($parameterNames)');
+          indent.newln();
+
+          final String checkValueParamNames = method.parameters
+              .map((Parameter parameter) => 'eq(${parameter.name})')
+              .join(', ');
+
+          indent.writeln(
+            'verify(mockApi).${method.name}(eq(instance), $checkValueParamNames, any())',
+          );
         });
       }
     });
