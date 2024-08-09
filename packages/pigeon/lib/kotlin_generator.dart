@@ -1870,6 +1870,137 @@ class KotlinGenerator extends StructuredGenerator<KotlinOptions> {
       indent.newln();
     }
   }
+
+  void _writeProxyApiTest(Indent indent, AstProxyApi api) {
+    indent.format(
+      '''
+      // Copyright 2013 The Flutter Authors. All rights reserved.
+      // Use of this source code is governed by a BSD-style license that can be
+      // found in the LICENSE file.''',
+      trimIndentation: true,
+    );
+    indent.newln();
+
+    Iterable<AstProxyApi> onlyProxyApis(Iterable<TypeDeclaration> types) {
+      return types.where((TypeDeclaration type) {
+        return type.isProxyApi;
+      }).map((TypeDeclaration type) => type.associatedProxyApi!);
+    }
+
+    Iterable<AstProxyApi> onlyProxyApis2(Iterable<NamedType> types) {
+      return onlyProxyApis(types.map((NamedType type) => type.type));
+    }
+
+    final Set<AstProxyApi> includedApis = <AstProxyApi>{
+      api,
+      ...api.constructors.expand(
+        (Constructor constructor) => onlyProxyApis2(constructor.parameters),
+      ),
+      ...onlyProxyApis2(api.fields),
+      ...api.methods.expand(
+        (Method method) => onlyProxyApis2(method.parameters),
+      ),
+    };
+
+    final String classImports = includedApis
+        .where((AstProxyApi api) => api.kotlinOptions?.fullClassName != null)
+        .map((AstProxyApi api) => api.kotlinOptions!.fullClassName!)
+        .map((String fullClassName) => 'import $fullClassName')
+        .join('\n');
+
+    indent.format(
+      '''
+      /*
+      $classImports
+      import kotlin.test.Test
+      import kotlin.test.assertEquals
+      import kotlin.test.assertTrue
+      import org.mockito.Mockito
+      import org.mockito.kotlin.any
+      import org.mockito.kotlin.eq
+      import org.mockito.kotlin.mock
+      import org.mockito.kotlin.whenever
+      */
+      ''',
+      trimIndentation: true,
+    );
+    indent.newln();
+
+    String getParameterNames(Iterable<Parameter> parameters) {
+      return parameters.map((Parameter parameter) => parameter.name).join(', ');
+    }
+
+    bool hasInterfaceImpl(AstProxyApi api) {
+      return api.constructors.length == 1 &&
+          api.constructors[0].parameters.isEmpty &&
+          api.fields.where((ApiField field) => !field.isStatic).isEmpty &&
+          api.hostMethods.where((Method method) => !method.isStatic).isEmpty;
+    }
+
+    indent.writeScoped('class ${api.name}ProxyApiTest {', '}', () {
+      void writeApiVar(Indent indent) {
+        indent.writeln(
+          'val api = TestProxyApiRegistrar().getPigeonApi${api.name}()',
+        );
+        indent.newln();
+      }
+
+      for (final Constructor constructor in api.constructors) {
+        indent.writeln('@Test');
+        final String constructorName = constructor.name.isEmpty
+            ? 'pigeon_defaultConstructor'
+            : constructor.name;
+        indent.writeScoped('fun $constructorName() {', '}', () {
+          writeApiVar(indent);
+
+          final String parameterNames = getParameterNames(
+            constructor.parameters,
+          );
+          indent.writeln(
+            'assertTrue(api.$constructorName($parameterNames) is ${api.name}ProxyApi.${api.name}${hasInterfaceImpl(api) ? 'Impl' : ''})',
+          );
+        });
+      }
+
+      String getDefaultTestValue(TypeDeclaration type) {
+        if (type.isProxyApi) {
+          return 'mock<${type.baseName}>()';
+        }
+
+        if (type.isEnum) {
+          return '${type.baseName}.${type.associatedEnum!.members.first.name.replaceAllMapped(RegExp(r'(?<=[a-z])[A-Z]'), (Match m) => '_${m.group(0)}').toUpperCase()}';
+        }
+
+        return switch (type.baseName) {
+          'bool' => 'true',
+          'String' => '"myString"',
+          'int' => '0',
+          'double' => '1.0',
+          'Uint8List' => 'byteArrayOf(0xA1.toByte())',
+          'List' => 'listOf(${getDefaultTestValue(type.typeArguments[0])})',
+          'Map' =>
+            'mapOf(${getDefaultTestValue(type.typeArguments[0])} to ${getDefaultTestValue(type.typeArguments[1])}})',
+          _ => '-1'
+        };
+      }
+
+      for (final ApiField field in api.unattachedFields) {
+        indent.writeln('@Test');
+        indent.writeScoped('fun ${field.name}() {', '}', () {
+          writeApiVar(indent);
+
+          indent.writeln('val instance = mock<${api.name}>()');
+          indent.writeln('val value = ${getDefaultTestValue(field.type)}');
+          indent.writeln(
+            'whenever(instance.${field.name}).thenReturn(value)',
+          );
+          indent.newln();
+
+          indent.writeln('assertEquals(value, api.${field.name}(instance))');
+        });
+      }
+    });
+  }
 }
 
 ({TypeDeclaration type, int version})? _findAndroidHighestApiRequirement(
