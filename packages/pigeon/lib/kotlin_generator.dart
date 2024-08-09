@@ -1871,7 +1871,7 @@ class KotlinGenerator extends StructuredGenerator<KotlinOptions> {
     }
   }
 
-  void _writeProxyApiTest(Indent indent, AstProxyApi api) {
+  void _writeLicense(Indent indent) {
     indent.format(
       '''
       // Copyright 2013 The Flutter Authors. All rights reserved.
@@ -1879,8 +1879,9 @@ class KotlinGenerator extends StructuredGenerator<KotlinOptions> {
       // found in the LICENSE file.''',
       trimIndentation: true,
     );
-    indent.newln();
+  }
 
+  void _writeProxyApiImports(Indent indent, AstProxyApi api) {
     Iterable<AstProxyApi> onlyProxyApis(Iterable<TypeDeclaration> types) {
       return types.where((TypeDeclaration type) {
         return type.isProxyApi;
@@ -1908,10 +1909,17 @@ class KotlinGenerator extends StructuredGenerator<KotlinOptions> {
         .map((String fullClassName) => 'import $fullClassName')
         .join('\n');
 
+    indent.writeln(classImports);
+  }
+
+  void _writeProxyApiImpl(Indent indent, AstProxyApi api) {
+    _writeLicense(indent);
+    indent.newln();
+
+    indent.writeln('/*');
+    _writeProxyApiImports(indent, api);
     indent.format(
       '''
-      /*
-      $classImports
       import kotlin.test.Test
       import kotlin.test.assertEquals
       import kotlin.test.assertTrue
@@ -1920,8 +1928,29 @@ class KotlinGenerator extends StructuredGenerator<KotlinOptions> {
       import org.mockito.kotlin.eq
       import org.mockito.kotlin.mock
       import org.mockito.kotlin.whenever
-      */
-      ''',
+      */''',
+      trimIndentation: true,
+    );
+    indent.newln();
+  }
+
+  void _writeProxyApiTest(Indent indent, AstProxyApi api) {
+    _writeLicense(indent);
+    indent.newln();
+
+    indent.writeln('/*');
+    _writeProxyApiImports(indent, api);
+    indent.format(
+      '''
+      import kotlin.test.Test
+      import kotlin.test.assertEquals
+      import kotlin.test.assertTrue
+      import org.mockito.Mockito
+      import org.mockito.kotlin.any
+      import org.mockito.kotlin.eq
+      import org.mockito.kotlin.mock
+      import org.mockito.kotlin.whenever
+      */''',
       trimIndentation: true,
     );
     indent.newln();
