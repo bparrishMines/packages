@@ -1871,6 +1871,10 @@ class KotlinGenerator extends StructuredGenerator<KotlinOptions> {
     }
   }
 
+  String _getParameterNames(Iterable<Parameter> parameters) {
+    return parameters.map((Parameter parameter) => parameter.name).join(', ');
+  }
+
   void _writeLicense(Indent indent) {
     indent.format(
       '''
@@ -1932,6 +1936,105 @@ class KotlinGenerator extends StructuredGenerator<KotlinOptions> {
       trimIndentation: true,
     );
     indent.newln();
+
+    indent.format(
+      '''
+      /**
+       * ProxyApi implementation for [${api.name}].
+       *
+       * <p>This class may handle instantiating native object instances that are attached to a Dart
+       * instance or handle method calls on the associated native class or an instance of that class.
+       */''',
+      trimIndentation: true,
+    );
+    indent.writeScoped(
+      'class ${api.name}ProxyApi(override val pigeonRegistrar: ProxyApiRegistrar) : PigeonApi${api.name}(pigeonRegistrar) {',
+      '}',
+      () {
+        String getMethodParameterNames(Iterable<Parameter> parameters) {
+          return parameters
+              .map(
+                (Parameter parameter) =>
+                    '${parameter.name}: ${parameter.type.baseName}',
+              )
+              .join(', ');
+        }
+
+        if (api.hasAnyFlutterMessageCalls()) {
+          indent.writeScoped(
+            'internal class ${api.name}Impl(val api: ${api.name}ProxyApi) : ${api.name} {',
+            '}',
+            () {
+              for (final Method method in api.flutterMethods) {
+                final String parameterDecl =
+                    getMethodParameterNames(method.parameters);
+                indent.writeScoped(
+                  'override fun ${method.name}($parameterDecl) {',
+                  '}',
+                  () {
+                    indent.writeln(
+                      'api.pigeonRegistrar.runOnMainThread { api.${method.name}(this, ${_getParameterNames(method.parameters)}) {} }',
+                    );
+                  },
+                );
+              }
+            },
+          );
+        }
+        indent.newln();
+
+        for (final Constructor constructor in api.constructors) {
+          final String constructorName = constructor.name.isEmpty
+              ? 'pigeon_defaultConstructor'
+              : constructor.name;
+          final String parameterDecl =
+              getMethodParameterNames(constructor.parameters);
+          indent.writeScoped(
+            'override fun $constructorName($parameterDecl): ${api.name} {',
+            '}',
+            () {
+              indent.writeln(
+                'return ${api.name}(${_getParameterNames(constructor.parameters)})',
+              );
+            },
+          );
+          indent.newln();
+        }
+
+        for (final ApiField field in api.unattachedFields) {
+          indent.writeScoped(
+            'override fun ${field.name}(pigeon_instance: ${api.name}): ${field.type.baseName} {',
+            '}',
+            () {
+              if (field.type.isEnum) {
+                indent.writeScoped(
+                  'return when (pigeon_instance.${field.type}) {',
+                  '}',
+                  () {
+                    for (final EnumMember member
+                        in field.type.associatedEnum!.members) {
+                      if (member.name == 'unknown') {
+                        continue;
+                      }
+                      final String memberName = member.name
+                          .replaceAllMapped(RegExp(r'(?<=[a-z])[A-Z]'),
+                              (Match m) => '_${m.group(0)}')
+                          .toUpperCase();
+                      indent.writeln(
+                        '${field.type}.$memberName -> ${field.type}.$memberName',
+                      );
+                      indent.writeln('else -> ${field.type}.UNKNOWN');
+                    }
+                  },
+                );
+              } else {
+                indent.writeln('return pigeon_instance.${field.name}');
+              }
+            },
+          );
+        }
+      },
+    );
   }
 
   void _writeProxyApiTest(Indent indent, AstProxyApi api) {
@@ -1981,10 +2084,6 @@ class KotlinGenerator extends StructuredGenerator<KotlinOptions> {
       return parameters
           .map((Parameter parameter) => getDefaultTestValue(parameter.type))
           .join(', ');
-    }
-
-    String getParameterNames(Iterable<Parameter> parameters) {
-      return parameters.map((Parameter parameter) => parameter.name).join(', ');
     }
 
     bool hasInterfaceImpl(AstProxyApi api) {
@@ -2060,7 +2159,7 @@ class KotlinGenerator extends StructuredGenerator<KotlinOptions> {
 
           indent.writeln('val instance = mock<${api.name}>()');
 
-          final String parameterNames = getParameterNames(method.parameters);
+          final String parameterNames = _getParameterNames(method.parameters);
 
           for (final Parameter parameter in method.parameters) {
             indent.writeln(
@@ -2104,7 +2203,7 @@ class KotlinGenerator extends StructuredGenerator<KotlinOptions> {
             );
           }
 
-          final String parameterNames = getParameterNames(method.parameters);
+          final String parameterNames = _getParameterNames(method.parameters);
           indent.writeln('instance.${method.name}($parameterNames)');
           indent.newln();
 
