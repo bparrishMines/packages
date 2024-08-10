@@ -2003,7 +2003,7 @@ class KotlinGenerator extends StructuredGenerator<KotlinOptions> {
             () {
               if (field.type.isEnum) {
                 indent.writeScoped(
-                  'return when (pigeon_instance.${field.type}) {',
+                  'return when (pigeon_instance.${field.name}) {',
                   '}',
                   () {
                     for (final EnumMember member
@@ -2016,10 +2016,10 @@ class KotlinGenerator extends StructuredGenerator<KotlinOptions> {
                               (Match m) => '_${m.group(0)}')
                           .toUpperCase();
                       indent.writeln(
-                        '${field.type}.$memberName -> ${field.type}.$memberName',
+                        '${field.type.baseName}.$memberName -> ${field.type.baseName}.$memberName',
                       );
-                      indent.writeln('else -> ${field.type}.UNKNOWN');
                     }
+                    indent.writeln('else -> ${field.type.baseName}.UNKNOWN');
                   },
                 );
               } else {
@@ -2053,10 +2053,10 @@ class KotlinGenerator extends StructuredGenerator<KotlinOptions> {
                               (Match m) => '_${m.group(0)}')
                           .toUpperCase();
                       indent.writeln(
-                        '${field.type}.$memberName -> ${field.type}.$memberName',
+                        '${field.type.baseName}.$memberName -> ${field.type.baseName}.$memberName',
                       );
-                      indent.writeln('else -> ${field.type}.UNKNOWN');
                     }
+                    indent.writeln('else -> ${field.type.baseName}.UNKNOWN');
                   },
                 );
               } else {
@@ -2169,6 +2169,7 @@ class KotlinGenerator extends StructuredGenerator<KotlinOptions> {
             'assertTrue(api.$constructorName($parameterValues) is ${api.name}ProxyApi.${api.name}${hasInterfaceImpl(api) ? 'Impl' : ''})',
           );
         });
+        indent.newln();
       }
 
       for (final ApiField field in api.unattachedFields) {
@@ -2185,6 +2186,7 @@ class KotlinGenerator extends StructuredGenerator<KotlinOptions> {
 
           indent.writeln('assertEquals(value, api.${field.name}(instance))');
         });
+        indent.newln();
       }
 
       for (final ApiField field
@@ -2202,6 +2204,7 @@ class KotlinGenerator extends StructuredGenerator<KotlinOptions> {
 
           indent.writeln('assertEquals(value, api.${field.name}(instance))');
         });
+        indent.newln();
       }
 
       for (final Method method
@@ -2238,6 +2241,7 @@ class KotlinGenerator extends StructuredGenerator<KotlinOptions> {
             );
           }
         });
+        indent.newln();
       }
 
       for (final Method method in api.flutterMethods) {
@@ -2268,6 +2272,7 @@ class KotlinGenerator extends StructuredGenerator<KotlinOptions> {
             'verify(mockApi).${method.name}(eq(instance), $checkValueParamNames, any())',
           );
         });
+        indent.newln();
       }
     });
   }
