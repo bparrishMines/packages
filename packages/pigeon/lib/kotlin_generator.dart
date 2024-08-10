@@ -2033,6 +2033,65 @@ class KotlinGenerator extends StructuredGenerator<KotlinOptions> {
             },
           );
         }
+
+        for (final ApiField field in api.attachedFields) {
+          final String instanceVar =
+              field.isStatic ? '' : 'pigeon_instance: ${api.name}';
+          indent.writeScoped(
+            'override fun ${field.name}($instanceVar): ${field.type.baseName} {',
+            '}',
+            () {
+              final String fromVar =
+                  field.isStatic ? api.name : 'pigeon_instance';
+              if (field.type.isEnum) {
+                indent.writeScoped(
+                  'return when ($fromVar.${field.type}) {',
+                  '}',
+                  () {
+                    for (final EnumMember member
+                        in field.type.associatedEnum!.members) {
+                      if (member.name == 'unknown') {
+                        continue;
+                      }
+                      final String memberName = member.name
+                          .replaceAllMapped(RegExp(r'(?<=[a-z])[A-Z]'),
+                              (Match m) => '_${m.group(0)}')
+                          .toUpperCase();
+                      indent.writeln(
+                        '${field.type}.$memberName -> ${field.type}.$memberName',
+                      );
+                      indent.writeln('else -> ${field.type}.UNKNOWN');
+                    }
+                  },
+                );
+              } else {
+                indent.writeln('return $fromVar.${field.name}');
+              }
+            },
+          );
+        }
+
+        for (final Method method in api.hostMethods) {
+          final String parameterDecl =
+              getMethodParameterNames(method.parameters);
+
+          final String instanceDecl =
+              method.isStatic ? '' : 'pigeon_instance: ${api.name}';
+          final String returnValue =
+              method.returnType.isVoid ? '' : ': ${method.returnType.baseName}';
+          indent.writeScoped(
+            'override fun ${method.name}($instanceDecl$parameterDecl)$returnValue {',
+            '}',
+            () {
+              final String fromVar =
+                  method.isStatic ? api.name : 'pigeon_instance';
+              indent.writeln(
+                'return $fromVar.${method.name}(${_getParameterNames(method.parameters)})',
+              );
+            },
+          );
+          indent.newln();
+        }
       },
     );
   }
