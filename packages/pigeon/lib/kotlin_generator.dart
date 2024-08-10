@@ -1920,21 +1920,7 @@ class KotlinGenerator extends StructuredGenerator<KotlinOptions> {
     _writeLicense(indent);
     indent.newln();
 
-    indent.writeln('/*');
     _writeProxyApiImports(indent, api);
-    indent.format(
-      '''
-      import kotlin.test.Test
-      import kotlin.test.assertEquals
-      import kotlin.test.assertTrue
-      import org.mockito.Mockito
-      import org.mockito.kotlin.any
-      import org.mockito.kotlin.eq
-      import org.mockito.kotlin.mock
-      import org.mockito.kotlin.whenever
-      */''',
-      trimIndentation: true,
-    );
     indent.newln();
 
     indent.format(
@@ -1955,7 +1941,7 @@ class KotlinGenerator extends StructuredGenerator<KotlinOptions> {
           return parameters
               .map(
                 (Parameter parameter) =>
-                    '${parameter.name}: ${parameter.type.baseName}',
+                    '${parameter.name}: ${_nullSafeKotlinTypeForDartType(parameter.type)}',
               )
               .join(', ');
         }
@@ -2003,7 +1989,7 @@ class KotlinGenerator extends StructuredGenerator<KotlinOptions> {
 
         for (final ApiField field in api.unattachedFields) {
           indent.writeScoped(
-            'override fun ${field.name}(pigeon_instance: ${api.name}): ${field.type.baseName} {',
+            'override fun ${field.name}(pigeon_instance: ${api.name}): ${_nullSafeKotlinTypeForDartType(field.type)} {',
             '}',
             () {
               if (field.type.isEnum) {
@@ -2038,14 +2024,14 @@ class KotlinGenerator extends StructuredGenerator<KotlinOptions> {
           final String instanceVar =
               field.isStatic ? '' : 'pigeon_instance: ${api.name}';
           indent.writeScoped(
-            'override fun ${field.name}($instanceVar): ${field.type.baseName} {',
+            'override fun ${field.name}($instanceVar): ${_nullSafeKotlinTypeForDartType(field.type)} {',
             '}',
             () {
               final String fromVar =
                   field.isStatic ? api.name : 'pigeon_instance';
               if (field.type.isEnum) {
                 indent.writeScoped(
-                  'return when ($fromVar.${field.type}) {',
+                  'return when ($fromVar.${field.name}) {',
                   '}',
                   () {
                     for (final EnumMember member
@@ -2077,8 +2063,9 @@ class KotlinGenerator extends StructuredGenerator<KotlinOptions> {
 
           final String instanceDecl =
               method.isStatic ? '' : 'pigeon_instance: ${api.name}';
-          final String returnValue =
-              method.returnType.isVoid ? '' : ': ${method.returnType.baseName}';
+          final String returnValue = method.returnType.isVoid
+              ? ''
+              : ': ${_nullSafeKotlinTypeForDartType(method.returnType)}';
           indent.writeScoped(
             'override fun ${method.name}($instanceDecl$parameterDecl)$returnValue {',
             '}',
@@ -2100,7 +2087,6 @@ class KotlinGenerator extends StructuredGenerator<KotlinOptions> {
     _writeLicense(indent);
     indent.newln();
 
-    indent.writeln('/*');
     _writeProxyApiImports(indent, api);
     indent.format(
       '''
@@ -2111,8 +2097,7 @@ class KotlinGenerator extends StructuredGenerator<KotlinOptions> {
       import org.mockito.kotlin.any
       import org.mockito.kotlin.eq
       import org.mockito.kotlin.mock
-      import org.mockito.kotlin.whenever
-      */''',
+      import org.mockito.kotlin.whenever''',
       trimIndentation: true,
     );
     indent.newln();
