@@ -1925,6 +1925,10 @@ class KotlinGenerator extends StructuredGenerator<KotlinOptions> {
     indent.writeln(classImports);
   }
 
+  String maybeComma(Iterable<Parameter> parameters) {
+    return parameters.isEmpty ? '' : ',';
+  }
+
   void _writeProxyApiImpl(Indent indent, AstProxyApi api) {
     _writeLicense(indent);
     indent.newln();
@@ -1968,7 +1972,7 @@ class KotlinGenerator extends StructuredGenerator<KotlinOptions> {
                   '}',
                   () {
                     indent.writeln(
-                      'api.pigeonRegistrar.runOnMainThread { api.${method.name}(this, ${_getParameterNames(method.parameters)}) {} }',
+                      'api.pigeonRegistrar.runOnMainThread { api.${method.name}(this${maybeComma(method.parameters)} ${_getParameterNames(method.parameters)}) {} }',
                     );
                   },
                 );
@@ -2071,7 +2075,7 @@ class KotlinGenerator extends StructuredGenerator<KotlinOptions> {
               getMethodParameterNames(method.parameters);
 
           final String instanceDecl =
-              method.isStatic ? '' : 'pigeon_instance: ${api.name}';
+              method.isStatic ? '' : 'pigeon_instance: ${api.name}${maybeComma(method.parameters)}';
           final String returnValue = method.returnType.isVoid
               ? ''
               : ': ${_nullSafeKotlinTypeForDartType(method.returnType)}';
@@ -2224,7 +2228,7 @@ class KotlinGenerator extends StructuredGenerator<KotlinOptions> {
           }
 
           if (method.returnType.isVoid) {
-            indent.writeln('api.${method.name}(instance, $parameterNames)');
+            indent.writeln('api.${method.name}(instance${maybeComma(method.parameters)} $parameterNames)');
             indent.newln();
 
             indent.writeln('verify(instance).${method.name}($parameterNames)');
@@ -2237,7 +2241,7 @@ class KotlinGenerator extends StructuredGenerator<KotlinOptions> {
             indent.newln();
 
             indent.writeln(
-              'assertEquals(value, api.${method.name}(instance, $parameterNames))',
+              'assertEquals(value, api.${method.name}(instance${maybeComma(method.parameters)} $parameterNames))',
             );
           }
         });
@@ -2269,7 +2273,7 @@ class KotlinGenerator extends StructuredGenerator<KotlinOptions> {
               .join(', ');
 
           indent.writeln(
-            'verify(mockApi).${method.name}(eq(instance), $checkValueParamNames, any())',
+            'verify(mockApi).${method.name}(eq(instance)${maybeComma(method.parameters)} $checkValueParamNames, any())',
           );
         });
         indent.newln();
