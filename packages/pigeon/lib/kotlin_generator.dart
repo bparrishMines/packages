@@ -882,6 +882,15 @@ class KotlinGenerator extends StructuredGenerator<KotlinOptions> {
         _writeProxyApiInheritedApiMethods(indent, api);
       },
     );
+
+    indent.newln();
+    indent.writeln('/*');
+    _writeProxyApiImpl(indent, api);
+    indent.writeln('*/');
+    indent.newln();
+    indent.writeln('/*');
+    _writeProxyApiTest(indent, api);
+    indent.writeln('*/');
   }
 
   void _writeWrapResult(Indent indent) {
