@@ -2051,10 +2051,11 @@ class KotlinGenerator extends StructuredGenerator<KotlinOptions> {
                               (Match m) => '_${m.group(0)}')
                           .toUpperCase();
                       indent.writeln(
-                        '${field.type.baseName}.$memberName -> ${field.type.baseName}.$memberName',
+                        '${field.type.baseName}.$memberName -> $package.${field.type.baseName}.$memberName',
                       );
                     }
-                    indent.writeln('else -> ${field.type.baseName}.UNKNOWN');
+                    indent.writeln(
+                        'else -> $package.${field.type.baseName}.UNKNOWN');
                   },
                 );
               } else {
@@ -2089,10 +2090,11 @@ class KotlinGenerator extends StructuredGenerator<KotlinOptions> {
                               (Match m) => '_${m.group(0)}')
                           .toUpperCase();
                       indent.writeln(
-                        '${field.type.baseName}.$memberName -> ${field.type.baseName}.$memberName',
+                        '${field.type.baseName}.$memberName -> $package.${field.type.baseName}.$memberName',
                       );
                     }
-                    indent.writeln('else -> ${field.type.baseName}.UNKNOWN');
+                    indent.writeln(
+                        'else -> $package.${field.type.baseName}.UNKNOWN');
                   },
                 );
               } else {
@@ -2162,7 +2164,7 @@ class KotlinGenerator extends StructuredGenerator<KotlinOptions> {
       }
 
       if (type.isEnum) {
-        return '${type.baseName}.${type.associatedEnum!.members.first.name.replaceAllMapped(RegExp(r'(?<=[a-z])[A-Z]'), (Match m) => '_${m.group(0)}').toUpperCase()}';
+        return '$package.${type.baseName}.${type.associatedEnum!.members.first.name.replaceAllMapped(RegExp(r'(?<=[a-z])[A-Z]'), (Match m) => '_${m.group(0)}').toUpperCase()}';
       }
 
       return switch (type.baseName) {

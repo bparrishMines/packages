@@ -3991,6 +3991,8 @@ abstract class PigeonApiProxyApiTestClass(
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+package com.example.test_plugin
+
 import com.example.test_plugin.ProxyApiSuperClass
 
 /**
@@ -4002,13 +4004,13 @@ import com.example.test_plugin.ProxyApiSuperClass
 class ProxyApiTestClassProxyApi(override val pigeonRegistrar: ProxyApiRegistrar) : PigeonApiProxyApiTestClass(pigeonRegistrar) {
   internal class ProxyApiTestClassImpl(val api: ProxyApiTestClassProxyApi) : ProxyApiTestClass {
     override fun flutterNoop() {
-      api.pigeonRegistrar.runOnMainThread { api.flutterNoop(this, ) {} }
+      api.pigeonRegistrar.runOnMainThread { api.flutterNoop(this ) {} }
     }
     override fun flutterThrowError() {
-      api.pigeonRegistrar.runOnMainThread { api.flutterThrowError(this, ) {} }
+      api.pigeonRegistrar.runOnMainThread { api.flutterThrowError(this ) {} }
     }
     override fun flutterThrowErrorFromVoid() {
-      api.pigeonRegistrar.runOnMainThread { api.flutterThrowErrorFromVoid(this, ) {} }
+      api.pigeonRegistrar.runOnMainThread { api.flutterThrowErrorFromVoid(this ) {} }
     }
     override fun flutterEchoBool(aBool: Boolean) {
       api.pigeonRegistrar.runOnMainThread { api.flutterEchoBool(this, aBool) {} }
@@ -4071,7 +4073,7 @@ class ProxyApiTestClassProxyApi(override val pigeonRegistrar: ProxyApiRegistrar)
       api.pigeonRegistrar.runOnMainThread { api.flutterEchoNullableProxyApi(this, aProxyApi) {} }
     }
     override fun flutterNoopAsync() {
-      api.pigeonRegistrar.runOnMainThread { api.flutterNoopAsync(this, ) {} }
+      api.pigeonRegistrar.runOnMainThread { api.flutterNoopAsync(this ) {} }
     }
     override fun flutterEchoAsyncString(aString: String) {
       api.pigeonRegistrar.runOnMainThread { api.flutterEchoAsyncString(this, aString) {} }
@@ -4085,24 +4087,31 @@ class ProxyApiTestClassProxyApi(override val pigeonRegistrar: ProxyApiRegistrar)
   override fun aBool(pigeon_instance: ProxyApiTestClass): Boolean {
     return pigeon_instance.aBool
   }
+
   override fun anInt(pigeon_instance: ProxyApiTestClass): Long {
     return pigeon_instance.anInt
   }
+
   override fun aDouble(pigeon_instance: ProxyApiTestClass): Double {
     return pigeon_instance.aDouble
   }
+
   override fun aString(pigeon_instance: ProxyApiTestClass): String {
     return pigeon_instance.aString
   }
+
   override fun aUint8List(pigeon_instance: ProxyApiTestClass): ByteArray {
     return pigeon_instance.aUint8List
   }
+
   override fun aList(pigeon_instance: ProxyApiTestClass): List<Any?> {
     return pigeon_instance.aList
   }
+
   override fun aMap(pigeon_instance: ProxyApiTestClass): Map<String?, Any?> {
     return pigeon_instance.aMap
   }
+
   override fun anEnum(pigeon_instance: ProxyApiTestClass): ProxyApiTestEnum {
     return when (pigeon_instance.anEnum) {
       ProxyApiTestEnum.ONE -> ProxyApiTestEnum.ONE
@@ -4111,30 +4120,39 @@ class ProxyApiTestClassProxyApi(override val pigeonRegistrar: ProxyApiRegistrar)
       else -> ProxyApiTestEnum.UNKNOWN
     }
   }
+
   override fun aProxyApi(pigeon_instance: ProxyApiTestClass): com.example.test_plugin.ProxyApiSuperClass {
     return pigeon_instance.aProxyApi
   }
+
   override fun aNullableBool(pigeon_instance: ProxyApiTestClass): Boolean? {
     return pigeon_instance.aNullableBool
   }
+
   override fun aNullableInt(pigeon_instance: ProxyApiTestClass): Long? {
     return pigeon_instance.aNullableInt
   }
+
   override fun aNullableDouble(pigeon_instance: ProxyApiTestClass): Double? {
     return pigeon_instance.aNullableDouble
   }
+
   override fun aNullableString(pigeon_instance: ProxyApiTestClass): String? {
     return pigeon_instance.aNullableString
   }
+
   override fun aNullableUint8List(pigeon_instance: ProxyApiTestClass): ByteArray? {
     return pigeon_instance.aNullableUint8List
   }
+
   override fun aNullableList(pigeon_instance: ProxyApiTestClass): List<Any?>? {
     return pigeon_instance.aNullableList
   }
+
   override fun aNullableMap(pigeon_instance: ProxyApiTestClass): Map<String?, Any?>? {
     return pigeon_instance.aNullableMap
   }
+
   override fun aNullableEnum(pigeon_instance: ProxyApiTestClass): ProxyApiTestEnum? {
     return when (pigeon_instance.aNullableEnum) {
       ProxyApiTestEnum.ONE -> ProxyApiTestEnum.ONE
@@ -4143,15 +4161,19 @@ class ProxyApiTestClassProxyApi(override val pigeonRegistrar: ProxyApiRegistrar)
       else -> ProxyApiTestEnum.UNKNOWN
     }
   }
+
   override fun aNullableProxyApi(pigeon_instance: ProxyApiTestClass): com.example.test_plugin.ProxyApiSuperClass? {
     return pigeon_instance.aNullableProxyApi
   }
+
   override fun attachedField(pigeon_instance: ProxyApiTestClass): com.example.test_plugin.ProxyApiSuperClass {
     return pigeon_instance.attachedField
   }
+
   override fun staticAttachedField(): com.example.test_plugin.ProxyApiSuperClass {
     return ProxyApiTestClass.staticAttachedField
   }
+
   override fun noop(pigeon_instance: ProxyApiTestClass) {
     return pigeon_instance.noop()
   }
@@ -4168,91 +4190,91 @@ class ProxyApiTestClassProxyApi(override val pigeonRegistrar: ProxyApiRegistrar)
     return pigeon_instance.throwFlutterError()
   }
 
-  override fun echoInt(pigeon_instance: ProxyApiTestClassanInt: Long): Long {
+  override fun echoInt(pigeon_instance: ProxyApiTestClass,anInt: Long): Long {
     return pigeon_instance.echoInt(anInt)
   }
 
-  override fun echoDouble(pigeon_instance: ProxyApiTestClassaDouble: Double): Double {
+  override fun echoDouble(pigeon_instance: ProxyApiTestClass,aDouble: Double): Double {
     return pigeon_instance.echoDouble(aDouble)
   }
 
-  override fun echoBool(pigeon_instance: ProxyApiTestClassaBool: Boolean): Boolean {
+  override fun echoBool(pigeon_instance: ProxyApiTestClass,aBool: Boolean): Boolean {
     return pigeon_instance.echoBool(aBool)
   }
 
-  override fun echoString(pigeon_instance: ProxyApiTestClassaString: String): String {
+  override fun echoString(pigeon_instance: ProxyApiTestClass,aString: String): String {
     return pigeon_instance.echoString(aString)
   }
 
-  override fun echoUint8List(pigeon_instance: ProxyApiTestClassaUint8List: ByteArray): ByteArray {
+  override fun echoUint8List(pigeon_instance: ProxyApiTestClass,aUint8List: ByteArray): ByteArray {
     return pigeon_instance.echoUint8List(aUint8List)
   }
 
-  override fun echoObject(pigeon_instance: ProxyApiTestClassanObject: Any): Any {
+  override fun echoObject(pigeon_instance: ProxyApiTestClass,anObject: Any): Any {
     return pigeon_instance.echoObject(anObject)
   }
 
-  override fun echoList(pigeon_instance: ProxyApiTestClassaList: List<Any?>): List<Any?> {
+  override fun echoList(pigeon_instance: ProxyApiTestClass,aList: List<Any?>): List<Any?> {
     return pigeon_instance.echoList(aList)
   }
 
-  override fun echoProxyApiList(pigeon_instance: ProxyApiTestClassaList: List<ProxyApiTestClass>): List<ProxyApiTestClass> {
+  override fun echoProxyApiList(pigeon_instance: ProxyApiTestClass,aList: List<ProxyApiTestClass>): List<ProxyApiTestClass> {
     return pigeon_instance.echoProxyApiList(aList)
   }
 
-  override fun echoMap(pigeon_instance: ProxyApiTestClassaMap: Map<String?, Any?>): Map<String?, Any?> {
+  override fun echoMap(pigeon_instance: ProxyApiTestClass,aMap: Map<String?, Any?>): Map<String?, Any?> {
     return pigeon_instance.echoMap(aMap)
   }
 
-  override fun echoProxyApiMap(pigeon_instance: ProxyApiTestClassaMap: Map<String, ProxyApiTestClass>): Map<String, ProxyApiTestClass> {
+  override fun echoProxyApiMap(pigeon_instance: ProxyApiTestClass,aMap: Map<String, ProxyApiTestClass>): Map<String, ProxyApiTestClass> {
     return pigeon_instance.echoProxyApiMap(aMap)
   }
 
-  override fun echoEnum(pigeon_instance: ProxyApiTestClassanEnum: ProxyApiTestEnum): ProxyApiTestEnum {
+  override fun echoEnum(pigeon_instance: ProxyApiTestClass,anEnum: ProxyApiTestEnum): ProxyApiTestEnum {
     return pigeon_instance.echoEnum(anEnum)
   }
 
-  override fun echoProxyApi(pigeon_instance: ProxyApiTestClassaProxyApi: com.example.test_plugin.ProxyApiSuperClass): com.example.test_plugin.ProxyApiSuperClass {
+  override fun echoProxyApi(pigeon_instance: ProxyApiTestClass,aProxyApi: com.example.test_plugin.ProxyApiSuperClass): com.example.test_plugin.ProxyApiSuperClass {
     return pigeon_instance.echoProxyApi(aProxyApi)
   }
 
-  override fun echoNullableInt(pigeon_instance: ProxyApiTestClassaNullableInt: Long?): Long? {
+  override fun echoNullableInt(pigeon_instance: ProxyApiTestClass,aNullableInt: Long?): Long? {
     return pigeon_instance.echoNullableInt(aNullableInt)
   }
 
-  override fun echoNullableDouble(pigeon_instance: ProxyApiTestClassaNullableDouble: Double?): Double? {
+  override fun echoNullableDouble(pigeon_instance: ProxyApiTestClass,aNullableDouble: Double?): Double? {
     return pigeon_instance.echoNullableDouble(aNullableDouble)
   }
 
-  override fun echoNullableBool(pigeon_instance: ProxyApiTestClassaNullableBool: Boolean?): Boolean? {
+  override fun echoNullableBool(pigeon_instance: ProxyApiTestClass,aNullableBool: Boolean?): Boolean? {
     return pigeon_instance.echoNullableBool(aNullableBool)
   }
 
-  override fun echoNullableString(pigeon_instance: ProxyApiTestClassaNullableString: String?): String? {
+  override fun echoNullableString(pigeon_instance: ProxyApiTestClass,aNullableString: String?): String? {
     return pigeon_instance.echoNullableString(aNullableString)
   }
 
-  override fun echoNullableUint8List(pigeon_instance: ProxyApiTestClassaNullableUint8List: ByteArray?): ByteArray? {
+  override fun echoNullableUint8List(pigeon_instance: ProxyApiTestClass,aNullableUint8List: ByteArray?): ByteArray? {
     return pigeon_instance.echoNullableUint8List(aNullableUint8List)
   }
 
-  override fun echoNullableObject(pigeon_instance: ProxyApiTestClassaNullableObject: Any?): Any? {
+  override fun echoNullableObject(pigeon_instance: ProxyApiTestClass,aNullableObject: Any?): Any? {
     return pigeon_instance.echoNullableObject(aNullableObject)
   }
 
-  override fun echoNullableList(pigeon_instance: ProxyApiTestClassaNullableList: List<Any?>?): List<Any?>? {
+  override fun echoNullableList(pigeon_instance: ProxyApiTestClass,aNullableList: List<Any?>?): List<Any?>? {
     return pigeon_instance.echoNullableList(aNullableList)
   }
 
-  override fun echoNullableMap(pigeon_instance: ProxyApiTestClassaNullableMap: Map<String?, Any?>?): Map<String?, Any?>? {
+  override fun echoNullableMap(pigeon_instance: ProxyApiTestClass,aNullableMap: Map<String?, Any?>?): Map<String?, Any?>? {
     return pigeon_instance.echoNullableMap(aNullableMap)
   }
 
-  override fun echoNullableEnum(pigeon_instance: ProxyApiTestClassaNullableEnum: ProxyApiTestEnum?): ProxyApiTestEnum? {
+  override fun echoNullableEnum(pigeon_instance: ProxyApiTestClass,aNullableEnum: ProxyApiTestEnum?): ProxyApiTestEnum? {
     return pigeon_instance.echoNullableEnum(aNullableEnum)
   }
 
-  override fun echoNullableProxyApi(pigeon_instance: ProxyApiTestClassaNullableProxyApi: com.example.test_plugin.ProxyApiSuperClass?): com.example.test_plugin.ProxyApiSuperClass? {
+  override fun echoNullableProxyApi(pigeon_instance: ProxyApiTestClass,aNullableProxyApi: com.example.test_plugin.ProxyApiSuperClass?): com.example.test_plugin.ProxyApiSuperClass? {
     return pigeon_instance.echoNullableProxyApi(aNullableProxyApi)
   }
 
@@ -4260,39 +4282,39 @@ class ProxyApiTestClassProxyApi(override val pigeonRegistrar: ProxyApiRegistrar)
     return pigeon_instance.noopAsync()
   }
 
-  override fun echoAsyncInt(pigeon_instance: ProxyApiTestClassanInt: Long): Long {
+  override fun echoAsyncInt(pigeon_instance: ProxyApiTestClass,anInt: Long): Long {
     return pigeon_instance.echoAsyncInt(anInt)
   }
 
-  override fun echoAsyncDouble(pigeon_instance: ProxyApiTestClassaDouble: Double): Double {
+  override fun echoAsyncDouble(pigeon_instance: ProxyApiTestClass,aDouble: Double): Double {
     return pigeon_instance.echoAsyncDouble(aDouble)
   }
 
-  override fun echoAsyncBool(pigeon_instance: ProxyApiTestClassaBool: Boolean): Boolean {
+  override fun echoAsyncBool(pigeon_instance: ProxyApiTestClass,aBool: Boolean): Boolean {
     return pigeon_instance.echoAsyncBool(aBool)
   }
 
-  override fun echoAsyncString(pigeon_instance: ProxyApiTestClassaString: String): String {
+  override fun echoAsyncString(pigeon_instance: ProxyApiTestClass,aString: String): String {
     return pigeon_instance.echoAsyncString(aString)
   }
 
-  override fun echoAsyncUint8List(pigeon_instance: ProxyApiTestClassaUint8List: ByteArray): ByteArray {
+  override fun echoAsyncUint8List(pigeon_instance: ProxyApiTestClass,aUint8List: ByteArray): ByteArray {
     return pigeon_instance.echoAsyncUint8List(aUint8List)
   }
 
-  override fun echoAsyncObject(pigeon_instance: ProxyApiTestClassanObject: Any): Any {
+  override fun echoAsyncObject(pigeon_instance: ProxyApiTestClass,anObject: Any): Any {
     return pigeon_instance.echoAsyncObject(anObject)
   }
 
-  override fun echoAsyncList(pigeon_instance: ProxyApiTestClassaList: List<Any?>): List<Any?> {
+  override fun echoAsyncList(pigeon_instance: ProxyApiTestClass,aList: List<Any?>): List<Any?> {
     return pigeon_instance.echoAsyncList(aList)
   }
 
-  override fun echoAsyncMap(pigeon_instance: ProxyApiTestClassaMap: Map<String?, Any?>): Map<String?, Any?> {
+  override fun echoAsyncMap(pigeon_instance: ProxyApiTestClass,aMap: Map<String?, Any?>): Map<String?, Any?> {
     return pigeon_instance.echoAsyncMap(aMap)
   }
 
-  override fun echoAsyncEnum(pigeon_instance: ProxyApiTestClassanEnum: ProxyApiTestEnum): ProxyApiTestEnum {
+  override fun echoAsyncEnum(pigeon_instance: ProxyApiTestClass,anEnum: ProxyApiTestEnum): ProxyApiTestEnum {
     return pigeon_instance.echoAsyncEnum(anEnum)
   }
 
@@ -4308,39 +4330,39 @@ class ProxyApiTestClassProxyApi(override val pigeonRegistrar: ProxyApiRegistrar)
     return pigeon_instance.throwAsyncFlutterError()
   }
 
-  override fun echoAsyncNullableInt(pigeon_instance: ProxyApiTestClassanInt: Long?): Long? {
+  override fun echoAsyncNullableInt(pigeon_instance: ProxyApiTestClass,anInt: Long?): Long? {
     return pigeon_instance.echoAsyncNullableInt(anInt)
   }
 
-  override fun echoAsyncNullableDouble(pigeon_instance: ProxyApiTestClassaDouble: Double?): Double? {
+  override fun echoAsyncNullableDouble(pigeon_instance: ProxyApiTestClass,aDouble: Double?): Double? {
     return pigeon_instance.echoAsyncNullableDouble(aDouble)
   }
 
-  override fun echoAsyncNullableBool(pigeon_instance: ProxyApiTestClassaBool: Boolean?): Boolean? {
+  override fun echoAsyncNullableBool(pigeon_instance: ProxyApiTestClass,aBool: Boolean?): Boolean? {
     return pigeon_instance.echoAsyncNullableBool(aBool)
   }
 
-  override fun echoAsyncNullableString(pigeon_instance: ProxyApiTestClassaString: String?): String? {
+  override fun echoAsyncNullableString(pigeon_instance: ProxyApiTestClass,aString: String?): String? {
     return pigeon_instance.echoAsyncNullableString(aString)
   }
 
-  override fun echoAsyncNullableUint8List(pigeon_instance: ProxyApiTestClassaUint8List: ByteArray?): ByteArray? {
+  override fun echoAsyncNullableUint8List(pigeon_instance: ProxyApiTestClass,aUint8List: ByteArray?): ByteArray? {
     return pigeon_instance.echoAsyncNullableUint8List(aUint8List)
   }
 
-  override fun echoAsyncNullableObject(pigeon_instance: ProxyApiTestClassanObject: Any?): Any? {
+  override fun echoAsyncNullableObject(pigeon_instance: ProxyApiTestClass,anObject: Any?): Any? {
     return pigeon_instance.echoAsyncNullableObject(anObject)
   }
 
-  override fun echoAsyncNullableList(pigeon_instance: ProxyApiTestClassaList: List<Any?>?): List<Any?>? {
+  override fun echoAsyncNullableList(pigeon_instance: ProxyApiTestClass,aList: List<Any?>?): List<Any?>? {
     return pigeon_instance.echoAsyncNullableList(aList)
   }
 
-  override fun echoAsyncNullableMap(pigeon_instance: ProxyApiTestClassaMap: Map<String?, Any?>?): Map<String?, Any?>? {
+  override fun echoAsyncNullableMap(pigeon_instance: ProxyApiTestClass,aMap: Map<String?, Any?>?): Map<String?, Any?>? {
     return pigeon_instance.echoAsyncNullableMap(aMap)
   }
 
-  override fun echoAsyncNullableEnum(pigeon_instance: ProxyApiTestClassanEnum: ProxyApiTestEnum?): ProxyApiTestEnum? {
+  override fun echoAsyncNullableEnum(pigeon_instance: ProxyApiTestClass,anEnum: ProxyApiTestEnum?): ProxyApiTestEnum? {
     return pigeon_instance.echoAsyncNullableEnum(anEnum)
   }
 
@@ -4368,83 +4390,83 @@ class ProxyApiTestClassProxyApi(override val pigeonRegistrar: ProxyApiRegistrar)
     return pigeon_instance.callFlutterThrowErrorFromVoid()
   }
 
-  override fun callFlutterEchoBool(pigeon_instance: ProxyApiTestClassaBool: Boolean): Boolean {
+  override fun callFlutterEchoBool(pigeon_instance: ProxyApiTestClass,aBool: Boolean): Boolean {
     return pigeon_instance.callFlutterEchoBool(aBool)
   }
 
-  override fun callFlutterEchoInt(pigeon_instance: ProxyApiTestClassanInt: Long): Long {
+  override fun callFlutterEchoInt(pigeon_instance: ProxyApiTestClass,anInt: Long): Long {
     return pigeon_instance.callFlutterEchoInt(anInt)
   }
 
-  override fun callFlutterEchoDouble(pigeon_instance: ProxyApiTestClassaDouble: Double): Double {
+  override fun callFlutterEchoDouble(pigeon_instance: ProxyApiTestClass,aDouble: Double): Double {
     return pigeon_instance.callFlutterEchoDouble(aDouble)
   }
 
-  override fun callFlutterEchoString(pigeon_instance: ProxyApiTestClassaString: String): String {
+  override fun callFlutterEchoString(pigeon_instance: ProxyApiTestClass,aString: String): String {
     return pigeon_instance.callFlutterEchoString(aString)
   }
 
-  override fun callFlutterEchoUint8List(pigeon_instance: ProxyApiTestClassaUint8List: ByteArray): ByteArray {
+  override fun callFlutterEchoUint8List(pigeon_instance: ProxyApiTestClass,aUint8List: ByteArray): ByteArray {
     return pigeon_instance.callFlutterEchoUint8List(aUint8List)
   }
 
-  override fun callFlutterEchoList(pigeon_instance: ProxyApiTestClassaList: List<Any?>): List<Any?> {
+  override fun callFlutterEchoList(pigeon_instance: ProxyApiTestClass,aList: List<Any?>): List<Any?> {
     return pigeon_instance.callFlutterEchoList(aList)
   }
 
-  override fun callFlutterEchoProxyApiList(pigeon_instance: ProxyApiTestClassaList: List<ProxyApiTestClass?>): List<ProxyApiTestClass?> {
+  override fun callFlutterEchoProxyApiList(pigeon_instance: ProxyApiTestClass,aList: List<ProxyApiTestClass?>): List<ProxyApiTestClass?> {
     return pigeon_instance.callFlutterEchoProxyApiList(aList)
   }
 
-  override fun callFlutterEchoMap(pigeon_instance: ProxyApiTestClassaMap: Map<String?, Any?>): Map<String?, Any?> {
+  override fun callFlutterEchoMap(pigeon_instance: ProxyApiTestClass,aMap: Map<String?, Any?>): Map<String?, Any?> {
     return pigeon_instance.callFlutterEchoMap(aMap)
   }
 
-  override fun callFlutterEchoProxyApiMap(pigeon_instance: ProxyApiTestClassaMap: Map<String?, ProxyApiTestClass?>): Map<String?, ProxyApiTestClass?> {
+  override fun callFlutterEchoProxyApiMap(pigeon_instance: ProxyApiTestClass,aMap: Map<String?, ProxyApiTestClass?>): Map<String?, ProxyApiTestClass?> {
     return pigeon_instance.callFlutterEchoProxyApiMap(aMap)
   }
 
-  override fun callFlutterEchoEnum(pigeon_instance: ProxyApiTestClassanEnum: ProxyApiTestEnum): ProxyApiTestEnum {
+  override fun callFlutterEchoEnum(pigeon_instance: ProxyApiTestClass,anEnum: ProxyApiTestEnum): ProxyApiTestEnum {
     return pigeon_instance.callFlutterEchoEnum(anEnum)
   }
 
-  override fun callFlutterEchoProxyApi(pigeon_instance: ProxyApiTestClassaProxyApi: com.example.test_plugin.ProxyApiSuperClass): com.example.test_plugin.ProxyApiSuperClass {
+  override fun callFlutterEchoProxyApi(pigeon_instance: ProxyApiTestClass,aProxyApi: com.example.test_plugin.ProxyApiSuperClass): com.example.test_plugin.ProxyApiSuperClass {
     return pigeon_instance.callFlutterEchoProxyApi(aProxyApi)
   }
 
-  override fun callFlutterEchoNullableBool(pigeon_instance: ProxyApiTestClassaBool: Boolean?): Boolean? {
+  override fun callFlutterEchoNullableBool(pigeon_instance: ProxyApiTestClass,aBool: Boolean?): Boolean? {
     return pigeon_instance.callFlutterEchoNullableBool(aBool)
   }
 
-  override fun callFlutterEchoNullableInt(pigeon_instance: ProxyApiTestClassanInt: Long?): Long? {
+  override fun callFlutterEchoNullableInt(pigeon_instance: ProxyApiTestClass,anInt: Long?): Long? {
     return pigeon_instance.callFlutterEchoNullableInt(anInt)
   }
 
-  override fun callFlutterEchoNullableDouble(pigeon_instance: ProxyApiTestClassaDouble: Double?): Double? {
+  override fun callFlutterEchoNullableDouble(pigeon_instance: ProxyApiTestClass,aDouble: Double?): Double? {
     return pigeon_instance.callFlutterEchoNullableDouble(aDouble)
   }
 
-  override fun callFlutterEchoNullableString(pigeon_instance: ProxyApiTestClassaString: String?): String? {
+  override fun callFlutterEchoNullableString(pigeon_instance: ProxyApiTestClass,aString: String?): String? {
     return pigeon_instance.callFlutterEchoNullableString(aString)
   }
 
-  override fun callFlutterEchoNullableUint8List(pigeon_instance: ProxyApiTestClassaUint8List: ByteArray?): ByteArray? {
+  override fun callFlutterEchoNullableUint8List(pigeon_instance: ProxyApiTestClass,aUint8List: ByteArray?): ByteArray? {
     return pigeon_instance.callFlutterEchoNullableUint8List(aUint8List)
   }
 
-  override fun callFlutterEchoNullableList(pigeon_instance: ProxyApiTestClassaList: List<Any?>?): List<Any?>? {
+  override fun callFlutterEchoNullableList(pigeon_instance: ProxyApiTestClass,aList: List<Any?>?): List<Any?>? {
     return pigeon_instance.callFlutterEchoNullableList(aList)
   }
 
-  override fun callFlutterEchoNullableMap(pigeon_instance: ProxyApiTestClassaMap: Map<String?, Any?>?): Map<String?, Any?>? {
+  override fun callFlutterEchoNullableMap(pigeon_instance: ProxyApiTestClass,aMap: Map<String?, Any?>?): Map<String?, Any?>? {
     return pigeon_instance.callFlutterEchoNullableMap(aMap)
   }
 
-  override fun callFlutterEchoNullableEnum(pigeon_instance: ProxyApiTestClassanEnum: ProxyApiTestEnum?): ProxyApiTestEnum? {
+  override fun callFlutterEchoNullableEnum(pigeon_instance: ProxyApiTestClass,anEnum: ProxyApiTestEnum?): ProxyApiTestEnum? {
     return pigeon_instance.callFlutterEchoNullableEnum(anEnum)
   }
 
-  override fun callFlutterEchoNullableProxyApi(pigeon_instance: ProxyApiTestClassaProxyApi: com.example.test_plugin.ProxyApiSuperClass?): com.example.test_plugin.ProxyApiSuperClass? {
+  override fun callFlutterEchoNullableProxyApi(pigeon_instance: ProxyApiTestClass,aProxyApi: com.example.test_plugin.ProxyApiSuperClass?): com.example.test_plugin.ProxyApiSuperClass? {
     return pigeon_instance.callFlutterEchoNullableProxyApi(aProxyApi)
   }
 
@@ -4452,7 +4474,7 @@ class ProxyApiTestClassProxyApi(override val pigeonRegistrar: ProxyApiRegistrar)
     return pigeon_instance.callFlutterNoopAsync()
   }
 
-  override fun callFlutterEchoAsyncString(pigeon_instance: ProxyApiTestClassaString: String): String {
+  override fun callFlutterEchoAsyncString(pigeon_instance: ProxyApiTestClass,aString: String): String {
     return pigeon_instance.callFlutterEchoAsyncString(aString)
   }
 
@@ -4463,6 +4485,8 @@ class ProxyApiTestClassProxyApi(override val pigeonRegistrar: ProxyApiRegistrar)
 // Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
+package com.example.test_plugin
 
 import com.example.test_plugin.ProxyApiSuperClass
 import kotlin.test.Test
@@ -4481,6 +4505,7 @@ class ProxyApiTestClassProxyApiTest {
 
     assertTrue(api.pigeon_defaultConstructor(true, 0, 1.0, "myString", byteArrayOf(0xA1.toByte()), listOf(-1), mapOf("myString" to -1}), ProxyApiTestEnum.ONE, mock<ProxyApiSuperClass>(), true, 0, 1.0, "myString", byteArrayOf(0xA1.toByte()), listOf(-1), mapOf("myString" to -1}), ProxyApiTestEnum.ONE, mock<ProxyApiSuperClass>()) is ProxyApiTestClassProxyApi.ProxyApiTestClass)
   }
+
   @Test
   fun aBool() {
     val api = TestProxyApiRegistrar().getPigeonApiProxyApiTestClass()
@@ -4491,6 +4516,7 @@ class ProxyApiTestClassProxyApiTest {
 
     assertEquals(value, api.aBool(instance))
   }
+
   @Test
   fun anInt() {
     val api = TestProxyApiRegistrar().getPigeonApiProxyApiTestClass()
@@ -4501,6 +4527,7 @@ class ProxyApiTestClassProxyApiTest {
 
     assertEquals(value, api.anInt(instance))
   }
+
   @Test
   fun aDouble() {
     val api = TestProxyApiRegistrar().getPigeonApiProxyApiTestClass()
@@ -4511,6 +4538,7 @@ class ProxyApiTestClassProxyApiTest {
 
     assertEquals(value, api.aDouble(instance))
   }
+
   @Test
   fun aString() {
     val api = TestProxyApiRegistrar().getPigeonApiProxyApiTestClass()
@@ -4521,6 +4549,7 @@ class ProxyApiTestClassProxyApiTest {
 
     assertEquals(value, api.aString(instance))
   }
+
   @Test
   fun aUint8List() {
     val api = TestProxyApiRegistrar().getPigeonApiProxyApiTestClass()
@@ -4531,6 +4560,7 @@ class ProxyApiTestClassProxyApiTest {
 
     assertEquals(value, api.aUint8List(instance))
   }
+
   @Test
   fun aList() {
     val api = TestProxyApiRegistrar().getPigeonApiProxyApiTestClass()
@@ -4541,6 +4571,7 @@ class ProxyApiTestClassProxyApiTest {
 
     assertEquals(value, api.aList(instance))
   }
+
   @Test
   fun aMap() {
     val api = TestProxyApiRegistrar().getPigeonApiProxyApiTestClass()
@@ -4551,6 +4582,7 @@ class ProxyApiTestClassProxyApiTest {
 
     assertEquals(value, api.aMap(instance))
   }
+
   @Test
   fun anEnum() {
     val api = TestProxyApiRegistrar().getPigeonApiProxyApiTestClass()
@@ -4561,6 +4593,7 @@ class ProxyApiTestClassProxyApiTest {
 
     assertEquals(value, api.anEnum(instance))
   }
+
   @Test
   fun aProxyApi() {
     val api = TestProxyApiRegistrar().getPigeonApiProxyApiTestClass()
@@ -4571,6 +4604,7 @@ class ProxyApiTestClassProxyApiTest {
 
     assertEquals(value, api.aProxyApi(instance))
   }
+
   @Test
   fun aNullableBool() {
     val api = TestProxyApiRegistrar().getPigeonApiProxyApiTestClass()
@@ -4581,6 +4615,7 @@ class ProxyApiTestClassProxyApiTest {
 
     assertEquals(value, api.aNullableBool(instance))
   }
+
   @Test
   fun aNullableInt() {
     val api = TestProxyApiRegistrar().getPigeonApiProxyApiTestClass()
@@ -4591,6 +4626,7 @@ class ProxyApiTestClassProxyApiTest {
 
     assertEquals(value, api.aNullableInt(instance))
   }
+
   @Test
   fun aNullableDouble() {
     val api = TestProxyApiRegistrar().getPigeonApiProxyApiTestClass()
@@ -4601,6 +4637,7 @@ class ProxyApiTestClassProxyApiTest {
 
     assertEquals(value, api.aNullableDouble(instance))
   }
+
   @Test
   fun aNullableString() {
     val api = TestProxyApiRegistrar().getPigeonApiProxyApiTestClass()
@@ -4611,6 +4648,7 @@ class ProxyApiTestClassProxyApiTest {
 
     assertEquals(value, api.aNullableString(instance))
   }
+
   @Test
   fun aNullableUint8List() {
     val api = TestProxyApiRegistrar().getPigeonApiProxyApiTestClass()
@@ -4621,6 +4659,7 @@ class ProxyApiTestClassProxyApiTest {
 
     assertEquals(value, api.aNullableUint8List(instance))
   }
+
   @Test
   fun aNullableList() {
     val api = TestProxyApiRegistrar().getPigeonApiProxyApiTestClass()
@@ -4631,6 +4670,7 @@ class ProxyApiTestClassProxyApiTest {
 
     assertEquals(value, api.aNullableList(instance))
   }
+
   @Test
   fun aNullableMap() {
     val api = TestProxyApiRegistrar().getPigeonApiProxyApiTestClass()
@@ -4641,6 +4681,7 @@ class ProxyApiTestClassProxyApiTest {
 
     assertEquals(value, api.aNullableMap(instance))
   }
+
   @Test
   fun aNullableEnum() {
     val api = TestProxyApiRegistrar().getPigeonApiProxyApiTestClass()
@@ -4651,6 +4692,7 @@ class ProxyApiTestClassProxyApiTest {
 
     assertEquals(value, api.aNullableEnum(instance))
   }
+
   @Test
   fun aNullableProxyApi() {
     val api = TestProxyApiRegistrar().getPigeonApiProxyApiTestClass()
@@ -4661,6 +4703,7 @@ class ProxyApiTestClassProxyApiTest {
 
     assertEquals(value, api.aNullableProxyApi(instance))
   }
+
   @Test
   fun attachedField() {
     val api = TestProxyApiRegistrar().getPigeonApiProxyApiTestClass()
@@ -4671,15 +4714,17 @@ class ProxyApiTestClassProxyApiTest {
 
     assertEquals(value, api.attachedField(instance))
   }
+
   @Test
   fun noop() {
     val api = TestProxyApiRegistrar().getPigeonApiProxyApiTestClass()
 
     val instance = mock<ProxyApiTestClass>()
-    api.noop(instance, )
+    api.noop(instance )
 
     verify(instance).noop()
   }
+
   @Test
   fun throwError() {
     val api = TestProxyApiRegistrar().getPigeonApiProxyApiTestClass()
@@ -4688,17 +4733,19 @@ class ProxyApiTestClassProxyApiTest {
     val value = -1
     whenever(instance.throwError()).thenReturn(value)
 
-    assertEquals(value, api.throwError(instance, ))
+    assertEquals(value, api.throwError(instance ))
   }
+
   @Test
   fun throwErrorFromVoid() {
     val api = TestProxyApiRegistrar().getPigeonApiProxyApiTestClass()
 
     val instance = mock<ProxyApiTestClass>()
-    api.throwErrorFromVoid(instance, )
+    api.throwErrorFromVoid(instance )
 
     verify(instance).throwErrorFromVoid()
   }
+
   @Test
   fun throwFlutterError() {
     val api = TestProxyApiRegistrar().getPigeonApiProxyApiTestClass()
@@ -4707,8 +4754,9 @@ class ProxyApiTestClassProxyApiTest {
     val value = -1
     whenever(instance.throwFlutterError()).thenReturn(value)
 
-    assertEquals(value, api.throwFlutterError(instance, ))
+    assertEquals(value, api.throwFlutterError(instance ))
   }
+
   @Test
   fun echoInt() {
     val api = TestProxyApiRegistrar().getPigeonApiProxyApiTestClass()
@@ -4720,6 +4768,7 @@ class ProxyApiTestClassProxyApiTest {
 
     assertEquals(value, api.echoInt(instance, anInt))
   }
+
   @Test
   fun echoDouble() {
     val api = TestProxyApiRegistrar().getPigeonApiProxyApiTestClass()
@@ -4731,6 +4780,7 @@ class ProxyApiTestClassProxyApiTest {
 
     assertEquals(value, api.echoDouble(instance, aDouble))
   }
+
   @Test
   fun echoBool() {
     val api = TestProxyApiRegistrar().getPigeonApiProxyApiTestClass()
@@ -4742,6 +4792,7 @@ class ProxyApiTestClassProxyApiTest {
 
     assertEquals(value, api.echoBool(instance, aBool))
   }
+
   @Test
   fun echoString() {
     val api = TestProxyApiRegistrar().getPigeonApiProxyApiTestClass()
@@ -4753,6 +4804,7 @@ class ProxyApiTestClassProxyApiTest {
 
     assertEquals(value, api.echoString(instance, aString))
   }
+
   @Test
   fun echoUint8List() {
     val api = TestProxyApiRegistrar().getPigeonApiProxyApiTestClass()
@@ -4764,6 +4816,7 @@ class ProxyApiTestClassProxyApiTest {
 
     assertEquals(value, api.echoUint8List(instance, aUint8List))
   }
+
   @Test
   fun echoObject() {
     val api = TestProxyApiRegistrar().getPigeonApiProxyApiTestClass()
@@ -4775,6 +4828,7 @@ class ProxyApiTestClassProxyApiTest {
 
     assertEquals(value, api.echoObject(instance, anObject))
   }
+
   @Test
   fun echoList() {
     val api = TestProxyApiRegistrar().getPigeonApiProxyApiTestClass()
@@ -4786,6 +4840,7 @@ class ProxyApiTestClassProxyApiTest {
 
     assertEquals(value, api.echoList(instance, aList))
   }
+
   @Test
   fun echoProxyApiList() {
     val api = TestProxyApiRegistrar().getPigeonApiProxyApiTestClass()
@@ -4797,6 +4852,7 @@ class ProxyApiTestClassProxyApiTest {
 
     assertEquals(value, api.echoProxyApiList(instance, aList))
   }
+
   @Test
   fun echoMap() {
     val api = TestProxyApiRegistrar().getPigeonApiProxyApiTestClass()
@@ -4808,6 +4864,7 @@ class ProxyApiTestClassProxyApiTest {
 
     assertEquals(value, api.echoMap(instance, aMap))
   }
+
   @Test
   fun echoProxyApiMap() {
     val api = TestProxyApiRegistrar().getPigeonApiProxyApiTestClass()
@@ -4819,6 +4876,7 @@ class ProxyApiTestClassProxyApiTest {
 
     assertEquals(value, api.echoProxyApiMap(instance, aMap))
   }
+
   @Test
   fun echoEnum() {
     val api = TestProxyApiRegistrar().getPigeonApiProxyApiTestClass()
@@ -4830,6 +4888,7 @@ class ProxyApiTestClassProxyApiTest {
 
     assertEquals(value, api.echoEnum(instance, anEnum))
   }
+
   @Test
   fun echoProxyApi() {
     val api = TestProxyApiRegistrar().getPigeonApiProxyApiTestClass()
@@ -4841,6 +4900,7 @@ class ProxyApiTestClassProxyApiTest {
 
     assertEquals(value, api.echoProxyApi(instance, aProxyApi))
   }
+
   @Test
   fun echoNullableInt() {
     val api = TestProxyApiRegistrar().getPigeonApiProxyApiTestClass()
@@ -4852,6 +4912,7 @@ class ProxyApiTestClassProxyApiTest {
 
     assertEquals(value, api.echoNullableInt(instance, aNullableInt))
   }
+
   @Test
   fun echoNullableDouble() {
     val api = TestProxyApiRegistrar().getPigeonApiProxyApiTestClass()
@@ -4863,6 +4924,7 @@ class ProxyApiTestClassProxyApiTest {
 
     assertEquals(value, api.echoNullableDouble(instance, aNullableDouble))
   }
+
   @Test
   fun echoNullableBool() {
     val api = TestProxyApiRegistrar().getPigeonApiProxyApiTestClass()
@@ -4874,6 +4936,7 @@ class ProxyApiTestClassProxyApiTest {
 
     assertEquals(value, api.echoNullableBool(instance, aNullableBool))
   }
+
   @Test
   fun echoNullableString() {
     val api = TestProxyApiRegistrar().getPigeonApiProxyApiTestClass()
@@ -4885,6 +4948,7 @@ class ProxyApiTestClassProxyApiTest {
 
     assertEquals(value, api.echoNullableString(instance, aNullableString))
   }
+
   @Test
   fun echoNullableUint8List() {
     val api = TestProxyApiRegistrar().getPigeonApiProxyApiTestClass()
@@ -4896,6 +4960,7 @@ class ProxyApiTestClassProxyApiTest {
 
     assertEquals(value, api.echoNullableUint8List(instance, aNullableUint8List))
   }
+
   @Test
   fun echoNullableObject() {
     val api = TestProxyApiRegistrar().getPigeonApiProxyApiTestClass()
@@ -4907,6 +4972,7 @@ class ProxyApiTestClassProxyApiTest {
 
     assertEquals(value, api.echoNullableObject(instance, aNullableObject))
   }
+
   @Test
   fun echoNullableList() {
     val api = TestProxyApiRegistrar().getPigeonApiProxyApiTestClass()
@@ -4918,6 +4984,7 @@ class ProxyApiTestClassProxyApiTest {
 
     assertEquals(value, api.echoNullableList(instance, aNullableList))
   }
+
   @Test
   fun echoNullableMap() {
     val api = TestProxyApiRegistrar().getPigeonApiProxyApiTestClass()
@@ -4929,6 +4996,7 @@ class ProxyApiTestClassProxyApiTest {
 
     assertEquals(value, api.echoNullableMap(instance, aNullableMap))
   }
+
   @Test
   fun echoNullableEnum() {
     val api = TestProxyApiRegistrar().getPigeonApiProxyApiTestClass()
@@ -4940,6 +5008,7 @@ class ProxyApiTestClassProxyApiTest {
 
     assertEquals(value, api.echoNullableEnum(instance, aNullableEnum))
   }
+
   @Test
   fun echoNullableProxyApi() {
     val api = TestProxyApiRegistrar().getPigeonApiProxyApiTestClass()
@@ -4951,15 +5020,17 @@ class ProxyApiTestClassProxyApiTest {
 
     assertEquals(value, api.echoNullableProxyApi(instance, aNullableProxyApi))
   }
+
   @Test
   fun noopAsync() {
     val api = TestProxyApiRegistrar().getPigeonApiProxyApiTestClass()
 
     val instance = mock<ProxyApiTestClass>()
-    api.noopAsync(instance, )
+    api.noopAsync(instance )
 
     verify(instance).noopAsync()
   }
+
   @Test
   fun echoAsyncInt() {
     val api = TestProxyApiRegistrar().getPigeonApiProxyApiTestClass()
@@ -4971,6 +5042,7 @@ class ProxyApiTestClassProxyApiTest {
 
     assertEquals(value, api.echoAsyncInt(instance, anInt))
   }
+
   @Test
   fun echoAsyncDouble() {
     val api = TestProxyApiRegistrar().getPigeonApiProxyApiTestClass()
@@ -4982,6 +5054,7 @@ class ProxyApiTestClassProxyApiTest {
 
     assertEquals(value, api.echoAsyncDouble(instance, aDouble))
   }
+
   @Test
   fun echoAsyncBool() {
     val api = TestProxyApiRegistrar().getPigeonApiProxyApiTestClass()
@@ -4993,6 +5066,7 @@ class ProxyApiTestClassProxyApiTest {
 
     assertEquals(value, api.echoAsyncBool(instance, aBool))
   }
+
   @Test
   fun echoAsyncString() {
     val api = TestProxyApiRegistrar().getPigeonApiProxyApiTestClass()
@@ -5004,6 +5078,7 @@ class ProxyApiTestClassProxyApiTest {
 
     assertEquals(value, api.echoAsyncString(instance, aString))
   }
+
   @Test
   fun echoAsyncUint8List() {
     val api = TestProxyApiRegistrar().getPigeonApiProxyApiTestClass()
@@ -5015,6 +5090,7 @@ class ProxyApiTestClassProxyApiTest {
 
     assertEquals(value, api.echoAsyncUint8List(instance, aUint8List))
   }
+
   @Test
   fun echoAsyncObject() {
     val api = TestProxyApiRegistrar().getPigeonApiProxyApiTestClass()
@@ -5026,6 +5102,7 @@ class ProxyApiTestClassProxyApiTest {
 
     assertEquals(value, api.echoAsyncObject(instance, anObject))
   }
+
   @Test
   fun echoAsyncList() {
     val api = TestProxyApiRegistrar().getPigeonApiProxyApiTestClass()
@@ -5037,6 +5114,7 @@ class ProxyApiTestClassProxyApiTest {
 
     assertEquals(value, api.echoAsyncList(instance, aList))
   }
+
   @Test
   fun echoAsyncMap() {
     val api = TestProxyApiRegistrar().getPigeonApiProxyApiTestClass()
@@ -5048,6 +5126,7 @@ class ProxyApiTestClassProxyApiTest {
 
     assertEquals(value, api.echoAsyncMap(instance, aMap))
   }
+
   @Test
   fun echoAsyncEnum() {
     val api = TestProxyApiRegistrar().getPigeonApiProxyApiTestClass()
@@ -5059,6 +5138,7 @@ class ProxyApiTestClassProxyApiTest {
 
     assertEquals(value, api.echoAsyncEnum(instance, anEnum))
   }
+
   @Test
   fun throwAsyncError() {
     val api = TestProxyApiRegistrar().getPigeonApiProxyApiTestClass()
@@ -5067,17 +5147,19 @@ class ProxyApiTestClassProxyApiTest {
     val value = -1
     whenever(instance.throwAsyncError()).thenReturn(value)
 
-    assertEquals(value, api.throwAsyncError(instance, ))
+    assertEquals(value, api.throwAsyncError(instance ))
   }
+
   @Test
   fun throwAsyncErrorFromVoid() {
     val api = TestProxyApiRegistrar().getPigeonApiProxyApiTestClass()
 
     val instance = mock<ProxyApiTestClass>()
-    api.throwAsyncErrorFromVoid(instance, )
+    api.throwAsyncErrorFromVoid(instance )
 
     verify(instance).throwAsyncErrorFromVoid()
   }
+
   @Test
   fun throwAsyncFlutterError() {
     val api = TestProxyApiRegistrar().getPigeonApiProxyApiTestClass()
@@ -5086,8 +5168,9 @@ class ProxyApiTestClassProxyApiTest {
     val value = -1
     whenever(instance.throwAsyncFlutterError()).thenReturn(value)
 
-    assertEquals(value, api.throwAsyncFlutterError(instance, ))
+    assertEquals(value, api.throwAsyncFlutterError(instance ))
   }
+
   @Test
   fun echoAsyncNullableInt() {
     val api = TestProxyApiRegistrar().getPigeonApiProxyApiTestClass()
@@ -5099,6 +5182,7 @@ class ProxyApiTestClassProxyApiTest {
 
     assertEquals(value, api.echoAsyncNullableInt(instance, anInt))
   }
+
   @Test
   fun echoAsyncNullableDouble() {
     val api = TestProxyApiRegistrar().getPigeonApiProxyApiTestClass()
@@ -5110,6 +5194,7 @@ class ProxyApiTestClassProxyApiTest {
 
     assertEquals(value, api.echoAsyncNullableDouble(instance, aDouble))
   }
+
   @Test
   fun echoAsyncNullableBool() {
     val api = TestProxyApiRegistrar().getPigeonApiProxyApiTestClass()
@@ -5121,6 +5206,7 @@ class ProxyApiTestClassProxyApiTest {
 
     assertEquals(value, api.echoAsyncNullableBool(instance, aBool))
   }
+
   @Test
   fun echoAsyncNullableString() {
     val api = TestProxyApiRegistrar().getPigeonApiProxyApiTestClass()
@@ -5132,6 +5218,7 @@ class ProxyApiTestClassProxyApiTest {
 
     assertEquals(value, api.echoAsyncNullableString(instance, aString))
   }
+
   @Test
   fun echoAsyncNullableUint8List() {
     val api = TestProxyApiRegistrar().getPigeonApiProxyApiTestClass()
@@ -5143,6 +5230,7 @@ class ProxyApiTestClassProxyApiTest {
 
     assertEquals(value, api.echoAsyncNullableUint8List(instance, aUint8List))
   }
+
   @Test
   fun echoAsyncNullableObject() {
     val api = TestProxyApiRegistrar().getPigeonApiProxyApiTestClass()
@@ -5154,6 +5242,7 @@ class ProxyApiTestClassProxyApiTest {
 
     assertEquals(value, api.echoAsyncNullableObject(instance, anObject))
   }
+
   @Test
   fun echoAsyncNullableList() {
     val api = TestProxyApiRegistrar().getPigeonApiProxyApiTestClass()
@@ -5165,6 +5254,7 @@ class ProxyApiTestClassProxyApiTest {
 
     assertEquals(value, api.echoAsyncNullableList(instance, aList))
   }
+
   @Test
   fun echoAsyncNullableMap() {
     val api = TestProxyApiRegistrar().getPigeonApiProxyApiTestClass()
@@ -5176,6 +5266,7 @@ class ProxyApiTestClassProxyApiTest {
 
     assertEquals(value, api.echoAsyncNullableMap(instance, aMap))
   }
+
   @Test
   fun echoAsyncNullableEnum() {
     val api = TestProxyApiRegistrar().getPigeonApiProxyApiTestClass()
@@ -5187,15 +5278,17 @@ class ProxyApiTestClassProxyApiTest {
 
     assertEquals(value, api.echoAsyncNullableEnum(instance, anEnum))
   }
+
   @Test
   fun callFlutterNoop() {
     val api = TestProxyApiRegistrar().getPigeonApiProxyApiTestClass()
 
     val instance = mock<ProxyApiTestClass>()
-    api.callFlutterNoop(instance, )
+    api.callFlutterNoop(instance )
 
     verify(instance).callFlutterNoop()
   }
+
   @Test
   fun callFlutterThrowError() {
     val api = TestProxyApiRegistrar().getPigeonApiProxyApiTestClass()
@@ -5204,17 +5297,19 @@ class ProxyApiTestClassProxyApiTest {
     val value = -1
     whenever(instance.callFlutterThrowError()).thenReturn(value)
 
-    assertEquals(value, api.callFlutterThrowError(instance, ))
+    assertEquals(value, api.callFlutterThrowError(instance ))
   }
+
   @Test
   fun callFlutterThrowErrorFromVoid() {
     val api = TestProxyApiRegistrar().getPigeonApiProxyApiTestClass()
 
     val instance = mock<ProxyApiTestClass>()
-    api.callFlutterThrowErrorFromVoid(instance, )
+    api.callFlutterThrowErrorFromVoid(instance )
 
     verify(instance).callFlutterThrowErrorFromVoid()
   }
+
   @Test
   fun callFlutterEchoBool() {
     val api = TestProxyApiRegistrar().getPigeonApiProxyApiTestClass()
@@ -5226,6 +5321,7 @@ class ProxyApiTestClassProxyApiTest {
 
     assertEquals(value, api.callFlutterEchoBool(instance, aBool))
   }
+
   @Test
   fun callFlutterEchoInt() {
     val api = TestProxyApiRegistrar().getPigeonApiProxyApiTestClass()
@@ -5237,6 +5333,7 @@ class ProxyApiTestClassProxyApiTest {
 
     assertEquals(value, api.callFlutterEchoInt(instance, anInt))
   }
+
   @Test
   fun callFlutterEchoDouble() {
     val api = TestProxyApiRegistrar().getPigeonApiProxyApiTestClass()
@@ -5248,6 +5345,7 @@ class ProxyApiTestClassProxyApiTest {
 
     assertEquals(value, api.callFlutterEchoDouble(instance, aDouble))
   }
+
   @Test
   fun callFlutterEchoString() {
     val api = TestProxyApiRegistrar().getPigeonApiProxyApiTestClass()
@@ -5259,6 +5357,7 @@ class ProxyApiTestClassProxyApiTest {
 
     assertEquals(value, api.callFlutterEchoString(instance, aString))
   }
+
   @Test
   fun callFlutterEchoUint8List() {
     val api = TestProxyApiRegistrar().getPigeonApiProxyApiTestClass()
@@ -5270,6 +5369,7 @@ class ProxyApiTestClassProxyApiTest {
 
     assertEquals(value, api.callFlutterEchoUint8List(instance, aUint8List))
   }
+
   @Test
   fun callFlutterEchoList() {
     val api = TestProxyApiRegistrar().getPigeonApiProxyApiTestClass()
@@ -5281,6 +5381,7 @@ class ProxyApiTestClassProxyApiTest {
 
     assertEquals(value, api.callFlutterEchoList(instance, aList))
   }
+
   @Test
   fun callFlutterEchoProxyApiList() {
     val api = TestProxyApiRegistrar().getPigeonApiProxyApiTestClass()
@@ -5292,6 +5393,7 @@ class ProxyApiTestClassProxyApiTest {
 
     assertEquals(value, api.callFlutterEchoProxyApiList(instance, aList))
   }
+
   @Test
   fun callFlutterEchoMap() {
     val api = TestProxyApiRegistrar().getPigeonApiProxyApiTestClass()
@@ -5303,6 +5405,7 @@ class ProxyApiTestClassProxyApiTest {
 
     assertEquals(value, api.callFlutterEchoMap(instance, aMap))
   }
+
   @Test
   fun callFlutterEchoProxyApiMap() {
     val api = TestProxyApiRegistrar().getPigeonApiProxyApiTestClass()
@@ -5314,6 +5417,7 @@ class ProxyApiTestClassProxyApiTest {
 
     assertEquals(value, api.callFlutterEchoProxyApiMap(instance, aMap))
   }
+
   @Test
   fun callFlutterEchoEnum() {
     val api = TestProxyApiRegistrar().getPigeonApiProxyApiTestClass()
@@ -5325,6 +5429,7 @@ class ProxyApiTestClassProxyApiTest {
 
     assertEquals(value, api.callFlutterEchoEnum(instance, anEnum))
   }
+
   @Test
   fun callFlutterEchoProxyApi() {
     val api = TestProxyApiRegistrar().getPigeonApiProxyApiTestClass()
@@ -5336,6 +5441,7 @@ class ProxyApiTestClassProxyApiTest {
 
     assertEquals(value, api.callFlutterEchoProxyApi(instance, aProxyApi))
   }
+
   @Test
   fun callFlutterEchoNullableBool() {
     val api = TestProxyApiRegistrar().getPigeonApiProxyApiTestClass()
@@ -5347,6 +5453,7 @@ class ProxyApiTestClassProxyApiTest {
 
     assertEquals(value, api.callFlutterEchoNullableBool(instance, aBool))
   }
+
   @Test
   fun callFlutterEchoNullableInt() {
     val api = TestProxyApiRegistrar().getPigeonApiProxyApiTestClass()
@@ -5358,6 +5465,7 @@ class ProxyApiTestClassProxyApiTest {
 
     assertEquals(value, api.callFlutterEchoNullableInt(instance, anInt))
   }
+
   @Test
   fun callFlutterEchoNullableDouble() {
     val api = TestProxyApiRegistrar().getPigeonApiProxyApiTestClass()
@@ -5369,6 +5477,7 @@ class ProxyApiTestClassProxyApiTest {
 
     assertEquals(value, api.callFlutterEchoNullableDouble(instance, aDouble))
   }
+
   @Test
   fun callFlutterEchoNullableString() {
     val api = TestProxyApiRegistrar().getPigeonApiProxyApiTestClass()
@@ -5380,6 +5489,7 @@ class ProxyApiTestClassProxyApiTest {
 
     assertEquals(value, api.callFlutterEchoNullableString(instance, aString))
   }
+
   @Test
   fun callFlutterEchoNullableUint8List() {
     val api = TestProxyApiRegistrar().getPigeonApiProxyApiTestClass()
@@ -5391,6 +5501,7 @@ class ProxyApiTestClassProxyApiTest {
 
     assertEquals(value, api.callFlutterEchoNullableUint8List(instance, aUint8List))
   }
+
   @Test
   fun callFlutterEchoNullableList() {
     val api = TestProxyApiRegistrar().getPigeonApiProxyApiTestClass()
@@ -5402,6 +5513,7 @@ class ProxyApiTestClassProxyApiTest {
 
     assertEquals(value, api.callFlutterEchoNullableList(instance, aList))
   }
+
   @Test
   fun callFlutterEchoNullableMap() {
     val api = TestProxyApiRegistrar().getPigeonApiProxyApiTestClass()
@@ -5413,6 +5525,7 @@ class ProxyApiTestClassProxyApiTest {
 
     assertEquals(value, api.callFlutterEchoNullableMap(instance, aMap))
   }
+
   @Test
   fun callFlutterEchoNullableEnum() {
     val api = TestProxyApiRegistrar().getPigeonApiProxyApiTestClass()
@@ -5424,6 +5537,7 @@ class ProxyApiTestClassProxyApiTest {
 
     assertEquals(value, api.callFlutterEchoNullableEnum(instance, anEnum))
   }
+
   @Test
   fun callFlutterEchoNullableProxyApi() {
     val api = TestProxyApiRegistrar().getPigeonApiProxyApiTestClass()
@@ -5435,15 +5549,17 @@ class ProxyApiTestClassProxyApiTest {
 
     assertEquals(value, api.callFlutterEchoNullableProxyApi(instance, aProxyApi))
   }
+
   @Test
   fun callFlutterNoopAsync() {
     val api = TestProxyApiRegistrar().getPigeonApiProxyApiTestClass()
 
     val instance = mock<ProxyApiTestClass>()
-    api.callFlutterNoopAsync(instance, )
+    api.callFlutterNoopAsync(instance )
 
     verify(instance).callFlutterNoopAsync()
   }
+
   @Test
   fun callFlutterEchoAsyncString() {
     val api = TestProxyApiRegistrar().getPigeonApiProxyApiTestClass()
@@ -5455,6 +5571,7 @@ class ProxyApiTestClassProxyApiTest {
 
     assertEquals(value, api.callFlutterEchoAsyncString(instance, aString))
   }
+
   @Test
   fun flutterNoop() {
     val mockApi = mock<ProxyApiTestClassProxyApi>()
@@ -5463,8 +5580,9 @@ class ProxyApiTestClassProxyApiTest {
     val instance = ProxyApiTestClassImpl(mockApi)
     instance.flutterNoop()
 
-    verify(mockApi).flutterNoop(eq(instance), , any())
+    verify(mockApi).flutterNoop(eq(instance) , any())
   }
+
   @Test
   fun flutterThrowError() {
     val mockApi = mock<ProxyApiTestClassProxyApi>()
@@ -5473,8 +5591,9 @@ class ProxyApiTestClassProxyApiTest {
     val instance = ProxyApiTestClassImpl(mockApi)
     instance.flutterThrowError()
 
-    verify(mockApi).flutterThrowError(eq(instance), , any())
+    verify(mockApi).flutterThrowError(eq(instance) , any())
   }
+
   @Test
   fun flutterThrowErrorFromVoid() {
     val mockApi = mock<ProxyApiTestClassProxyApi>()
@@ -5483,8 +5602,9 @@ class ProxyApiTestClassProxyApiTest {
     val instance = ProxyApiTestClassImpl(mockApi)
     instance.flutterThrowErrorFromVoid()
 
-    verify(mockApi).flutterThrowErrorFromVoid(eq(instance), , any())
+    verify(mockApi).flutterThrowErrorFromVoid(eq(instance) , any())
   }
+
   @Test
   fun flutterEchoBool() {
     val mockApi = mock<ProxyApiTestClassProxyApi>()
@@ -5496,6 +5616,7 @@ class ProxyApiTestClassProxyApiTest {
 
     verify(mockApi).flutterEchoBool(eq(instance), eq(aBool), any())
   }
+
   @Test
   fun flutterEchoInt() {
     val mockApi = mock<ProxyApiTestClassProxyApi>()
@@ -5507,6 +5628,7 @@ class ProxyApiTestClassProxyApiTest {
 
     verify(mockApi).flutterEchoInt(eq(instance), eq(anInt), any())
   }
+
   @Test
   fun flutterEchoDouble() {
     val mockApi = mock<ProxyApiTestClassProxyApi>()
@@ -5518,6 +5640,7 @@ class ProxyApiTestClassProxyApiTest {
 
     verify(mockApi).flutterEchoDouble(eq(instance), eq(aDouble), any())
   }
+
   @Test
   fun flutterEchoString() {
     val mockApi = mock<ProxyApiTestClassProxyApi>()
@@ -5529,6 +5652,7 @@ class ProxyApiTestClassProxyApiTest {
 
     verify(mockApi).flutterEchoString(eq(instance), eq(aString), any())
   }
+
   @Test
   fun flutterEchoUint8List() {
     val mockApi = mock<ProxyApiTestClassProxyApi>()
@@ -5540,6 +5664,7 @@ class ProxyApiTestClassProxyApiTest {
 
     verify(mockApi).flutterEchoUint8List(eq(instance), eq(aList), any())
   }
+
   @Test
   fun flutterEchoList() {
     val mockApi = mock<ProxyApiTestClassProxyApi>()
@@ -5551,6 +5676,7 @@ class ProxyApiTestClassProxyApiTest {
 
     verify(mockApi).flutterEchoList(eq(instance), eq(aList), any())
   }
+
   @Test
   fun flutterEchoProxyApiList() {
     val mockApi = mock<ProxyApiTestClassProxyApi>()
@@ -5562,6 +5688,7 @@ class ProxyApiTestClassProxyApiTest {
 
     verify(mockApi).flutterEchoProxyApiList(eq(instance), eq(aList), any())
   }
+
   @Test
   fun flutterEchoMap() {
     val mockApi = mock<ProxyApiTestClassProxyApi>()
@@ -5573,6 +5700,7 @@ class ProxyApiTestClassProxyApiTest {
 
     verify(mockApi).flutterEchoMap(eq(instance), eq(aMap), any())
   }
+
   @Test
   fun flutterEchoProxyApiMap() {
     val mockApi = mock<ProxyApiTestClassProxyApi>()
@@ -5584,6 +5712,7 @@ class ProxyApiTestClassProxyApiTest {
 
     verify(mockApi).flutterEchoProxyApiMap(eq(instance), eq(aMap), any())
   }
+
   @Test
   fun flutterEchoEnum() {
     val mockApi = mock<ProxyApiTestClassProxyApi>()
@@ -5595,6 +5724,7 @@ class ProxyApiTestClassProxyApiTest {
 
     verify(mockApi).flutterEchoEnum(eq(instance), eq(anEnum), any())
   }
+
   @Test
   fun flutterEchoProxyApi() {
     val mockApi = mock<ProxyApiTestClassProxyApi>()
@@ -5606,6 +5736,7 @@ class ProxyApiTestClassProxyApiTest {
 
     verify(mockApi).flutterEchoProxyApi(eq(instance), eq(aProxyApi), any())
   }
+
   @Test
   fun flutterEchoNullableBool() {
     val mockApi = mock<ProxyApiTestClassProxyApi>()
@@ -5617,6 +5748,7 @@ class ProxyApiTestClassProxyApiTest {
 
     verify(mockApi).flutterEchoNullableBool(eq(instance), eq(aBool), any())
   }
+
   @Test
   fun flutterEchoNullableInt() {
     val mockApi = mock<ProxyApiTestClassProxyApi>()
@@ -5628,6 +5760,7 @@ class ProxyApiTestClassProxyApiTest {
 
     verify(mockApi).flutterEchoNullableInt(eq(instance), eq(anInt), any())
   }
+
   @Test
   fun flutterEchoNullableDouble() {
     val mockApi = mock<ProxyApiTestClassProxyApi>()
@@ -5639,6 +5772,7 @@ class ProxyApiTestClassProxyApiTest {
 
     verify(mockApi).flutterEchoNullableDouble(eq(instance), eq(aDouble), any())
   }
+
   @Test
   fun flutterEchoNullableString() {
     val mockApi = mock<ProxyApiTestClassProxyApi>()
@@ -5650,6 +5784,7 @@ class ProxyApiTestClassProxyApiTest {
 
     verify(mockApi).flutterEchoNullableString(eq(instance), eq(aString), any())
   }
+
   @Test
   fun flutterEchoNullableUint8List() {
     val mockApi = mock<ProxyApiTestClassProxyApi>()
@@ -5661,6 +5796,7 @@ class ProxyApiTestClassProxyApiTest {
 
     verify(mockApi).flutterEchoNullableUint8List(eq(instance), eq(aList), any())
   }
+
   @Test
   fun flutterEchoNullableList() {
     val mockApi = mock<ProxyApiTestClassProxyApi>()
@@ -5672,6 +5808,7 @@ class ProxyApiTestClassProxyApiTest {
 
     verify(mockApi).flutterEchoNullableList(eq(instance), eq(aList), any())
   }
+
   @Test
   fun flutterEchoNullableMap() {
     val mockApi = mock<ProxyApiTestClassProxyApi>()
@@ -5683,6 +5820,7 @@ class ProxyApiTestClassProxyApiTest {
 
     verify(mockApi).flutterEchoNullableMap(eq(instance), eq(aMap), any())
   }
+
   @Test
   fun flutterEchoNullableEnum() {
     val mockApi = mock<ProxyApiTestClassProxyApi>()
@@ -5694,6 +5832,7 @@ class ProxyApiTestClassProxyApiTest {
 
     verify(mockApi).flutterEchoNullableEnum(eq(instance), eq(anEnum), any())
   }
+
   @Test
   fun flutterEchoNullableProxyApi() {
     val mockApi = mock<ProxyApiTestClassProxyApi>()
@@ -5705,6 +5844,7 @@ class ProxyApiTestClassProxyApiTest {
 
     verify(mockApi).flutterEchoNullableProxyApi(eq(instance), eq(aProxyApi), any())
   }
+
   @Test
   fun flutterNoopAsync() {
     val mockApi = mock<ProxyApiTestClassProxyApi>()
@@ -5713,8 +5853,9 @@ class ProxyApiTestClassProxyApiTest {
     val instance = ProxyApiTestClassImpl(mockApi)
     instance.flutterNoopAsync()
 
-    verify(mockApi).flutterNoopAsync(eq(instance), , any())
+    verify(mockApi).flutterNoopAsync(eq(instance) , any())
   }
+
   @Test
   fun flutterEchoAsyncString() {
     val mockApi = mock<ProxyApiTestClassProxyApi>()
@@ -5726,6 +5867,7 @@ class ProxyApiTestClassProxyApiTest {
 
     verify(mockApi).flutterEchoAsyncString(eq(instance), eq(aString), any())
   }
+
 }
 */
 /** ProxyApi to serve as a super class to the core ProxyApi class. */
@@ -5836,6 +5978,8 @@ abstract class PigeonApiProxyApiSuperClass(
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+package com.example.test_plugin
+
 import com.example.test_plugin.ProxyApiSuperClass
 
 /**
@@ -5845,8 +5989,6 @@ import com.example.test_plugin.ProxyApiSuperClass
  * instance or handle method calls on the associated native class or an instance of that class.
  */
 class ProxyApiSuperClassProxyApi(override val pigeonRegistrar: ProxyApiRegistrar) : PigeonApiProxyApiSuperClass(pigeonRegistrar) {
-  internal class ProxyApiSuperClassImpl(val api: ProxyApiSuperClassProxyApi) : ProxyApiSuperClass {
-  }
 
   override fun pigeon_defaultConstructor(): ProxyApiSuperClass {
     return ProxyApiSuperClass()
@@ -5863,6 +6005,8 @@ class ProxyApiSuperClassProxyApi(override val pigeonRegistrar: ProxyApiRegistrar
 // Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
+package com.example.test_plugin
 
 import com.example.test_plugin.ProxyApiSuperClass
 import kotlin.test.Test
@@ -5881,15 +6025,17 @@ class ProxyApiSuperClassProxyApiTest {
 
     assertTrue(api.pigeon_defaultConstructor() is ProxyApiSuperClassProxyApi.ProxyApiSuperClass)
   }
+
   @Test
   fun aSuperMethod() {
     val api = TestProxyApiRegistrar().getPigeonApiProxyApiSuperClass()
 
     val instance = mock<ProxyApiSuperClass>()
-    api.aSuperMethod(instance, )
+    api.aSuperMethod(instance )
 
     verify(instance).aSuperMethod()
   }
+
 }
 */
 /** ProxyApi to serve as an interface to the core ProxyApi class. */
@@ -5965,6 +6111,8 @@ open class PigeonApiProxyApiInterface(
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+package com.example.test_plugin
+
 
 
 /**
@@ -5976,7 +6124,7 @@ open class PigeonApiProxyApiInterface(
 class ProxyApiInterfaceProxyApi(override val pigeonRegistrar: ProxyApiRegistrar) : PigeonApiProxyApiInterface(pigeonRegistrar) {
   internal class ProxyApiInterfaceImpl(val api: ProxyApiInterfaceProxyApi) : ProxyApiInterface {
     override fun anInterfaceMethod() {
-      api.pigeonRegistrar.runOnMainThread { api.anInterfaceMethod(this, ) {} }
+      api.pigeonRegistrar.runOnMainThread { api.anInterfaceMethod(this ) {} }
     }
   }
 
@@ -5987,6 +6135,8 @@ class ProxyApiInterfaceProxyApi(override val pigeonRegistrar: ProxyApiRegistrar)
 // Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
+package com.example.test_plugin
 
 
 import kotlin.test.Test
@@ -6007,8 +6157,9 @@ class ProxyApiInterfaceProxyApiTest {
     val instance = ProxyApiInterfaceImpl(mockApi)
     instance.anInterfaceMethod()
 
-    verify(mockApi).anInterfaceMethod(eq(instance), , any())
+    verify(mockApi).anInterfaceMethod(eq(instance) , any())
   }
+
 }
 */
 @Suppress("UNCHECKED_CAST")
@@ -6160,6 +6311,8 @@ abstract class PigeonApiClassWithApiRequirement(
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+package com.example.test_plugin
+
 
 
 /**
@@ -6169,8 +6322,6 @@ abstract class PigeonApiClassWithApiRequirement(
  * instance or handle method calls on the associated native class or an instance of that class.
  */
 class ClassWithApiRequirementProxyApi(override val pigeonRegistrar: ProxyApiRegistrar) : PigeonApiClassWithApiRequirement(pigeonRegistrar) {
-  internal class ClassWithApiRequirementImpl(val api: ClassWithApiRequirementProxyApi) : ClassWithApiRequirement {
-  }
 
   override fun pigeon_defaultConstructor(): ClassWithApiRequirement {
     return ClassWithApiRequirement()
@@ -6187,6 +6338,8 @@ class ClassWithApiRequirementProxyApi(override val pigeonRegistrar: ProxyApiRegi
 // Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
+package com.example.test_plugin
 
 
 import kotlin.test.Test
@@ -6205,14 +6358,16 @@ class ClassWithApiRequirementProxyApiTest {
 
     assertTrue(api.pigeon_defaultConstructor() is ClassWithApiRequirementProxyApi.ClassWithApiRequirement)
   }
+
   @Test
   fun aMethod() {
     val api = TestProxyApiRegistrar().getPigeonApiClassWithApiRequirement()
 
     val instance = mock<ClassWithApiRequirement>()
-    api.aMethod(instance, )
+    api.aMethod(instance )
 
     verify(instance).aMethod()
   }
+
 }
 */
