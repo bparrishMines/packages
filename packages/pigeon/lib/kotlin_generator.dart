@@ -891,6 +891,14 @@ class KotlinGenerator extends StructuredGenerator<KotlinOptions> {
       'android/src/main/kotlin/${generatorOptions.package!.replaceAll('.', '/')}/${api.name}ProxyApi.kt',
     );
     print('${implFile.path}: ${implFile.existsSync()}');
+    if (!implFile.existsSync()) {
+      _writeProxyApiImpl(
+        implFileIndent,
+        api,
+        package: generatorOptions.package ?? '',
+      );
+      implFile.writeAsStringSync(implFileBuffer.toString());
+    }
 
     final StringBuffer testFileBuffer = StringBuffer();
     final Indent testFileIndent = Indent(implFileBuffer);
@@ -898,6 +906,14 @@ class KotlinGenerator extends StructuredGenerator<KotlinOptions> {
       'android/src/test/kotlin/${generatorOptions.package!.replaceAll('.', '/')}/${api.name}ProxyApiTest.kt',
     );
     print('${testFile.path}: ${testFile.existsSync()}');
+    if (!testFile.existsSync()) {
+      _writeProxyApiTest(
+        testFileIndent,
+        api,
+        package: generatorOptions.package ?? '',
+      );
+      testFile.writeAsStringSync(testFileBuffer.toString());
+    }
 
     indent.newln();
     indent.writeln('/*');
