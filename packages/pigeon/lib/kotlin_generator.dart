@@ -890,14 +890,14 @@ class KotlinGenerator extends StructuredGenerator<KotlinOptions> {
     final File implFile = File(
       'android/src/main/kotlin/${generatorOptions.package!.replaceAll('.', '/')}/${api.name}ProxyApi.kt',
     );
-    print('${implFile.path}: ${implFile.exists()}');
+    print('${implFile.path}: ${implFile.existsSync()}');
 
     final StringBuffer testFileBuffer = StringBuffer();
     final Indent testFileIndent = Indent(implFileBuffer);
     final File testFile = File(
       'android/src/test/kotlin/${generatorOptions.package!.replaceAll('.', '/')}/${api.name}ProxyApiTest.kt',
     );
-    print('${testFile.path}: ${testFile.exists()}');
+    print('${testFile.path}: ${testFile.existsSync()}');
 
     indent.newln();
     indent.writeln('/*');
