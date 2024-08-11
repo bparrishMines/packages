@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'dart:io';
+
 import 'package:graphs/graphs.dart';
 
 import 'ast.dart';
@@ -882,6 +884,20 @@ class KotlinGenerator extends StructuredGenerator<KotlinOptions> {
         _writeProxyApiInheritedApiMethods(indent, api);
       },
     );
+
+    final StringBuffer implFileBuffer = StringBuffer();
+    final Indent implFileIndent = Indent(implFileBuffer);
+    final File implFile = File(
+      'android/src/main/kotlin/${generatorOptions.package!.replaceAll('.', '/')}/${api.name}ProxyApi.kt',
+    );
+    print('${implFile.path}: ${implFile.exists()}');
+
+    final StringBuffer testFileBuffer = StringBuffer();
+    final Indent testFileIndent = Indent(implFileBuffer);
+    final File testFile = File(
+      'android/src/test/kotlin/${generatorOptions.package!.replaceAll('.', '/')}/${api.name}ProxyApiTest.kt',
+    );
+    print('${testFile.path}: ${testFile.exists()}');
 
     indent.newln();
     indent.writeln('/*');
