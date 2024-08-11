@@ -885,11 +885,11 @@ class KotlinGenerator extends StructuredGenerator<KotlinOptions> {
 
     indent.newln();
     indent.writeln('/*');
-    _writeProxyApiImpl(indent, api);
+    _writeProxyApiImpl(indent, api, package: generatorOptions.package ?? '');
     indent.writeln('*/');
     indent.newln();
     indent.writeln('/*');
-    _writeProxyApiTest(indent, api);
+    _writeProxyApiTest(indent, api, package: generatorOptions.package ?? '');
     indent.writeln('*/');
   }
 
@@ -1896,9 +1896,32 @@ class KotlinGenerator extends StructuredGenerator<KotlinOptions> {
 
   void _writeProxyApiImports(Indent indent, AstProxyApi api) {
     Iterable<AstProxyApi> onlyProxyApis(Iterable<TypeDeclaration> types) {
-      return types.where((TypeDeclaration type) {
-        return type.isProxyApi;
-      }).map((TypeDeclaration type) => type.associatedProxyApi!);
+      return <AstProxyApi>[
+        ...types.where((TypeDeclaration type) {
+          return type.baseName == 'List';
+        }).expand(
+          (TypeDeclaration type) => onlyProxyApis(
+            <TypeDeclaration>[type.typeArguments.single],
+          ),
+        ),
+        ...types.where((TypeDeclaration type) {
+          return type.baseName == 'Map';
+        }).expand(
+          (TypeDeclaration type) {
+            return <AstProxyApi>[
+              ...onlyProxyApis(
+                <TypeDeclaration>[type.typeArguments.first],
+              ),
+              ...onlyProxyApis(
+                <TypeDeclaration>[type.typeArguments[1]],
+              ),
+            ];
+          },
+        ),
+        ...types.where((TypeDeclaration type) {
+          return type.isProxyApi;
+        }).map((TypeDeclaration type) => type.associatedProxyApi!),
+      ];
     }
 
     Iterable<AstProxyApi> onlyProxyApis2(Iterable<NamedType> types) {
@@ -1929,8 +1952,15 @@ class KotlinGenerator extends StructuredGenerator<KotlinOptions> {
     return parameters.isEmpty ? '' : ',';
   }
 
-  void _writeProxyApiImpl(Indent indent, AstProxyApi api) {
+  void _writeProxyApiImpl(
+    Indent indent,
+    AstProxyApi api, {
+    required String package,
+  }) {
     _writeLicense(indent);
+    indent.newln();
+
+    indent.writeln('package $package');
     indent.newln();
 
     _writeProxyApiImports(indent, api);
@@ -1959,7 +1989,8 @@ class KotlinGenerator extends StructuredGenerator<KotlinOptions> {
               .join(', ');
         }
 
-        if (api.hasAnyFlutterMessageCalls()) {
+        if (api.flutterMethods.isNotEmpty ||
+            api.flutterMethodsFromInterfaces().isNotEmpty) {
           indent.writeScoped(
             'internal class ${api.name}Impl(val api: ${api.name}ProxyApi) : ${api.name} {',
             '}',
@@ -2031,6 +2062,7 @@ class KotlinGenerator extends StructuredGenerator<KotlinOptions> {
               }
             },
           );
+          indent.newln();
         }
 
         for (final ApiField field in api.attachedFields) {
@@ -2068,14 +2100,16 @@ class KotlinGenerator extends StructuredGenerator<KotlinOptions> {
               }
             },
           );
+          indent.newln();
         }
 
         for (final Method method in api.hostMethods) {
           final String parameterDecl =
               getMethodParameterNames(method.parameters);
 
-          final String instanceDecl =
-              method.isStatic ? '' : 'pigeon_instance: ${api.name}${maybeComma(method.parameters)}';
+          final String instanceDecl = method.isStatic
+              ? ''
+              : 'pigeon_instance: ${api.name}${maybeComma(method.parameters)}';
           final String returnValue = method.returnType.isVoid
               ? ''
               : ': ${_nullSafeKotlinTypeForDartType(method.returnType)}';
@@ -2096,8 +2130,15 @@ class KotlinGenerator extends StructuredGenerator<KotlinOptions> {
     );
   }
 
-  void _writeProxyApiTest(Indent indent, AstProxyApi api) {
+  void _writeProxyApiTest(
+    Indent indent,
+    AstProxyApi api, {
+    required String package,
+  }) {
     _writeLicense(indent);
+    indent.newln();
+
+    indent.writeln('package $package');
     indent.newln();
 
     _writeProxyApiImports(indent, api);
@@ -2228,7 +2269,8 @@ class KotlinGenerator extends StructuredGenerator<KotlinOptions> {
           }
 
           if (method.returnType.isVoid) {
-            indent.writeln('api.${method.name}(instance${maybeComma(method.parameters)} $parameterNames)');
+            indent.writeln(
+                'api.${method.name}(instance${maybeComma(method.parameters)} $parameterNames)');
             indent.newln();
 
             indent.writeln('verify(instance).${method.name}($parameterNames)');
