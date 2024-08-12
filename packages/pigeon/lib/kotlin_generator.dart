@@ -901,7 +901,7 @@ class KotlinGenerator extends StructuredGenerator<KotlinOptions> {
     }
 
     final StringBuffer testFileBuffer = StringBuffer();
-    final Indent testFileIndent = Indent(implFileBuffer);
+    final Indent testFileIndent = Indent(testFileBuffer);
     final File testFile = File(
       'android/src/test/kotlin/${generatorOptions.package!.replaceAll('.', '/')}/${api.name}ProxyApiTest.kt',
     );
@@ -2021,8 +2021,9 @@ class KotlinGenerator extends StructuredGenerator<KotlinOptions> {
               .join(', ');
         }
 
-        if (api.flutterMethods.isNotEmpty ||
-            api.flutterMethodsFromInterfaces().isNotEmpty) {
+        final bool hasImplClass = api.flutterMethods.isNotEmpty ||
+            api.flutterMethodsFromInterfaces().isNotEmpty;
+        if (hasImplClass) {
           indent.writeScoped(
             'internal class ${api.name}Impl(val api: ${api.name}ProxyApi) : ${api.name} {',
             '}',
@@ -2056,7 +2057,7 @@ class KotlinGenerator extends StructuredGenerator<KotlinOptions> {
             '}',
             () {
               indent.writeln(
-                'return ${api.name}(${_getParameterNames(constructor.parameters)})',
+                'return ${api.name}${hasImplClass ? 'Impl' : ''}(${_getParameterNames(constructor.parameters)})',
               );
             },
           );
