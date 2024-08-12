@@ -2157,10 +2157,12 @@ class KotlinGenerator extends StructuredGenerator<KotlinOptions> {
             'override fun ${method.name}($instanceDecl$parameterDecl)$returnValue {',
             '}',
             () {
+              final String maybeReturn =
+                  method.returnType.isVoid ? '' : 'return ';
               final String fromVar =
                   method.isStatic ? api.name : 'pigeon_instance';
               indent.writeln(
-                'return $fromVar.${method.name}(${_getParameterNames(method.parameters)})',
+                '$maybeReturn$fromVar.${method.name}(${_getParameterNames(method.parameters)})',
               );
             },
           );
@@ -2214,7 +2216,7 @@ class KotlinGenerator extends StructuredGenerator<KotlinOptions> {
         'Uint8List' => 'byteArrayOf(0xA1.toByte())',
         'List' => 'listOf(${getDefaultTestValue(type.typeArguments[0])})',
         'Map' =>
-          'mapOf(${getDefaultTestValue(type.typeArguments[0])} to ${getDefaultTestValue(type.typeArguments[1])}})',
+          'mapOf(${getDefaultTestValue(type.typeArguments[0])} to ${getDefaultTestValue(type.typeArguments[1])})',
         _ => '-1'
       };
     }
