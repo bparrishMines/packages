@@ -1969,6 +1969,11 @@ class KotlinGenerator extends StructuredGenerator<KotlinOptions> {
       ...api.methods.expand(
         (Method method) => onlyProxyApis2(method.parameters),
       ),
+      ...api.methods.expand(
+        (Method method) => onlyProxyApis(
+          <TypeDeclaration>[method.returnType],
+        ),
+      ),
     };
 
     final String classImports = includedApis
@@ -2186,6 +2191,7 @@ class KotlinGenerator extends StructuredGenerator<KotlinOptions> {
       import org.mockito.kotlin.any
       import org.mockito.kotlin.eq
       import org.mockito.kotlin.mock
+      import org.mockito.kotlin.verify
       import org.mockito.kotlin.whenever''',
       trimIndentation: true,
     );
