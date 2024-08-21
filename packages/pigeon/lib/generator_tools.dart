@@ -14,13 +14,7 @@ import 'ast.dart';
 /// The current version of pigeon.
 ///
 /// This must match the version in pubspec.yaml.
-const String pigeonVersion = '21.2.0';
-
-/// Prefix for all local variables in methods.
-///
-/// This lowers the chances of variable name collisions with
-/// user defined parameters.
-const String varNamePrefix = '__pigeon_';
+const String pigeonVersion = '21.3.0';
 
 /// Read all the content from [stdin] to a String.
 String readStdin() {
@@ -121,8 +115,6 @@ class Indent {
     bool addTrailingNewline = true,
     int nestCount = 1,
   }) {
-    assert(begin != '' || end != '',
-        'Use nest for indentation without any decoration');
     if (begin != null) {
       _sink.write(begin + newline);
     }
@@ -142,8 +134,6 @@ class Indent {
     Function func, {
     bool addTrailingNewline = true,
   }) {
-    assert(begin != '' || end != '',
-        'Use nest for indentation without any decoration');
     addScoped(str() + (begin ?? ''), end, func,
         addTrailingNewline: addTrailingNewline);
   }
@@ -320,29 +310,45 @@ String getGeneratedCodeWarning() {
 /// String to be printed after `getGeneratedCodeWarning()'s warning`.
 const String seeAlsoWarning = 'See also: https://pub.dev/packages/pigeon';
 
-/// Prefix for utility classes generated for ProxyApis.
+/// Prefix for generated internal classes.
 ///
 /// This lowers the chances of variable name collisions with user defined
 /// parameters.
-const String classNamePrefix = 'Pigeon';
+const String classNamePrefix = 'PigeonInternal';
+
+/// Prefix for classes generated to use with ProxyApis.
+///
+/// This lowers the chances of variable name collisions with user defined
+/// parameters.
+const String proxyApiClassNamePrefix = 'Pigeon';
 
 /// Prefix for APIs generated for ProxyApi.
 ///
 /// Since ProxyApis are intended to wrap a class and will often share the name
 /// of said class, host APIs should prefix the API with this protected name.
-const String hostProxyApiPrefix = '${classNamePrefix}Api';
-
-/// Name for the generated InstanceManager for ProxyApis.
-///
-/// This lowers the chances of variable name collisions with user defined
-/// parameters.
-const String instanceManagerClassName = '${classNamePrefix}InstanceManager';
+const String hostProxyApiPrefix = '${proxyApiClassNamePrefix}Api';
 
 /// Prefix for class member names not defined by the user.
 ///
 /// This lowers the chances of variable name collisions with user defined
 /// parameters.
 const String classMemberNamePrefix = 'pigeon_';
+
+/// Prefix for variable names not defined by the user.
+///
+/// This lowers the chances of variable name collisions with user defined
+/// parameters.
+const String varNamePrefix = 'pigeonVar_';
+
+/// Prefixes that are not allowed for any names of any types or methods.
+const List<String> disallowedPrefixes = <String>[
+  classNamePrefix,
+  classMemberNamePrefix,
+  hostProxyApiPrefix,
+  proxyApiClassNamePrefix,
+  varNamePrefix,
+  'pigeonChannelCodec'
+];
 
 /// Collection of keys used in dictionaries across generators.
 class Keys {
@@ -446,9 +452,16 @@ const List<String> validTypes = <String>[
 /// The dedicated key for accessing an InstanceManager in ProxyApi base codecs.
 const int proxyApiCodecInstanceManagerKey = 128;
 
-/// Custom codecs' custom types are enumerated from 255 down to this number to
+/// Custom codecs' custom types are enumerations begin at this number to
 /// avoid collisions with the StandardMessageCodec.
-const int _minimumCodecFieldKey = proxyApiCodecInstanceManagerKey + 1;
+const int minimumCodecFieldKey = proxyApiCodecInstanceManagerKey + 1;
+
+/// The maximum codec enumeration allowed.
+const int maximumCodecFieldKey = 255;
+
+/// The total number of keys allowed in the custom codec.
+const int totalCustomCodecKeysAllowed =
+    maximumCodecFieldKey - minimumCodecFieldKey;
 
 Iterable<TypeDeclaration> _getTypeArguments(TypeDeclaration type) sync* {
   for (final TypeDeclaration typeArg in type.typeArguments) {
@@ -586,31 +599,33 @@ enum CustomTypes {
 /// Return the enumerated types that must exist in the codec
 /// where the enumeration should be the key used in the buffer.
 Iterable<EnumeratedType> getEnumeratedTypes(Root root) sync* {
-  const int maxCustomClassesPerApi = 255 - _minimumCodecFieldKey;
-  if (root.classes.length + root.enums.length > maxCustomClassesPerApi) {
-    throw Exception(
-        "Pigeon doesn't currently support more than $maxCustomClassesPerApi referenced custom classes per file.");
-  }
   int index = 0;
-  for (final Class customClass in root.classes) {
-    yield EnumeratedType(
-      customClass.name,
-      index + _minimumCodecFieldKey,
-      CustomTypes.customClass,
-      associatedClass: customClass,
-    );
-    index += 1;
-  }
 
   for (final Enum customEnum in root.enums) {
     yield EnumeratedType(
       customEnum.name,
-      index + _minimumCodecFieldKey,
+      index + minimumCodecFieldKey,
       CustomTypes.customEnum,
       associatedEnum: customEnum,
     );
     index += 1;
   }
+
+  for (final Class customClass in root.classes) {
+    yield EnumeratedType(
+      customClass.name,
+      index + minimumCodecFieldKey,
+      CustomTypes.customClass,
+      associatedClass: customClass,
+    );
+    index += 1;
+  }
+}
+
+/// Checks if [root] contains enough custom types to require overflow codec tools.
+bool customTypeOverflowCheck(Root root) {
+  return root.classes.length + root.enums.length >
+      maximumCodecFieldKey - minimumCodecFieldKey;
 }
 
 /// Describes how to format a document comment.
@@ -777,4 +792,35 @@ String toUpperCamelCase(String text) {
         ? ''
         : word.substring(0, 1).toUpperCase() + word.substring(1);
   }).join();
+}
+
+/// Converts string to SCREAMING_SNAKE_CASE.
+String toScreamingSnakeCase(String string) {
+  return string
+      .replaceAllMapped(
+          RegExp(r'(?<=[a-z])[A-Z]'), (Match m) => '_${m.group(0)}')
+      .toUpperCase();
+}
+
+/// The channel name for the `removeStrongReference` method of the
+/// `InstanceManager` API.
+///
+/// This ensures the channel name is the same for all languages.
+String makeRemoveStrongReferenceChannelName(String dartPackageName) {
+  return makeChannelNameWithStrings(
+    apiName: '${classNamePrefix}InstanceManager',
+    methodName: 'removeStrongReference',
+    dartPackageName: dartPackageName,
+  );
+}
+
+/// The channel name for the `clear` method of the `InstanceManager` API.
+///
+/// This ensures the channel name is the same for all languages.
+String makeClearChannelName(String dartPackageName) {
+  return makeChannelNameWithStrings(
+    apiName: '${classNamePrefix}InstanceManager',
+    methodName: 'clear',
+    dartPackageName: dartPackageName,
+  );
 }

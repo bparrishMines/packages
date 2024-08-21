@@ -32,6 +32,8 @@ const DocumentCommentSpecification _docCommentSpec =
 
 String _codecName = 'PigeonCodec';
 
+const String _overflowClassName = '${classNamePrefix}CodecOverflow';
+
 /// Options that control how Kotlin code will be generated.
 class KotlinOptions {
   /// Creates a [KotlinOptions] object
@@ -169,10 +171,7 @@ class KotlinGenerator extends StructuredGenerator<KotlinOptions> {
       enumerate(anEnum.members, (int index, final EnumMember member) {
         addDocumentationComments(
             indent, member.documentationComments, _docCommentSpec);
-        final String nameScreamingSnakeCase = member.name
-            .replaceAllMapped(
-                RegExp(r'(?<=[a-z])[A-Z]'), (Match m) => '_${m.group(0)}')
-            .toUpperCase();
+        final String nameScreamingSnakeCase = toScreamingSnakeCase(member.name);
         indent.write('$nameScreamingSnakeCase($index)');
         if (index != anEnum.members.length - 1) {
           indent.addln(',');
@@ -207,20 +206,8 @@ class KotlinGenerator extends StructuredGenerator<KotlinOptions> {
     addDocumentationComments(
         indent, classDefinition.documentationComments, _docCommentSpec,
         generatorComments: generatedMessages);
-    indent.write('data class ${classDefinition.name} ');
-    indent.addScoped('(', '', () {
-      for (final NamedType element
-          in getFieldsInSerializationOrder(classDefinition)) {
-        _writeClassField(indent, element);
-        if (getFieldsInSerializationOrder(classDefinition).last != element) {
-          indent.addln(',');
-        } else {
-          indent.newln();
-        }
-      }
-    });
-
-    indent.addScoped(') {', '}', () {
+    _writeDataClassSignature(indent, classDefinition);
+    indent.addScoped(' {', '}', () {
       writeClassDecode(
         generatorOptions,
         root,
@@ -235,6 +222,26 @@ class KotlinGenerator extends StructuredGenerator<KotlinOptions> {
         classDefinition,
         dartPackageName: dartPackageName,
       );
+    });
+  }
+
+  void _writeDataClassSignature(
+    Indent indent,
+    Class classDefinition, {
+    bool private = false,
+  }) {
+    indent.write(
+        '${private ? 'private ' : ''}data class ${classDefinition.name} ');
+    indent.addScoped('(', ')', () {
+      for (final NamedType element
+          in getFieldsInSerializationOrder(classDefinition)) {
+        _writeClassField(indent, element);
+        if (getFieldsInSerializationOrder(classDefinition).last != element) {
+          indent.addln(',');
+        } else {
+          indent.newln();
+        }
+      }
     });
   }
 
@@ -271,7 +278,6 @@ class KotlinGenerator extends StructuredGenerator<KotlinOptions> {
 
     indent.write('companion object ');
     indent.addScoped('{', '}', () {
-      indent.writeln('@Suppress("LocalVariableName")');
       indent
           .write('fun fromList(${varNamePrefix}list: List<Any?>): $className ');
 
@@ -329,7 +335,60 @@ class KotlinGenerator extends StructuredGenerator<KotlinOptions> {
     Indent indent, {
     required String dartPackageName,
   }) {
-    final Iterable<EnumeratedType> enumeratedTypes = getEnumeratedTypes(root);
+    final List<EnumeratedType> enumeratedTypes =
+        getEnumeratedTypes(root).toList();
+
+    void writeEncodeLogic(EnumeratedType customType) {
+      final String encodeString =
+          customType.type == CustomTypes.customClass ? 'toList()' : 'raw';
+      final String valueString = customType.enumeration < maximumCodecFieldKey
+          ? 'value.$encodeString'
+          : 'wrap.toList()';
+      final int enumeration = customType.enumeration < maximumCodecFieldKey
+          ? customType.enumeration
+          : maximumCodecFieldKey;
+      indent.writeScoped('is ${customType.name} -> {', '}', () {
+        if (customType.enumeration >= maximumCodecFieldKey) {
+          indent.writeln(
+              'val wrap = ${generatorOptions.fileSpecificClassNameComponent}$_overflowClassName(type = ${customType.enumeration - maximumCodecFieldKey}, wrapped = value.$encodeString)');
+        }
+        indent.writeln('stream.write($enumeration)');
+        indent.writeln('writeValue(stream, $valueString)');
+      });
+    }
+
+    void writeDecodeLogic(EnumeratedType customType) {
+      indent.write('${customType.enumeration}.toByte() -> ');
+      indent.addScoped('{', '}', () {
+        if (customType.type == CustomTypes.customClass) {
+          indent.write('return (readValue(buffer) as? List<Any?>)?.let ');
+          indent.addScoped('{', '}', () {
+            indent.writeln('${customType.name}.fromList(it)');
+          });
+        } else if (customType.type == CustomTypes.customEnum) {
+          indent.write('return (readValue(buffer) as Int?)?.let ');
+          indent.addScoped('{', '}', () {
+            indent.writeln('${customType.name}.ofRaw(it)');
+          });
+        }
+      });
+    }
+
+    final EnumeratedType overflowClass = EnumeratedType(
+        '${generatorOptions.fileSpecificClassNameComponent}$_overflowClassName',
+        maximumCodecFieldKey,
+        CustomTypes.customClass);
+
+    if (root.requiresOverflowClass) {
+      _writeCodecOverflowUtilities(
+        generatorOptions,
+        root,
+        indent,
+        enumeratedTypes,
+        dartPackageName: dartPackageName,
+      );
+    }
+
     indent.write(
         'private open class ${generatorOptions.fileSpecificClassNameComponent}$_codecName : StandardMessageCodec() ');
     indent.addScoped('{', '}', () {
@@ -341,21 +400,12 @@ class KotlinGenerator extends StructuredGenerator<KotlinOptions> {
           indent.add('when (type) ');
           indent.addScoped('{', '}', () {
             for (final EnumeratedType customType in enumeratedTypes) {
-              indent.write('${customType.enumeration}.toByte() -> ');
-              indent.addScoped('{', '}', () {
-                if (customType.type == CustomTypes.customClass) {
-                  indent
-                      .write('return (readValue(buffer) as? List<Any?>)?.let ');
-                  indent.addScoped('{', '}', () {
-                    indent.writeln('${customType.name}.fromList(it)');
-                  });
-                } else if (customType.type == CustomTypes.customEnum) {
-                  indent.write('return (readValue(buffer) as Int?)?.let ');
-                  indent.addScoped('{', '}', () {
-                    indent.writeln('${customType.name}.ofRaw(it)');
-                  });
-                }
-              });
+              if (customType.enumeration < maximumCodecFieldKey) {
+                writeDecodeLogic(customType);
+              }
+            }
+            if (root.requiresOverflowClass) {
+              writeDecodeLogic(overflowClass);
             }
             indent.writeln('else -> super.readValueOfType(type, buffer)');
           });
@@ -370,17 +420,7 @@ class KotlinGenerator extends StructuredGenerator<KotlinOptions> {
         if (root.classes.isNotEmpty || root.enums.isNotEmpty) {
           indent.write('when (value) ');
           indent.addScoped('{', '}', () {
-            for (final EnumeratedType customType in enumeratedTypes) {
-              indent.write('is ${customType.name} -> ');
-              indent.addScoped('{', '}', () {
-                indent.writeln('stream.write(${customType.enumeration})');
-                if (customType.type == CustomTypes.customClass) {
-                  indent.writeln('writeValue(stream, value.toList())');
-                } else if (customType.type == CustomTypes.customEnum) {
-                  indent.writeln('writeValue(stream, value.raw)');
-                }
-              });
-            }
+            enumeratedTypes.forEach(writeEncodeLogic);
             indent.writeln('else -> super.writeValue(stream, value)');
           });
         } else {
@@ -389,6 +429,73 @@ class KotlinGenerator extends StructuredGenerator<KotlinOptions> {
       });
     });
     indent.newln();
+  }
+
+  void _writeCodecOverflowUtilities(
+    KotlinOptions generatorOptions,
+    Root root,
+    Indent indent,
+    List<EnumeratedType> types, {
+    required String dartPackageName,
+  }) {
+    final NamedType overflowInt = NamedType(
+        name: 'type',
+        type: const TypeDeclaration(baseName: 'Int', isNullable: false));
+    final NamedType overflowObject = NamedType(
+        name: 'wrapped',
+        type: const TypeDeclaration(baseName: 'Object', isNullable: true));
+    final List<NamedType> overflowFields = <NamedType>[
+      overflowInt,
+      overflowObject,
+    ];
+    final Class overflowClass = Class(
+        name:
+            '${generatorOptions.fileSpecificClassNameComponent}$_overflowClassName',
+        fields: overflowFields);
+
+    _writeDataClassSignature(indent, overflowClass, private: true);
+    indent.addScoped(' {', '}', () {
+      writeClassEncode(
+        generatorOptions,
+        root,
+        indent,
+        overflowClass,
+        dartPackageName: dartPackageName,
+      );
+
+      indent.format('''
+companion object {
+  fun fromList(${varNamePrefix}list: List<Any?>): Any? {
+    val wrapper = ${generatorOptions.fileSpecificClassNameComponent}$_overflowClassName(
+      type = ${varNamePrefix}list[0] as Int,
+      wrapped = ${varNamePrefix}list[1],
+    );
+    return wrapper.unwrap()
+  }
+}
+''');
+
+      indent.writeScoped('fun unwrap(): Any? {', '}', () {
+        indent.format('''
+if (wrapped == null) {
+  return null
+}
+    ''');
+        indent.writeScoped('when (type) {', '}', () {
+          for (int i = totalCustomCodecKeysAllowed; i < types.length; i++) {
+            indent.writeScoped('${i - totalCustomCodecKeysAllowed} ->', '', () {
+              if (types[i].type == CustomTypes.customClass) {
+                indent.writeln(
+                    'return ${types[i].name}.fromList(wrapped as List<Any?>)');
+              } else if (types[i].type == CustomTypes.customEnum) {
+                indent.writeln('return ${types[i].name}.ofRaw(wrapped as Int)');
+              }
+            });
+          }
+        });
+        indent.writeln('return null');
+      });
+    });
   }
 
   /// Writes the code for a flutter [Api], [api].
@@ -550,21 +657,10 @@ class KotlinGenerator extends StructuredGenerator<KotlinOptions> {
     final String instanceManagerApiName =
         '${kotlinInstanceManagerClassName(generatorOptions)}Api';
 
-    final String removeStrongReferenceName = makeChannelNameWithStrings(
-      apiName: '${instanceManagerClassName}Api',
-      methodName: 'removeStrongReference',
-      dartPackageName: dartPackageName,
-    );
-    final String clearName = makeChannelNameWithStrings(
-      apiName: '${instanceManagerClassName}Api',
-      methodName: 'clear',
-      dartPackageName: dartPackageName,
-    );
-
     addDocumentationComments(
       indent,
       <String>[
-        'Generated API for managing the Dart and native `$instanceManagerClassName`s.',
+        'Generated API for managing the Dart and native `InstanceManager`s.',
       ],
       _docCommentSpec,
     );
@@ -600,7 +696,8 @@ class KotlinGenerator extends StructuredGenerator<KotlinOptions> {
               _writeHostMethodMessageHandler(
                 indent,
                 name: 'removeStrongReference',
-                channelName: removeStrongReferenceName,
+                channelName:
+                    makeRemoveStrongReferenceChannelName(dartPackageName),
                 taskQueueType: TaskQueueType.serial,
                 parameters: <Parameter>[
                   Parameter(
@@ -623,7 +720,7 @@ class KotlinGenerator extends StructuredGenerator<KotlinOptions> {
               _writeHostMethodMessageHandler(
                 indent,
                 name: 'clear',
-                channelName: clearName,
+                channelName: makeClearChannelName(dartPackageName),
                 taskQueueType: TaskQueueType.serial,
                 parameters: <Parameter>[],
                 returnType: const TypeDeclaration.voidDeclaration(),
@@ -651,7 +748,7 @@ class KotlinGenerator extends StructuredGenerator<KotlinOptions> {
             )
           ],
           returnType: const TypeDeclaration.voidDeclaration(),
-          channelName: removeStrongReferenceName,
+          channelName: makeRemoveStrongReferenceChannelName(dartPackageName),
           dartPackageName: dartPackageName,
         );
       },
@@ -1312,7 +1409,7 @@ class KotlinGenerator extends StructuredGenerator<KotlinOptions> {
                   api.removeStrongReference(identifier) {
                     if (it.isFailure) {
                       Log.e(
-                        "${classNamePrefix}ProxyApiRegistrar",
+                        "${proxyApiClassNamePrefix}ProxyApiRegistrar",
                         "Failed to remove Dart strong reference with identifier: \$identifier"
                       )
                     }

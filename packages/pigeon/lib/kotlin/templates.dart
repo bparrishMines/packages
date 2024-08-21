@@ -7,15 +7,15 @@ import '../kotlin_generator.dart';
 
 /// Name of the Kotlin `InstanceManager`.
 String kotlinInstanceManagerClassName(KotlinOptions options) =>
-    '${options.fileSpecificClassNameComponent ?? ''}${classNamePrefix}InstanceManager';
+    '${options.fileSpecificClassNameComponent ?? ''}${proxyApiClassNamePrefix}InstanceManager';
 
 /// The name of the registrar containing all the ProxyApi implementations.
 String proxyApiRegistrarName(KotlinOptions options) =>
-    '${options.fileSpecificClassNameComponent ?? ''}${classNamePrefix}ProxyApiRegistrar';
+    '${options.fileSpecificClassNameComponent ?? ''}${proxyApiClassNamePrefix}ProxyApiRegistrar';
 
 /// The name of the codec that handles ProxyApis.
 String proxyApiCodecName(KotlinOptions options) =>
-    '${options.fileSpecificClassNameComponent ?? ''}${classNamePrefix}ProxyApiBaseCodec';
+    '${options.fileSpecificClassNameComponent ?? ''}${proxyApiClassNamePrefix}ProxyApiBaseCodec';
 
 /// The Kotlin `InstanceManager`.
 String instanceManagerTemplate(KotlinOptions options) {
@@ -75,7 +75,7 @@ class ${kotlinInstanceManagerClassName(options)}(private val finalizationListene
     // Host uses identifiers >= 2^16 and Dart is expected to use values n where,
     // 0 <= n < 2^16.
     private const val minHostCreatedIdentifier: Long = 65536
-    private const val tag = "$instanceManagerClassName"
+    private const val tag = "${proxyApiClassNamePrefix}InstanceManager"
 
     /**
      * Instantiate a new manager with a listener for garbage collected weak
@@ -237,4 +237,4 @@ class ${kotlinInstanceManagerClassName(options)}(private val finalizationListene
 }
 
 const String _finalizationListenerClassName =
-    '${classNamePrefix}FinalizationListener';
+    '${proxyApiClassNamePrefix}FinalizationListener';

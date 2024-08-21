@@ -259,7 +259,7 @@ class ProxyApiTestsPigeonInstanceManager(
   }
 }
 
-/** Generated API for managing the Dart and native `PigeonInstanceManager`s. */
+/** Generated API for managing the Dart and native `InstanceManager`s. */
 private class ProxyApiTestsPigeonInstanceManagerApi(val binaryMessenger: BinaryMessenger) {
   companion object {
     /** The codec used by ProxyApiTestsPigeonInstanceManagerApi. */
@@ -277,7 +277,7 @@ private class ProxyApiTestsPigeonInstanceManagerApi(val binaryMessenger: BinaryM
         val channel =
             BasicMessageChannel<Any?>(
                 binaryMessenger,
-                "dev.flutter.pigeon.pigeon_integration_tests.PigeonInstanceManagerApi.removeStrongReference",
+                "dev.flutter.pigeon.pigeon_integration_tests.PigeonInternalInstanceManager.removeStrongReference",
                 codec)
         if (instanceManager != null) {
           channel.setMessageHandler { message, reply ->
@@ -300,7 +300,7 @@ private class ProxyApiTestsPigeonInstanceManagerApi(val binaryMessenger: BinaryM
         val channel =
             BasicMessageChannel<Any?>(
                 binaryMessenger,
-                "dev.flutter.pigeon.pigeon_integration_tests.PigeonInstanceManagerApi.clear",
+                "dev.flutter.pigeon.pigeon_integration_tests.PigeonInternalInstanceManager.clear",
                 codec)
         if (instanceManager != null) {
           channel.setMessageHandler { _, reply ->
@@ -322,7 +322,7 @@ private class ProxyApiTestsPigeonInstanceManagerApi(val binaryMessenger: BinaryM
 
   fun removeStrongReference(identifierArg: Long, callback: (Result<Unit>) -> Unit) {
     val channelName =
-        "dev.flutter.pigeon.pigeon_integration_tests.PigeonInstanceManagerApi.removeStrongReference"
+        "dev.flutter.pigeon.pigeon_integration_tests.PigeonInternalInstanceManager.removeStrongReference"
     val channel = BasicMessageChannel<Any?>(binaryMessenger, channelName, codec)
     channel.send(listOf(identifierArg)) {
       if (it is List<*>) {
