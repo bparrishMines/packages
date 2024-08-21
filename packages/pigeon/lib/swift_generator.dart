@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'dart:io';
+
 import 'package:collection/collection.dart' as collection;
 import 'package:graphs/graphs.dart';
 import 'package:pub_semver/pub_semver.dart';
@@ -1186,6 +1188,45 @@ if (wrapped == nil) {
         dartPackageName: dartPackageName,
       );
     });
+
+    final StringBuffer implFileBuffer = StringBuffer();
+    final Indent implFileIndent = Indent(implFileBuffer);
+    final File implFile = File(
+      'android/src/main/kotlin/${generatorOptions.package!.replaceAll('.', '/')}/${api.name}ProxyApi.kt',
+    );
+    print('${implFile.path}: ${implFile.existsSync()}');
+    if (!implFile.existsSync()) {
+      _writeProxyApiImpl(
+        implFileIndent,
+        api,
+        package: generatorOptions.package ?? '',
+      );
+      implFile.writeAsStringSync(implFileBuffer.toString());
+    }
+
+    final StringBuffer testFileBuffer = StringBuffer();
+    final Indent testFileIndent = Indent(testFileBuffer);
+    final File testFile = File(
+      'android/src/test/kotlin/${generatorOptions.package!.replaceAll('.', '/')}/${api.name}ProxyApiTest.kt',
+    );
+    print('${testFile.path}: ${testFile.existsSync()}');
+    if (!testFile.existsSync()) {
+      _writeProxyApiTest(
+        testFileIndent,
+        api,
+        package: generatorOptions.package ?? '',
+      );
+      testFile.writeAsStringSync(testFileBuffer.toString());
+    }
+
+    indent.newln();
+    indent.writeln('/*');
+    _writeProxyApiImpl(indent, api, package: generatorOptions.package ?? '');
+    indent.writeln('*/');
+    indent.newln();
+    indent.writeln('/*');
+    _writeProxyApiTest(indent, api, package: generatorOptions.package ?? '');
+    indent.writeln('*/');
   }
 
   String _castForceUnwrap(String value, TypeDeclaration type) {
@@ -2379,6 +2420,460 @@ private func nilOrValue<T>(_ value: Any?) -> T? {
               '"${_getErrorClassName(generatorOptions)}(code: \\(code), message: \\(message ?? "<nil>"), details: \\(details ?? "<nil>")"');
         }, addTrailingNewline: false);
       });
+    });
+  }
+
+  String _getParameterNames(Iterable<Parameter> parameters) {
+    return parameters.map((Parameter parameter) => parameter.name).join(', ');
+  }
+
+  void _writeLicense(Indent indent) {
+    indent.format(
+      '''
+      // Copyright 2013 The Flutter Authors. All rights reserved.
+      // Use of this source code is governed by a BSD-style license that can be
+      // found in the LICENSE file.''',
+      trimIndentation: true,
+    );
+  }
+
+  void _writeProxyApiImports(Indent indent, AstProxyApi api) {
+    Iterable<AstProxyApi> onlyProxyApis(Iterable<TypeDeclaration> types) {
+      return <AstProxyApi>[
+        ...types.where((TypeDeclaration type) {
+          return type.baseName == 'List';
+        }).expand(
+          (TypeDeclaration type) => onlyProxyApis(
+            <TypeDeclaration>[type.typeArguments.single],
+          ),
+        ),
+        ...types.where((TypeDeclaration type) {
+          return type.baseName == 'Map';
+        }).expand(
+          (TypeDeclaration type) {
+            return <AstProxyApi>[
+              ...onlyProxyApis(
+                <TypeDeclaration>[type.typeArguments.first],
+              ),
+              ...onlyProxyApis(
+                <TypeDeclaration>[type.typeArguments[1]],
+              ),
+            ];
+          },
+        ),
+        ...types.where((TypeDeclaration type) {
+          return type.isProxyApi;
+        }).map((TypeDeclaration type) => type.associatedProxyApi!),
+      ];
+    }
+
+    Iterable<AstProxyApi> onlyProxyApis2(Iterable<NamedType> types) {
+      return onlyProxyApis(types.map((NamedType type) => type.type));
+    }
+
+    final Set<AstProxyApi> includedApis = <AstProxyApi>{
+      api,
+      ...api.constructors.expand(
+        (Constructor constructor) => onlyProxyApis2(constructor.parameters),
+      ),
+      ...onlyProxyApis2(api.fields),
+      ...api.methods.expand(
+        (Method method) => onlyProxyApis2(method.parameters),
+      ),
+      ...api.methods.expand(
+        (Method method) => onlyProxyApis(
+          <TypeDeclaration>[method.returnType],
+        ),
+      ),
+    };
+
+    final String classImports = includedApis
+        .where((AstProxyApi api) => api.kotlinOptions?.fullClassName != null)
+        .map((AstProxyApi api) => api.kotlinOptions!.fullClassName!)
+        .map((String fullClassName) => 'import $fullClassName')
+        .join('\n');
+
+    indent.writeln(classImports);
+  }
+
+  String maybeComma(Iterable<Parameter> parameters) {
+    return parameters.isEmpty ? '' : ',';
+  }
+
+  void _writeProxyApiImpl(
+    Indent indent,
+    AstProxyApi api, {
+    required String package,
+  }) {
+    _writeLicense(indent);
+    indent.newln();
+
+    indent.writeln('package $package');
+    indent.newln();
+
+    _writeProxyApiImports(indent, api);
+    indent.newln();
+
+    indent.format(
+      '''
+      /**
+       * ProxyApi implementation for [${api.name}].
+       *
+       * <p>This class may handle instantiating native object instances that are attached to a Dart
+       * instance or handle method calls on the associated native class or an instance of that class.
+       */''',
+      trimIndentation: true,
+    );
+    indent.writeScoped(
+      'class ${api.name}ProxyApi(override val pigeonRegistrar: ProxyApiRegistrar) : PigeonApi${api.name}(pigeonRegistrar) {',
+      '}',
+      () {
+        String getMethodParameterNames(Iterable<Parameter> parameters) {
+          return parameters
+              .map(
+                (Parameter parameter) =>
+                    '${parameter.name}: ${_nullSafeKotlinTypeForDartType(parameter.type)}',
+              )
+              .join(', ');
+        }
+
+        final bool hasImplClass = api.flutterMethods.isNotEmpty ||
+            api.flutterMethodsFromInterfaces().isNotEmpty;
+        if (hasImplClass) {
+          indent.writeScoped(
+            'internal class ${api.name}Impl(val api: ${api.name}ProxyApi) : ${api.name} {',
+            '}',
+            () {
+              for (final Method method in api.flutterMethods) {
+                final String parameterDecl =
+                    getMethodParameterNames(method.parameters);
+                indent.writeScoped(
+                  'override fun ${method.name}($parameterDecl) {',
+                  '}',
+                  () {
+                    indent.writeln(
+                      'api.pigeonRegistrar.runOnMainThread { api.${method.name}(this${maybeComma(method.parameters)} ${_getParameterNames(method.parameters)}) {} }',
+                    );
+                  },
+                );
+              }
+            },
+          );
+        }
+        indent.newln();
+
+        for (final Constructor constructor in api.constructors) {
+          final String constructorName = constructor.name.isEmpty
+              ? 'pigeon_defaultConstructor'
+              : constructor.name;
+          final String parameterDecl =
+              getMethodParameterNames(constructor.parameters);
+          indent.writeScoped(
+            'override fun $constructorName($parameterDecl): ${api.name} {',
+            '}',
+            () {
+              indent.writeln(
+                'return ${api.name}${hasImplClass ? 'Impl' : ''}(${_getParameterNames(constructor.parameters)})',
+              );
+            },
+          );
+          indent.newln();
+        }
+
+        for (final ApiField field in api.unattachedFields) {
+          indent.writeScoped(
+            'override fun ${field.name}(pigeon_instance: ${api.name}): ${_nullSafeKotlinTypeForDartType(field.type)} {',
+            '}',
+            () {
+              if (field.type.isEnum) {
+                indent.writeScoped(
+                  'return when (pigeon_instance.${field.name}) {',
+                  '}',
+                  () {
+                    for (final EnumMember member
+                        in field.type.associatedEnum!.members) {
+                      if (member.name == 'unknown') {
+                        continue;
+                      }
+                      final String memberName = member.name
+                          .replaceAllMapped(RegExp(r'(?<=[a-z])[A-Z]'),
+                              (Match m) => '_${m.group(0)}')
+                          .toUpperCase();
+                      indent.writeln(
+                        '${field.type.baseName}.$memberName -> $package.${field.type.baseName}.$memberName',
+                      );
+                    }
+                    indent.writeln(
+                        'else -> $package.${field.type.baseName}.UNKNOWN');
+                  },
+                );
+              } else {
+                indent.writeln('return pigeon_instance.${field.name}');
+              }
+            },
+          );
+          indent.newln();
+        }
+
+        for (final ApiField field in api.attachedFields) {
+          final String instanceVar =
+              field.isStatic ? '' : 'pigeon_instance: ${api.name}';
+          indent.writeScoped(
+            'override fun ${field.name}($instanceVar): ${_nullSafeKotlinTypeForDartType(field.type)} {',
+            '}',
+            () {
+              final String fromVar =
+                  field.isStatic ? api.name : 'pigeon_instance';
+              if (field.type.isEnum) {
+                indent.writeScoped(
+                  'return when ($fromVar.${field.name}) {',
+                  '}',
+                  () {
+                    for (final EnumMember member
+                        in field.type.associatedEnum!.members) {
+                      if (member.name == 'unknown') {
+                        continue;
+                      }
+                      final String memberName = member.name
+                          .replaceAllMapped(RegExp(r'(?<=[a-z])[A-Z]'),
+                              (Match m) => '_${m.group(0)}')
+                          .toUpperCase();
+                      indent.writeln(
+                        '${field.type.baseName}.$memberName -> $package.${field.type.baseName}.$memberName',
+                      );
+                    }
+                    indent.writeln(
+                        'else -> $package.${field.type.baseName}.UNKNOWN');
+                  },
+                );
+              } else {
+                indent.writeln('return $fromVar.${field.name}');
+              }
+            },
+          );
+          indent.newln();
+        }
+
+        for (final Method method in api.hostMethods) {
+          final String parameterDecl =
+              getMethodParameterNames(method.parameters);
+
+          final String instanceDecl = method.isStatic
+              ? ''
+              : 'pigeon_instance: ${api.name}${maybeComma(method.parameters)}';
+          final String returnValue = method.returnType.isVoid
+              ? ''
+              : ': ${_nullSafeKotlinTypeForDartType(method.returnType)}';
+          indent.writeScoped(
+            'override fun ${method.name}($instanceDecl$parameterDecl)$returnValue {',
+            '}',
+            () {
+              final String maybeReturn =
+                  method.returnType.isVoid ? '' : 'return ';
+              final String fromVar =
+                  method.isStatic ? api.name : 'pigeon_instance';
+              indent.writeln(
+                '$maybeReturn$fromVar.${method.name}(${_getParameterNames(method.parameters)})',
+              );
+            },
+          );
+          indent.newln();
+        }
+      },
+    );
+  }
+
+  void _writeProxyApiTest(
+    Indent indent,
+    AstProxyApi api, {
+    required String package,
+  }) {
+    _writeLicense(indent);
+    indent.newln();
+
+    indent.writeln('package $package');
+    indent.newln();
+
+    _writeProxyApiImports(indent, api);
+    indent.format(
+      '''
+      import kotlin.test.Test
+      import kotlin.test.assertEquals
+      import kotlin.test.assertTrue
+      import org.mockito.Mockito
+      import org.mockito.kotlin.any
+      import org.mockito.kotlin.eq
+      import org.mockito.kotlin.mock
+      import org.mockito.kotlin.verify
+      import org.mockito.kotlin.whenever''',
+      trimIndentation: true,
+    );
+    indent.newln();
+
+    String getDefaultTestValue(TypeDeclaration type) {
+      if (type.isProxyApi) {
+        return 'mock<${type.baseName}>()';
+      }
+
+      if (type.isEnum) {
+        return '$package.${type.baseName}.${type.associatedEnum!.members.first.name.replaceAllMapped(RegExp(r'(?<=[a-z])[A-Z]'), (Match m) => '_${m.group(0)}').toUpperCase()}';
+      }
+
+      return switch (type.baseName) {
+        'bool' => 'true',
+        'String' => '"myString"',
+        'int' => '0',
+        'double' => '1.0',
+        'Uint8List' => 'byteArrayOf(0xA1.toByte())',
+        'List' => 'listOf(${getDefaultTestValue(type.typeArguments[0])})',
+        'Map' =>
+          'mapOf(${getDefaultTestValue(type.typeArguments[0])} to ${getDefaultTestValue(type.typeArguments[1])})',
+        _ => '-1'
+      };
+    }
+
+    String getParameterValues(Iterable<Parameter> parameters) {
+      return parameters
+          .map((Parameter parameter) => getDefaultTestValue(parameter.type))
+          .join(', ');
+    }
+
+    bool hasInterfaceImpl(AstProxyApi api) {
+      return api.constructors.length == 1 &&
+          api.constructors[0].parameters.isEmpty &&
+          api.fields.where((ApiField field) => !field.isStatic).isEmpty &&
+          api.hostMethods.where((Method method) => !method.isStatic).isEmpty;
+    }
+
+    indent.writeScoped('class ${api.name}ProxyApiTest {', '}', () {
+      void writeApiVar(Indent indent) {
+        indent.writeln(
+          'val api = TestProxyApiRegistrar().getPigeonApi${api.name}()',
+        );
+        indent.newln();
+      }
+
+      for (final Constructor constructor in api.constructors) {
+        indent.writeln('@Test');
+        final String constructorName = constructor.name.isEmpty
+            ? 'pigeon_defaultConstructor'
+            : constructor.name;
+        indent.writeScoped('fun $constructorName() {', '}', () {
+          writeApiVar(indent);
+
+          final String parameterValues = getParameterValues(
+            constructor.parameters,
+          );
+          indent.writeln(
+            'assertTrue(api.$constructorName($parameterValues) is ${api.name}ProxyApi.${api.name}${hasInterfaceImpl(api) ? 'Impl' : ''})',
+          );
+        });
+        indent.newln();
+      }
+
+      for (final ApiField field in api.unattachedFields) {
+        indent.writeln('@Test');
+        indent.writeScoped('fun ${field.name}() {', '}', () {
+          writeApiVar(indent);
+
+          indent.writeln('val instance = mock<${api.name}>()');
+          indent.writeln('val value = ${getDefaultTestValue(field.type)}');
+          indent.writeln(
+            'whenever(instance.${field.name}).thenReturn(value)',
+          );
+          indent.newln();
+
+          indent.writeln('assertEquals(value, api.${field.name}(instance))');
+        });
+        indent.newln();
+      }
+
+      for (final ApiField field
+          in api.attachedFields.where((ApiField f) => !f.isStatic)) {
+        indent.writeln('@Test');
+        indent.writeScoped('fun ${field.name}() {', '}', () {
+          writeApiVar(indent);
+
+          indent.writeln('val instance = mock<${api.name}>()');
+          indent.writeln('val value = ${getDefaultTestValue(field.type)}');
+          indent.writeln(
+            'whenever(instance.${field.name}).thenReturn(value)',
+          );
+          indent.newln();
+
+          indent.writeln('assertEquals(value, api.${field.name}(instance))');
+        });
+        indent.newln();
+      }
+
+      for (final Method method
+          in api.hostMethods.where((Method m) => !m.isStatic)) {
+        indent.writeln('@Test');
+        indent.writeScoped('fun ${method.name}() {', '}', () {
+          writeApiVar(indent);
+
+          indent.writeln('val instance = mock<${api.name}>()');
+
+          final String parameterNames = _getParameterNames(method.parameters);
+
+          for (final Parameter parameter in method.parameters) {
+            indent.writeln(
+              'val ${parameter.name} = ${getDefaultTestValue(parameter.type)}',
+            );
+          }
+
+          if (method.returnType.isVoid) {
+            indent.writeln(
+                'api.${method.name}(instance${maybeComma(method.parameters)} $parameterNames)');
+            indent.newln();
+
+            indent.writeln('verify(instance).${method.name}($parameterNames)');
+          } else {
+            indent.writeln(
+                'val value = ${getDefaultTestValue(method.returnType)}');
+            indent.writeln(
+              'whenever(instance.${method.name}($parameterNames)).thenReturn(value)',
+            );
+            indent.newln();
+
+            indent.writeln(
+              'assertEquals(value, api.${method.name}(instance${maybeComma(method.parameters)} $parameterNames))',
+            );
+          }
+        });
+        indent.newln();
+      }
+
+      for (final Method method in api.flutterMethods) {
+        indent.writeln('@Test');
+        indent.writeScoped('fun ${method.name}() {', '}', () {
+          indent.writeln('val mockApi = mock<${api.name}ProxyApi>()');
+          indent.writeln(
+            'whenever(mockApi.pigeonRegistrar).thenReturn(TestProxyApiRegistrar())',
+          );
+          indent.newln();
+
+          indent.writeln('val instance = ${api.name}Impl(mockApi)');
+          for (final Parameter parameter in method.parameters) {
+            indent.writeln(
+              'val ${parameter.name} = ${getDefaultTestValue(parameter.type)}',
+            );
+          }
+
+          final String parameterNames = _getParameterNames(method.parameters);
+          indent.writeln('instance.${method.name}($parameterNames)');
+          indent.newln();
+
+          final String checkValueParamNames = method.parameters
+              .map((Parameter parameter) => 'eq(${parameter.name})')
+              .join(', ');
+
+          indent.writeln(
+            'verify(mockApi).${method.name}(eq(instance)${maybeComma(method.parameters)} $checkValueParamNames, any())',
+          );
+        });
+        indent.newln();
+      }
     });
   }
 }
