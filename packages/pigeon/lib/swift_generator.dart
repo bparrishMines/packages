@@ -1189,16 +1189,16 @@ if (wrapped == nil) {
       );
     });
 
-    final StringBuffer implFileBuffer = StringBuffer();
-    final Indent implFileIndent = Indent(implFileBuffer);
-    final File implFile = File(
-      'ios/$dartPackageName/Sources/$dartPackageName/${apiNameWithoutPrefix(api.name)}ProxyAPIDelegate.swift',
-    );
-    print('${implFile.path}: ${implFile.existsSync()}');
-    if (!implFile.existsSync()) {
-      _writeProxyApiImpl(implFileIndent, api);
-      implFile.writeAsStringSync(implFileBuffer.toString());
-    }
+    // final StringBuffer implFileBuffer = StringBuffer();
+    // final Indent implFileIndent = Indent(implFileBuffer);
+    // final File implFile = File(
+    //   'ios/$dartPackageName/Sources/$dartPackageName/${apiNameWithoutPrefix(api.name)}ProxyAPIDelegate.swift',
+    // );
+    // print('${implFile.path}: ${implFile.existsSync()}');
+    // if (!implFile.existsSync()) {
+    //   _writeProxyApiImpl(implFileIndent, api);
+    //   implFile.writeAsStringSync(implFileBuffer.toString());
+    // }
 
     // final StringBuffer testFileBuffer = StringBuffer();
     // final Indent testFileIndent = Indent(testFileBuffer);
@@ -1210,7 +1210,8 @@ if (wrapped == nil) {
     //   _writeProxyApiTest(
     //     testFileIndent,
     //     api,
-    //     package: generatorOptions.package ?? '',
+    //     dartPackageName: dartPackageName,
+    //     errorTypeName: _getErrorClassName(generatorOptions),
     //   );
     //   testFile.writeAsStringSync(testFileBuffer.toString());
     // }
@@ -1220,10 +1221,15 @@ if (wrapped == nil) {
     _writeProxyApiImpl(indent, api);
     indent.writeln('*/');
     indent.newln();
-    // indent.writeln('/*');
-    // _writeProxyApiTest(indent, api, package: generatorOptions.package ?? '');
-    // indent.writeln('*/');
-    //indent.newln();
+    indent.writeln('/*');
+    _writeProxyApiTest(
+      indent,
+      api,
+      dartPackageName: dartPackageName,
+      errorTypeName: _getErrorClassName(generatorOptions),
+    );
+    indent.writeln('*/');
+    indent.newln();
   }
 
   String _castForceUnwrap(String value, TypeDeclaration type) {
@@ -2709,6 +2715,7 @@ private func nilOrValue<T>(_ value: Any?) -> T? {
     Indent indent,
     AstProxyApi api, {
     required String dartPackageName,
+    required String errorTypeName,
   }) {
     _writeLicense(indent);
     indent.newln();
@@ -2919,6 +2926,106 @@ private func nilOrValue<T>(_ value: Any?) -> T? {
         indent.newln();
       }
     });
+
+    if (api.hostMethods.where((Method m) => !m.isStatic).isNotEmpty ||
+        api.attachedFields.where((ApiField f) => !f.isStatic).isNotEmpty) {
+      indent.writeScoped(
+        'class Test${apiNameWithoutPrefix(api.name)}: ${api.name} {',
+        '}',
+        () {
+          for (final ApiField field
+              in api.fields.where((ApiField f) => !f.isStatic)) {
+            indent.writeln(
+              'private var ${field.name}TestValue = ${getDefaultTestValue(field.type)}',
+            );
+          }
+          for (final Method method
+              in api.hostMethods.where((Method m) => !m.isStatic)) {
+            if (method.parameters.isNotEmpty) {
+              indent.writeln('var ${method.name}Args: [AnyHashable?]? = nil');
+            } else {
+              indent.writeln('var ${method.name}Called = false');
+            }
+          }
+          indent.newln();
+
+          for (final ApiField field
+              in api.fields.where((ApiField f) => !f.isStatic)) {
+            indent.writeScoped(
+              'override var ${field.name}: ${_swiftTypeForDartType(field.type)} {',
+              '}',
+              () {
+                indent.writeln('return ${field.name}TestValue');
+              },
+            );
+          }
+          indent.newln();
+
+          for (final Method method
+              in api.hostMethods.where((Method m) => !m.isStatic)) {
+            indent.writeScoped(
+              'override func ${method.name}() {',
+              '}',
+              () {
+                if (method.parameters.isNotEmpty) {
+                  indent.writeln(
+                    '${method.name}Args = [${_getParameterNamesList(method.parameters)}]',
+                  );
+                  if (!method.returnType.isVoid) {
+                    indent.writeln(
+                      'return ${getDefaultTestValue(method.returnType)}',
+                    );
+                  }
+                } else {
+                  indent.writeln('${method.name}Called = true');
+                }
+              },
+            );
+          }
+        },
+      );
+    }
+
+    if (api.flutterMethods.isNotEmpty) {
+      indent.writeScoped(
+        'class Test${apiNameWithoutPrefix(api.name)}Api: PigeonApiProtocol${api.name} {',
+        '}',
+        () {
+          for (final Method method
+              in api.flutterMethods.where((Method m) => !m.isStatic)) {
+            if (method.parameters.isNotEmpty) {
+              indent.writeln('var ${method.name}Args: [AnyHashable?]? = nil');
+            } else {
+              indent.writeln('var ${method.name}Called = false');
+            }
+          }
+          indent.newln();
+
+          for (final Method method in api.flutterMethods) {
+            final String methodSig = _getMethodSignature(
+              name: method.name,
+              parameters: method.parameters,
+              returnType: method.returnType,
+              errorTypeName: errorTypeName,
+            );
+            indent.writeScoped('$methodSig {', '}', () {
+              if (method.parameters.isNotEmpty) {
+                final Iterable<String> enumSafeArgNames = method.parameters
+                    .asMap()
+                    .entries
+                    .map((MapEntry<int, NamedType> e) =>
+                        '${_getArgumentName(e.key, e.value)}Arg');
+                indent.writeln(
+                  '${method.name}Args = [${enumSafeArgNames.join(', ')}]',
+                );
+              } else {
+                indent.writeln('${method.name}Called = true');
+              }
+            });
+          }
+        },
+      );
+    }
   }
 }
 
