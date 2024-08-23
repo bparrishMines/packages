@@ -3850,6 +3850,2350 @@ final class PigeonApiProxyApiTestClass: PigeonApiProtocolProxyApiTestClass {
   }
 
 }
+
+// swiftlint:disable all
+/*
+// Copyright 2013 The Flutter Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import Foundation
+
+
+/// Implementation of `ProxyApiTestClass` that calls to Dart in callback methods.
+class ProxyApiTestClassImpl: ProxyApiTestClass {
+  let api: PigeonApiProtocolProxyApiTestClass
+
+  init(api: PigeonApiProtocolProxyApiTestClass) {
+    self.api = api
+  }
+
+  func fixMe() {
+    api.flutterNoop(pigeonInstance: self ) {  _ in }
+  }
+  func fixMe() {
+    api.flutterThrowError(pigeonInstance: self ) {  _ in }
+  }
+  func fixMe() {
+    api.flutterThrowErrorFromVoid(pigeonInstance: self ) {  _ in }
+  }
+  func fixMe() {
+    api.flutterEchoBool(pigeonInstance: self, aBool: aBool) {  _ in }
+  }
+  func fixMe() {
+    api.flutterEchoInt(pigeonInstance: self, anInt: anInt) {  _ in }
+  }
+  func fixMe() {
+    api.flutterEchoDouble(pigeonInstance: self, aDouble: aDouble) {  _ in }
+  }
+  func fixMe() {
+    api.flutterEchoString(pigeonInstance: self, aString: aString) {  _ in }
+  }
+  func fixMe() {
+    api.flutterEchoUint8List(pigeonInstance: self, aList: aList) {  _ in }
+  }
+  func fixMe() {
+    api.flutterEchoList(pigeonInstance: self, aList: aList) {  _ in }
+  }
+  func fixMe() {
+    api.flutterEchoProxyApiList(pigeonInstance: self, aList: aList) {  _ in }
+  }
+  func fixMe() {
+    api.flutterEchoMap(pigeonInstance: self, aMap: aMap) {  _ in }
+  }
+  func fixMe() {
+    api.flutterEchoProxyApiMap(pigeonInstance: self, aMap: aMap) {  _ in }
+  }
+  func fixMe() {
+    api.flutterEchoEnum(pigeonInstance: self, anEnum: anEnum) {  _ in }
+  }
+  func fixMe() {
+    api.flutterEchoProxyApi(pigeonInstance: self, aProxyApi: aProxyApi) {  _ in }
+  }
+  func fixMe() {
+    api.flutterEchoNullableBool(pigeonInstance: self, aBool: aBool) {  _ in }
+  }
+  func fixMe() {
+    api.flutterEchoNullableInt(pigeonInstance: self, anInt: anInt) {  _ in }
+  }
+  func fixMe() {
+    api.flutterEchoNullableDouble(pigeonInstance: self, aDouble: aDouble) {  _ in }
+  }
+  func fixMe() {
+    api.flutterEchoNullableString(pigeonInstance: self, aString: aString) {  _ in }
+  }
+  func fixMe() {
+    api.flutterEchoNullableUint8List(pigeonInstance: self, aList: aList) {  _ in }
+  }
+  func fixMe() {
+    api.flutterEchoNullableList(pigeonInstance: self, aList: aList) {  _ in }
+  }
+  func fixMe() {
+    api.flutterEchoNullableMap(pigeonInstance: self, aMap: aMap) {  _ in }
+  }
+  func fixMe() {
+    api.flutterEchoNullableEnum(pigeonInstance: self, anEnum: anEnum) {  _ in }
+  }
+  func fixMe() {
+    api.flutterEchoNullableProxyApi(pigeonInstance: self, aProxyApi: aProxyApi) {  _ in }
+  }
+  func fixMe() {
+    api.flutterNoopAsync(pigeonInstance: self ) {  _ in }
+  }
+  func fixMe() {
+    api.flutterEchoAsyncString(pigeonInstance: self, aString: aString) {  _ in }
+  }
+}
+
+/// ProxyApi implementation for [ProxyApiTestClass].
+/// This class may handle instantiating native object instances that are attached to a Dart
+/// instance or handle method calls on the associated native class or an instance of that class.
+class ProxyApiTestClassProxyAPIDelegate : PigeonApiDelegateProxyApiTestClass {
+  func pigeon_defaultConstructor(pigeonApi: PigeonApiProxyApiTestClass, aBool: Bool, anInt: Int64, aDouble: Double, aString: String, aUint8List: FlutterStandardTypedData, aList: [Any?], aMap: [String?: Any?], anEnum: ProxyApiTestEnum, aProxyApi: ProxyApiSuperClass, aNullableBool: Bool?, aNullableInt: Int64?, aNullableDouble: Double?, aNullableString: String?, aNullableUint8List: FlutterStandardTypedData?, aNullableList: [Any?]?, aNullableMap: [String?: Any?]?, aNullableEnum: ProxyApiTestEnum?, aNullableProxyApi: ProxyApiSuperClass?, boolParam: Bool, intParam: Int64, doubleParam: Double, stringParam: String, aUint8ListParam: FlutterStandardTypedData, listParam: [Any?], mapParam: [String?: Any?], enumParam: ProxyApiTestEnum, proxyApiParam: ProxyApiSuperClass, nullableBoolParam: Bool?, nullableIntParam: Int64?, nullableDoubleParam: Double?, nullableStringParam: String?, nullableUint8ListParam: FlutterStandardTypedData?, nullableListParam: [Any?]?, nullableMapParam: [String?: Any?]?, nullableEnumParam: ProxyApiTestEnum?, nullableProxyApiParam: ProxyApiSuperClass?) throws -> ProxyApiTestClass {
+    return ProxyApiTestClassImpl(api: pigeonApi,boolParam: boolParam, intParam: intParam, doubleParam: doubleParam, stringParam: stringParam, aUint8ListParam: aUint8ListParam, listParam: listParam, mapParam: mapParam, enumParam: enumParam, proxyApiParam: proxyApiParam, nullableBoolParam: nullableBoolParam, nullableIntParam: nullableIntParam, nullableDoubleParam: nullableDoubleParam, nullableStringParam: nullableStringParam, nullableUint8ListParam: nullableUint8ListParam, nullableListParam: nullableListParam, nullableMapParam: nullableMapParam, nullableEnumParam: nullableEnumParam, nullableProxyApiParam: nullableProxyApiParam)
+  }
+
+  func aBool(pigeonApi: PigeonApiProxyApiTestClass, pigeonInstance: ProxyApiTestClass) throws -> Bool {
+    return pigeon_instance.aBool
+  }
+
+  func anInt(pigeonApi: PigeonApiProxyApiTestClass, pigeonInstance: ProxyApiTestClass) throws -> Int64 {
+    return pigeon_instance.anInt
+  }
+
+  func aDouble(pigeonApi: PigeonApiProxyApiTestClass, pigeonInstance: ProxyApiTestClass) throws -> Double {
+    return pigeon_instance.aDouble
+  }
+
+  func aString(pigeonApi: PigeonApiProxyApiTestClass, pigeonInstance: ProxyApiTestClass) throws -> String {
+    return pigeon_instance.aString
+  }
+
+  func aUint8List(pigeonApi: PigeonApiProxyApiTestClass, pigeonInstance: ProxyApiTestClass) throws -> FlutterStandardTypedData {
+    return pigeon_instance.aUint8List
+  }
+
+  func aList(pigeonApi: PigeonApiProxyApiTestClass, pigeonInstance: ProxyApiTestClass) throws -> [Any?] {
+    return pigeon_instance.aList
+  }
+
+  func aMap(pigeonApi: PigeonApiProxyApiTestClass, pigeonInstance: ProxyApiTestClass) throws -> [String?: Any?] {
+    return pigeon_instance.aMap
+  }
+
+  func anEnum(pigeonApi: PigeonApiProxyApiTestClass, pigeonInstance: ProxyApiTestClass) throws -> ProxyApiTestEnum {
+    switch pigeon_instance.anEnum {
+      case .one
+        return .one
+
+      case .two
+        return .two
+
+      case .three
+        return .three
+
+      @unknown default:
+        return .unknown
+
+    }
+  }
+
+  func aProxyApi(pigeonApi: PigeonApiProxyApiTestClass, pigeonInstance: ProxyApiTestClass) throws -> ProxyApiSuperClass {
+    return pigeon_instance.aProxyApi
+  }
+
+  func aNullableBool(pigeonApi: PigeonApiProxyApiTestClass, pigeonInstance: ProxyApiTestClass) throws -> Bool? {
+    return pigeon_instance.aNullableBool
+  }
+
+  func aNullableInt(pigeonApi: PigeonApiProxyApiTestClass, pigeonInstance: ProxyApiTestClass) throws -> Int64? {
+    return pigeon_instance.aNullableInt
+  }
+
+  func aNullableDouble(pigeonApi: PigeonApiProxyApiTestClass, pigeonInstance: ProxyApiTestClass) throws -> Double? {
+    return pigeon_instance.aNullableDouble
+  }
+
+  func aNullableString(pigeonApi: PigeonApiProxyApiTestClass, pigeonInstance: ProxyApiTestClass) throws -> String? {
+    return pigeon_instance.aNullableString
+  }
+
+  func aNullableUint8List(pigeonApi: PigeonApiProxyApiTestClass, pigeonInstance: ProxyApiTestClass) throws -> FlutterStandardTypedData? {
+    return pigeon_instance.aNullableUint8List
+  }
+
+  func aNullableList(pigeonApi: PigeonApiProxyApiTestClass, pigeonInstance: ProxyApiTestClass) throws -> [Any?]? {
+    return pigeon_instance.aNullableList
+  }
+
+  func aNullableMap(pigeonApi: PigeonApiProxyApiTestClass, pigeonInstance: ProxyApiTestClass) throws -> [String?: Any?]? {
+    return pigeon_instance.aNullableMap
+  }
+
+  func aNullableEnum(pigeonApi: PigeonApiProxyApiTestClass, pigeonInstance: ProxyApiTestClass) throws -> ProxyApiTestEnum? {
+    switch pigeon_instance.aNullableEnum {
+      case .one
+        return .one
+
+      case .two
+        return .two
+
+      case .three
+        return .three
+
+      @unknown default:
+        return .unknown
+
+    }
+  }
+
+  func aNullableProxyApi(pigeonApi: PigeonApiProxyApiTestClass, pigeonInstance: ProxyApiTestClass) throws -> ProxyApiSuperClass? {
+    return pigeon_instance.aNullableProxyApi
+  }
+
+  func attachedField(pigeonApi: PigeonApiProxyApiTestClass, pigeon_instance: ProxyApiTestClass): ProxyApiSuperClass {
+    return pigeon_instance.attachedField
+  }
+
+  func staticAttachedField(pigeonApi: PigeonApiProxyApiTestClass): ProxyApiSuperClass {
+    return ProxyApiTestClass.staticAttachedField
+  }
+
+  func noop(pigeonApi: PigeonApiProxyApiTestClass, pigeonInstance: ProxyApiTestClass) throws {
+    pigeonInstance.noop()
+  }
+
+  func throwError(pigeonApi: PigeonApiProxyApiTestClass, pigeonInstance: ProxyApiTestClass) throws -> Any? {
+    return pigeonInstance.throwError()
+  }
+
+  func throwErrorFromVoid(pigeonApi: PigeonApiProxyApiTestClass, pigeonInstance: ProxyApiTestClass) throws {
+    pigeonInstance.throwErrorFromVoid()
+  }
+
+  func throwFlutterError(pigeonApi: PigeonApiProxyApiTestClass, pigeonInstance: ProxyApiTestClass) throws -> Any? {
+    return pigeonInstance.throwFlutterError()
+  }
+
+  func echoInt(pigeonApi: PigeonApiProxyApiTestClass, pigeonInstance: ProxyApiTestClass, anInt: Int64) throws -> Int64 {
+    return pigeonInstance.echoInt(anInt: anInt)
+  }
+
+  func echoDouble(pigeonApi: PigeonApiProxyApiTestClass, pigeonInstance: ProxyApiTestClass, aDouble: Double) throws -> Double {
+    return pigeonInstance.echoDouble(aDouble: aDouble)
+  }
+
+  func echoBool(pigeonApi: PigeonApiProxyApiTestClass, pigeonInstance: ProxyApiTestClass, aBool: Bool) throws -> Bool {
+    return pigeonInstance.echoBool(aBool: aBool)
+  }
+
+  func echoString(pigeonApi: PigeonApiProxyApiTestClass, pigeonInstance: ProxyApiTestClass, aString: String) throws -> String {
+    return pigeonInstance.echoString(aString: aString)
+  }
+
+  func echoUint8List(pigeonApi: PigeonApiProxyApiTestClass, pigeonInstance: ProxyApiTestClass, aUint8List: FlutterStandardTypedData) throws -> FlutterStandardTypedData {
+    return pigeonInstance.echoUint8List(aUint8List: aUint8List)
+  }
+
+  func echoObject(pigeonApi: PigeonApiProxyApiTestClass, pigeonInstance: ProxyApiTestClass, anObject: Any) throws -> Any {
+    return pigeonInstance.echoObject(anObject: anObject)
+  }
+
+  func echoList(pigeonApi: PigeonApiProxyApiTestClass, pigeonInstance: ProxyApiTestClass, aList: [Any?]) throws -> [Any?] {
+    return pigeonInstance.echoList(aList: aList)
+  }
+
+  func echoProxyApiList(pigeonApi: PigeonApiProxyApiTestClass, pigeonInstance: ProxyApiTestClass, aList: [ProxyApiTestClass]) throws -> [ProxyApiTestClass] {
+    return pigeonInstance.echoProxyApiList(aList: aList)
+  }
+
+  func echoMap(pigeonApi: PigeonApiProxyApiTestClass, pigeonInstance: ProxyApiTestClass, aMap: [String?: Any?]) throws -> [String?: Any?] {
+    return pigeonInstance.echoMap(aMap: aMap)
+  }
+
+  func echoProxyApiMap(pigeonApi: PigeonApiProxyApiTestClass, pigeonInstance: ProxyApiTestClass, aMap: [String: ProxyApiTestClass]) throws -> [String: ProxyApiTestClass] {
+    return pigeonInstance.echoProxyApiMap(aMap: aMap)
+  }
+
+  func echoEnum(pigeonApi: PigeonApiProxyApiTestClass, pigeonInstance: ProxyApiTestClass, anEnum: ProxyApiTestEnum) throws -> ProxyApiTestEnum {
+    return pigeonInstance.echoEnum(anEnum: anEnum)
+  }
+
+  func echoProxyApi(pigeonApi: PigeonApiProxyApiTestClass, pigeonInstance: ProxyApiTestClass, aProxyApi: ProxyApiSuperClass) throws -> ProxyApiSuperClass {
+    return pigeonInstance.echoProxyApi(aProxyApi: aProxyApi)
+  }
+
+  func echoNullableInt(pigeonApi: PigeonApiProxyApiTestClass, pigeonInstance: ProxyApiTestClass, aNullableInt: Int64?) throws -> Int64? {
+    return pigeonInstance.echoNullableInt(aNullableInt: aNullableInt)
+  }
+
+  func echoNullableDouble(pigeonApi: PigeonApiProxyApiTestClass, pigeonInstance: ProxyApiTestClass, aNullableDouble: Double?) throws -> Double? {
+    return pigeonInstance.echoNullableDouble(aNullableDouble: aNullableDouble)
+  }
+
+  func echoNullableBool(pigeonApi: PigeonApiProxyApiTestClass, pigeonInstance: ProxyApiTestClass, aNullableBool: Bool?) throws -> Bool? {
+    return pigeonInstance.echoNullableBool(aNullableBool: aNullableBool)
+  }
+
+  func echoNullableString(pigeonApi: PigeonApiProxyApiTestClass, pigeonInstance: ProxyApiTestClass, aNullableString: String?) throws -> String? {
+    return pigeonInstance.echoNullableString(aNullableString: aNullableString)
+  }
+
+  func echoNullableUint8List(pigeonApi: PigeonApiProxyApiTestClass, pigeonInstance: ProxyApiTestClass, aNullableUint8List: FlutterStandardTypedData?) throws -> FlutterStandardTypedData? {
+    return pigeonInstance.echoNullableUint8List(aNullableUint8List: aNullableUint8List)
+  }
+
+  func echoNullableObject(pigeonApi: PigeonApiProxyApiTestClass, pigeonInstance: ProxyApiTestClass, aNullableObject: Any?) throws -> Any? {
+    return pigeonInstance.echoNullableObject(aNullableObject: aNullableObject)
+  }
+
+  func echoNullableList(pigeonApi: PigeonApiProxyApiTestClass, pigeonInstance: ProxyApiTestClass, aNullableList: [Any?]?) throws -> [Any?]? {
+    return pigeonInstance.echoNullableList(aNullableList: aNullableList)
+  }
+
+  func echoNullableMap(pigeonApi: PigeonApiProxyApiTestClass, pigeonInstance: ProxyApiTestClass, aNullableMap: [String?: Any?]?) throws -> [String?: Any?]? {
+    return pigeonInstance.echoNullableMap(aNullableMap: aNullableMap)
+  }
+
+  func echoNullableEnum(pigeonApi: PigeonApiProxyApiTestClass, pigeonInstance: ProxyApiTestClass, aNullableEnum: ProxyApiTestEnum?) throws -> ProxyApiTestEnum? {
+    return pigeonInstance.echoNullableEnum(aNullableEnum: aNullableEnum)
+  }
+
+  func echoNullableProxyApi(pigeonApi: PigeonApiProxyApiTestClass, pigeonInstance: ProxyApiTestClass, aNullableProxyApi: ProxyApiSuperClass?) throws -> ProxyApiSuperClass? {
+    return pigeonInstance.echoNullableProxyApi(aNullableProxyApi: aNullableProxyApi)
+  }
+
+  func noopAsync(pigeonApi: PigeonApiProxyApiTestClass, pigeonInstance: ProxyApiTestClass, completion: @escaping (Result<Void, Error>) -> Void) {
+    pigeonInstance.noopAsync()
+  }
+
+  func echoAsyncInt(pigeonApi: PigeonApiProxyApiTestClass, pigeonInstance: ProxyApiTestClass, anInt: Int64, completion: @escaping (Result<Int64, Error>) -> Void) {
+    return pigeonInstance.echoAsyncInt(anInt: anInt)
+  }
+
+  func echoAsyncDouble(pigeonApi: PigeonApiProxyApiTestClass, pigeonInstance: ProxyApiTestClass, aDouble: Double, completion: @escaping (Result<Double, Error>) -> Void) {
+    return pigeonInstance.echoAsyncDouble(aDouble: aDouble)
+  }
+
+  func echoAsyncBool(pigeonApi: PigeonApiProxyApiTestClass, pigeonInstance: ProxyApiTestClass, aBool: Bool, completion: @escaping (Result<Bool, Error>) -> Void) {
+    return pigeonInstance.echoAsyncBool(aBool: aBool)
+  }
+
+  func echoAsyncString(pigeonApi: PigeonApiProxyApiTestClass, pigeonInstance: ProxyApiTestClass, aString: String, completion: @escaping (Result<String, Error>) -> Void) {
+    return pigeonInstance.echoAsyncString(aString: aString)
+  }
+
+  func echoAsyncUint8List(pigeonApi: PigeonApiProxyApiTestClass, pigeonInstance: ProxyApiTestClass, aUint8List: FlutterStandardTypedData, completion: @escaping (Result<FlutterStandardTypedData, Error>) -> Void) {
+    return pigeonInstance.echoAsyncUint8List(aUint8List: aUint8List)
+  }
+
+  func echoAsyncObject(pigeonApi: PigeonApiProxyApiTestClass, pigeonInstance: ProxyApiTestClass, anObject: Any, completion: @escaping (Result<Any, Error>) -> Void) {
+    return pigeonInstance.echoAsyncObject(anObject: anObject)
+  }
+
+  func echoAsyncList(pigeonApi: PigeonApiProxyApiTestClass, pigeonInstance: ProxyApiTestClass, aList: [Any?], completion: @escaping (Result<[Any?], Error>) -> Void) {
+    return pigeonInstance.echoAsyncList(aList: aList)
+  }
+
+  func echoAsyncMap(pigeonApi: PigeonApiProxyApiTestClass, pigeonInstance: ProxyApiTestClass, aMap: [String?: Any?], completion: @escaping (Result<[String?: Any?], Error>) -> Void) {
+    return pigeonInstance.echoAsyncMap(aMap: aMap)
+  }
+
+  func echoAsyncEnum(pigeonApi: PigeonApiProxyApiTestClass, pigeonInstance: ProxyApiTestClass, anEnum: ProxyApiTestEnum, completion: @escaping (Result<ProxyApiTestEnum, Error>) -> Void) {
+    return pigeonInstance.echoAsyncEnum(anEnum: anEnum)
+  }
+
+  func throwAsyncError(pigeonApi: PigeonApiProxyApiTestClass, pigeonInstance: ProxyApiTestClass, completion: @escaping (Result<Any?, Error>) -> Void) {
+    return pigeonInstance.throwAsyncError()
+  }
+
+  func throwAsyncErrorFromVoid(pigeonApi: PigeonApiProxyApiTestClass, pigeonInstance: ProxyApiTestClass, completion: @escaping (Result<Void, Error>) -> Void) {
+    pigeonInstance.throwAsyncErrorFromVoid()
+  }
+
+  func throwAsyncFlutterError(pigeonApi: PigeonApiProxyApiTestClass, pigeonInstance: ProxyApiTestClass, completion: @escaping (Result<Any?, Error>) -> Void) {
+    return pigeonInstance.throwAsyncFlutterError()
+  }
+
+  func echoAsyncNullableInt(pigeonApi: PigeonApiProxyApiTestClass, pigeonInstance: ProxyApiTestClass, anInt: Int64?, completion: @escaping (Result<Int64?, Error>) -> Void) {
+    return pigeonInstance.echoAsyncNullableInt(anInt: anInt)
+  }
+
+  func echoAsyncNullableDouble(pigeonApi: PigeonApiProxyApiTestClass, pigeonInstance: ProxyApiTestClass, aDouble: Double?, completion: @escaping (Result<Double?, Error>) -> Void) {
+    return pigeonInstance.echoAsyncNullableDouble(aDouble: aDouble)
+  }
+
+  func echoAsyncNullableBool(pigeonApi: PigeonApiProxyApiTestClass, pigeonInstance: ProxyApiTestClass, aBool: Bool?, completion: @escaping (Result<Bool?, Error>) -> Void) {
+    return pigeonInstance.echoAsyncNullableBool(aBool: aBool)
+  }
+
+  func echoAsyncNullableString(pigeonApi: PigeonApiProxyApiTestClass, pigeonInstance: ProxyApiTestClass, aString: String?, completion: @escaping (Result<String?, Error>) -> Void) {
+    return pigeonInstance.echoAsyncNullableString(aString: aString)
+  }
+
+  func echoAsyncNullableUint8List(pigeonApi: PigeonApiProxyApiTestClass, pigeonInstance: ProxyApiTestClass, aUint8List: FlutterStandardTypedData?, completion: @escaping (Result<FlutterStandardTypedData?, Error>) -> Void) {
+    return pigeonInstance.echoAsyncNullableUint8List(aUint8List: aUint8List)
+  }
+
+  func echoAsyncNullableObject(pigeonApi: PigeonApiProxyApiTestClass, pigeonInstance: ProxyApiTestClass, anObject: Any?, completion: @escaping (Result<Any?, Error>) -> Void) {
+    return pigeonInstance.echoAsyncNullableObject(anObject: anObject)
+  }
+
+  func echoAsyncNullableList(pigeonApi: PigeonApiProxyApiTestClass, pigeonInstance: ProxyApiTestClass, aList: [Any?]?, completion: @escaping (Result<[Any?]?, Error>) -> Void) {
+    return pigeonInstance.echoAsyncNullableList(aList: aList)
+  }
+
+  func echoAsyncNullableMap(pigeonApi: PigeonApiProxyApiTestClass, pigeonInstance: ProxyApiTestClass, aMap: [String?: Any?]?, completion: @escaping (Result<[String?: Any?]?, Error>) -> Void) {
+    return pigeonInstance.echoAsyncNullableMap(aMap: aMap)
+  }
+
+  func echoAsyncNullableEnum(pigeonApi: PigeonApiProxyApiTestClass, pigeonInstance: ProxyApiTestClass, anEnum: ProxyApiTestEnum?, completion: @escaping (Result<ProxyApiTestEnum?, Error>) -> Void) {
+    return pigeonInstance.echoAsyncNullableEnum(anEnum: anEnum)
+  }
+
+  func staticNoop(pigeonApi: PigeonApiProxyApiTestClass) throws {
+    ProxyApiTestClass.staticNoop()
+  }
+
+  func echoStaticString(pigeonApi: PigeonApiProxyApiTestClass, aString: String) throws -> String {
+    return ProxyApiTestClass.echoStaticString(aString: aString)
+  }
+
+  func staticAsyncNoop(pigeonApi: PigeonApiProxyApiTestClass, completion: @escaping (Result<Void, Error>) -> Void) {
+    ProxyApiTestClass.staticAsyncNoop()
+  }
+
+  func callFlutterNoop(pigeonApi: PigeonApiProxyApiTestClass, pigeonInstance: ProxyApiTestClass, completion: @escaping (Result<Void, Error>) -> Void) {
+    pigeonInstance.callFlutterNoop()
+  }
+
+  func callFlutterThrowError(pigeonApi: PigeonApiProxyApiTestClass, pigeonInstance: ProxyApiTestClass, completion: @escaping (Result<Any?, Error>) -> Void) {
+    return pigeonInstance.callFlutterThrowError()
+  }
+
+  func callFlutterThrowErrorFromVoid(pigeonApi: PigeonApiProxyApiTestClass, pigeonInstance: ProxyApiTestClass, completion: @escaping (Result<Void, Error>) -> Void) {
+    pigeonInstance.callFlutterThrowErrorFromVoid()
+  }
+
+  func callFlutterEchoBool(pigeonApi: PigeonApiProxyApiTestClass, pigeonInstance: ProxyApiTestClass, aBool: Bool, completion: @escaping (Result<Bool, Error>) -> Void) {
+    return pigeonInstance.callFlutterEchoBool(aBool: aBool)
+  }
+
+  func callFlutterEchoInt(pigeonApi: PigeonApiProxyApiTestClass, pigeonInstance: ProxyApiTestClass, anInt: Int64, completion: @escaping (Result<Int64, Error>) -> Void) {
+    return pigeonInstance.callFlutterEchoInt(anInt: anInt)
+  }
+
+  func callFlutterEchoDouble(pigeonApi: PigeonApiProxyApiTestClass, pigeonInstance: ProxyApiTestClass, aDouble: Double, completion: @escaping (Result<Double, Error>) -> Void) {
+    return pigeonInstance.callFlutterEchoDouble(aDouble: aDouble)
+  }
+
+  func callFlutterEchoString(pigeonApi: PigeonApiProxyApiTestClass, pigeonInstance: ProxyApiTestClass, aString: String, completion: @escaping (Result<String, Error>) -> Void) {
+    return pigeonInstance.callFlutterEchoString(aString: aString)
+  }
+
+  func callFlutterEchoUint8List(pigeonApi: PigeonApiProxyApiTestClass, pigeonInstance: ProxyApiTestClass, aUint8List: FlutterStandardTypedData, completion: @escaping (Result<FlutterStandardTypedData, Error>) -> Void) {
+    return pigeonInstance.callFlutterEchoUint8List(aUint8List: aUint8List)
+  }
+
+  func callFlutterEchoList(pigeonApi: PigeonApiProxyApiTestClass, pigeonInstance: ProxyApiTestClass, aList: [Any?], completion: @escaping (Result<[Any?], Error>) -> Void) {
+    return pigeonInstance.callFlutterEchoList(aList: aList)
+  }
+
+  func callFlutterEchoProxyApiList(pigeonApi: PigeonApiProxyApiTestClass, pigeonInstance: ProxyApiTestClass, aList: [ProxyApiTestClass?], completion: @escaping (Result<[ProxyApiTestClass?], Error>) -> Void) {
+    return pigeonInstance.callFlutterEchoProxyApiList(aList: aList)
+  }
+
+  func callFlutterEchoMap(pigeonApi: PigeonApiProxyApiTestClass, pigeonInstance: ProxyApiTestClass, aMap: [String?: Any?], completion: @escaping (Result<[String?: Any?], Error>) -> Void) {
+    return pigeonInstance.callFlutterEchoMap(aMap: aMap)
+  }
+
+  func callFlutterEchoProxyApiMap(pigeonApi: PigeonApiProxyApiTestClass, pigeonInstance: ProxyApiTestClass, aMap: [String?: ProxyApiTestClass?], completion: @escaping (Result<[String?: ProxyApiTestClass?], Error>) -> Void) {
+    return pigeonInstance.callFlutterEchoProxyApiMap(aMap: aMap)
+  }
+
+  func callFlutterEchoEnum(pigeonApi: PigeonApiProxyApiTestClass, pigeonInstance: ProxyApiTestClass, anEnum: ProxyApiTestEnum, completion: @escaping (Result<ProxyApiTestEnum, Error>) -> Void) {
+    return pigeonInstance.callFlutterEchoEnum(anEnum: anEnum)
+  }
+
+  func callFlutterEchoProxyApi(pigeonApi: PigeonApiProxyApiTestClass, pigeonInstance: ProxyApiTestClass, aProxyApi: ProxyApiSuperClass, completion: @escaping (Result<ProxyApiSuperClass, Error>) -> Void) {
+    return pigeonInstance.callFlutterEchoProxyApi(aProxyApi: aProxyApi)
+  }
+
+  func callFlutterEchoNullableBool(pigeonApi: PigeonApiProxyApiTestClass, pigeonInstance: ProxyApiTestClass, aBool: Bool?, completion: @escaping (Result<Bool?, Error>) -> Void) {
+    return pigeonInstance.callFlutterEchoNullableBool(aBool: aBool)
+  }
+
+  func callFlutterEchoNullableInt(pigeonApi: PigeonApiProxyApiTestClass, pigeonInstance: ProxyApiTestClass, anInt: Int64?, completion: @escaping (Result<Int64?, Error>) -> Void) {
+    return pigeonInstance.callFlutterEchoNullableInt(anInt: anInt)
+  }
+
+  func callFlutterEchoNullableDouble(pigeonApi: PigeonApiProxyApiTestClass, pigeonInstance: ProxyApiTestClass, aDouble: Double?, completion: @escaping (Result<Double?, Error>) -> Void) {
+    return pigeonInstance.callFlutterEchoNullableDouble(aDouble: aDouble)
+  }
+
+  func callFlutterEchoNullableString(pigeonApi: PigeonApiProxyApiTestClass, pigeonInstance: ProxyApiTestClass, aString: String?, completion: @escaping (Result<String?, Error>) -> Void) {
+    return pigeonInstance.callFlutterEchoNullableString(aString: aString)
+  }
+
+  func callFlutterEchoNullableUint8List(pigeonApi: PigeonApiProxyApiTestClass, pigeonInstance: ProxyApiTestClass, aUint8List: FlutterStandardTypedData?, completion: @escaping (Result<FlutterStandardTypedData?, Error>) -> Void) {
+    return pigeonInstance.callFlutterEchoNullableUint8List(aUint8List: aUint8List)
+  }
+
+  func callFlutterEchoNullableList(pigeonApi: PigeonApiProxyApiTestClass, pigeonInstance: ProxyApiTestClass, aList: [Any?]?, completion: @escaping (Result<[Any?]?, Error>) -> Void) {
+    return pigeonInstance.callFlutterEchoNullableList(aList: aList)
+  }
+
+  func callFlutterEchoNullableMap(pigeonApi: PigeonApiProxyApiTestClass, pigeonInstance: ProxyApiTestClass, aMap: [String?: Any?]?, completion: @escaping (Result<[String?: Any?]?, Error>) -> Void) {
+    return pigeonInstance.callFlutterEchoNullableMap(aMap: aMap)
+  }
+
+  func callFlutterEchoNullableEnum(pigeonApi: PigeonApiProxyApiTestClass, pigeonInstance: ProxyApiTestClass, anEnum: ProxyApiTestEnum?, completion: @escaping (Result<ProxyApiTestEnum?, Error>) -> Void) {
+    return pigeonInstance.callFlutterEchoNullableEnum(anEnum: anEnum)
+  }
+
+  func callFlutterEchoNullableProxyApi(pigeonApi: PigeonApiProxyApiTestClass, pigeonInstance: ProxyApiTestClass, aProxyApi: ProxyApiSuperClass?, completion: @escaping (Result<ProxyApiSuperClass?, Error>) -> Void) {
+    return pigeonInstance.callFlutterEchoNullableProxyApi(aProxyApi: aProxyApi)
+  }
+
+  func callFlutterNoopAsync(pigeonApi: PigeonApiProxyApiTestClass, pigeonInstance: ProxyApiTestClass, completion: @escaping (Result<Void, Error>) -> Void) {
+    pigeonInstance.callFlutterNoopAsync()
+  }
+
+  func callFlutterEchoAsyncString(pigeonApi: PigeonApiProxyApiTestClass, pigeonInstance: ProxyApiTestClass, aString: String, completion: @escaping (Result<String, Error>) -> Void) {
+    return pigeonInstance.callFlutterEchoAsyncString(aString: aString)
+  }
+
+}
+*/
+
+/*
+// Copyright 2013 The Flutter Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+
+import Flutter
+import XCTest
+
+@testable import pigeon_integration_tests
+
+class ProxyApiTestClassProxyApiTest {
+  func testPigeonDefaultConstructor() {
+    let registrar = TestProxyApiRegistrar()
+    let api = registrar.apiDelegate.pigeonApiProxyApiTestClass(registrar)
+
+    let instance = try? api.pigeonDefaultConstructor(pigeonApi: api, boolParam: true, intParam: 0, doubleParam: 1.0, stringParam: "myString", aUint8ListParam: byteArrayOf(0xA1.toByte()), listParam: [-1], mapParam: ["myString": -1], enumParam: .one, proxyApiParam: TestProxyApiSuperClass, nullableBoolParam: true, nullableIntParam: 0, nullableDoubleParam: 1.0, nullableStringParam: "myString", nullableUint8ListParam: byteArrayOf(0xA1.toByte()), nullableListParam: [-1], nullableMapParam: ["myString": -1], nullableEnumParam: .one, nullableProxyApiParam: TestProxyApiSuperClass)
+    XCTAssertNotNil(instance)
+  }
+
+  func testABool() {
+    let registrar = TestProxyApiRegistrar()
+    let api = registrar.apiDelegate.pigeonApiProxyApiTestClass(registrar)
+
+    let instance = TestProxyApiTestClass()
+    let value = try? api.pigeonDelegate.aBool(pigeonApi: api, pigeonInstance: instance)
+
+    XCTAssertEqual(value, instance.aBool)
+  }
+
+  func testAnInt() {
+    let registrar = TestProxyApiRegistrar()
+    let api = registrar.apiDelegate.pigeonApiProxyApiTestClass(registrar)
+
+    let instance = TestProxyApiTestClass()
+    let value = try? api.pigeonDelegate.anInt(pigeonApi: api, pigeonInstance: instance)
+
+    XCTAssertEqual(value, instance.anInt)
+  }
+
+  func testADouble() {
+    let registrar = TestProxyApiRegistrar()
+    let api = registrar.apiDelegate.pigeonApiProxyApiTestClass(registrar)
+
+    let instance = TestProxyApiTestClass()
+    let value = try? api.pigeonDelegate.aDouble(pigeonApi: api, pigeonInstance: instance)
+
+    XCTAssertEqual(value, instance.aDouble)
+  }
+
+  func testAString() {
+    let registrar = TestProxyApiRegistrar()
+    let api = registrar.apiDelegate.pigeonApiProxyApiTestClass(registrar)
+
+    let instance = TestProxyApiTestClass()
+    let value = try? api.pigeonDelegate.aString(pigeonApi: api, pigeonInstance: instance)
+
+    XCTAssertEqual(value, instance.aString)
+  }
+
+  func testAUint8List() {
+    let registrar = TestProxyApiRegistrar()
+    let api = registrar.apiDelegate.pigeonApiProxyApiTestClass(registrar)
+
+    let instance = TestProxyApiTestClass()
+    let value = try? api.pigeonDelegate.aUint8List(pigeonApi: api, pigeonInstance: instance)
+
+    XCTAssertEqual(value, instance.aUint8List)
+  }
+
+  func testAList() {
+    let registrar = TestProxyApiRegistrar()
+    let api = registrar.apiDelegate.pigeonApiProxyApiTestClass(registrar)
+
+    let instance = TestProxyApiTestClass()
+    let value = try? api.pigeonDelegate.aList(pigeonApi: api, pigeonInstance: instance)
+
+    XCTAssertEqual(value, instance.aList)
+  }
+
+  func testAMap() {
+    let registrar = TestProxyApiRegistrar()
+    let api = registrar.apiDelegate.pigeonApiProxyApiTestClass(registrar)
+
+    let instance = TestProxyApiTestClass()
+    let value = try? api.pigeonDelegate.aMap(pigeonApi: api, pigeonInstance: instance)
+
+    XCTAssertEqual(value, instance.aMap)
+  }
+
+  func testAnEnum() {
+    let registrar = TestProxyApiRegistrar()
+    let api = registrar.apiDelegate.pigeonApiProxyApiTestClass(registrar)
+
+    let instance = TestProxyApiTestClass()
+    let value = try? api.pigeonDelegate.anEnum(pigeonApi: api, pigeonInstance: instance)
+
+    XCTAssertEqual(value, instance.anEnum)
+  }
+
+  func testAProxyApi() {
+    let registrar = TestProxyApiRegistrar()
+    let api = registrar.apiDelegate.pigeonApiProxyApiTestClass(registrar)
+
+    let instance = TestProxyApiTestClass()
+    let value = try? api.pigeonDelegate.aProxyApi(pigeonApi: api, pigeonInstance: instance)
+
+    XCTAssertEqual(value, instance.aProxyApi)
+  }
+
+  func testANullableBool() {
+    let registrar = TestProxyApiRegistrar()
+    let api = registrar.apiDelegate.pigeonApiProxyApiTestClass(registrar)
+
+    let instance = TestProxyApiTestClass()
+    let value = try? api.pigeonDelegate.aNullableBool(pigeonApi: api, pigeonInstance: instance)
+
+    XCTAssertEqual(value, instance.aNullableBool)
+  }
+
+  func testANullableInt() {
+    let registrar = TestProxyApiRegistrar()
+    let api = registrar.apiDelegate.pigeonApiProxyApiTestClass(registrar)
+
+    let instance = TestProxyApiTestClass()
+    let value = try? api.pigeonDelegate.aNullableInt(pigeonApi: api, pigeonInstance: instance)
+
+    XCTAssertEqual(value, instance.aNullableInt)
+  }
+
+  func testANullableDouble() {
+    let registrar = TestProxyApiRegistrar()
+    let api = registrar.apiDelegate.pigeonApiProxyApiTestClass(registrar)
+
+    let instance = TestProxyApiTestClass()
+    let value = try? api.pigeonDelegate.aNullableDouble(pigeonApi: api, pigeonInstance: instance)
+
+    XCTAssertEqual(value, instance.aNullableDouble)
+  }
+
+  func testANullableString() {
+    let registrar = TestProxyApiRegistrar()
+    let api = registrar.apiDelegate.pigeonApiProxyApiTestClass(registrar)
+
+    let instance = TestProxyApiTestClass()
+    let value = try? api.pigeonDelegate.aNullableString(pigeonApi: api, pigeonInstance: instance)
+
+    XCTAssertEqual(value, instance.aNullableString)
+  }
+
+  func testANullableUint8List() {
+    let registrar = TestProxyApiRegistrar()
+    let api = registrar.apiDelegate.pigeonApiProxyApiTestClass(registrar)
+
+    let instance = TestProxyApiTestClass()
+    let value = try? api.pigeonDelegate.aNullableUint8List(pigeonApi: api, pigeonInstance: instance)
+
+    XCTAssertEqual(value, instance.aNullableUint8List)
+  }
+
+  func testANullableList() {
+    let registrar = TestProxyApiRegistrar()
+    let api = registrar.apiDelegate.pigeonApiProxyApiTestClass(registrar)
+
+    let instance = TestProxyApiTestClass()
+    let value = try? api.pigeonDelegate.aNullableList(pigeonApi: api, pigeonInstance: instance)
+
+    XCTAssertEqual(value, instance.aNullableList)
+  }
+
+  func testANullableMap() {
+    let registrar = TestProxyApiRegistrar()
+    let api = registrar.apiDelegate.pigeonApiProxyApiTestClass(registrar)
+
+    let instance = TestProxyApiTestClass()
+    let value = try? api.pigeonDelegate.aNullableMap(pigeonApi: api, pigeonInstance: instance)
+
+    XCTAssertEqual(value, instance.aNullableMap)
+  }
+
+  func testANullableEnum() {
+    let registrar = TestProxyApiRegistrar()
+    let api = registrar.apiDelegate.pigeonApiProxyApiTestClass(registrar)
+
+    let instance = TestProxyApiTestClass()
+    let value = try? api.pigeonDelegate.aNullableEnum(pigeonApi: api, pigeonInstance: instance)
+
+    XCTAssertEqual(value, instance.aNullableEnum)
+  }
+
+  func testANullableProxyApi() {
+    let registrar = TestProxyApiRegistrar()
+    let api = registrar.apiDelegate.pigeonApiProxyApiTestClass(registrar)
+
+    let instance = TestProxyApiTestClass()
+    let value = try? api.pigeonDelegate.aNullableProxyApi(pigeonApi: api, pigeonInstance: instance)
+
+    XCTAssertEqual(value, instance.aNullableProxyApi)
+  }
+
+  func testAttachedField() {
+    let registrar = TestProxyApiRegistrar()
+    let api = registrar.apiDelegate.pigeonApiProxyApiTestClass(registrar)
+
+    let instance = TestProxyApiTestClass()
+    let value = try? api.pigeonDelegate.attachedField(pigeonApi: api, pigeonInstance: instance)
+
+    XCTAssertEqual(value, instance.attachedField)
+  }
+
+  func testNoop() {
+    let registrar = TestProxyApiRegistrar()
+    let api = registrar.apiDelegate.pigeonApiProxyApiTestClass(registrar)
+
+    let instance = TestProxyApiTestClass()
+    api.pigeonDelegate.noop(pigeonApi: api, pigeonInstance: instance )
+
+    XCTAssertTrue(instance.noopCalled)
+  }
+
+  func testThrowError() {
+    let registrar = TestProxyApiRegistrar()
+    let api = registrar.apiDelegate.pigeonApiProxyApiTestClass(registrar)
+
+    let instance = TestProxyApiTestClass()
+    let value = api.pigeonDelegate.throwError(pigeonApi: api, pigeonInstance: instance )
+
+    XCTAssertTrue(instance.throwErrorCalled)
+    XCTAssertEqual(value, instance.throwError())
+  }
+
+  func testThrowErrorFromVoid() {
+    let registrar = TestProxyApiRegistrar()
+    let api = registrar.apiDelegate.pigeonApiProxyApiTestClass(registrar)
+
+    let instance = TestProxyApiTestClass()
+    api.pigeonDelegate.throwErrorFromVoid(pigeonApi: api, pigeonInstance: instance )
+
+    XCTAssertTrue(instance.throwErrorFromVoidCalled)
+  }
+
+  func testThrowFlutterError() {
+    let registrar = TestProxyApiRegistrar()
+    let api = registrar.apiDelegate.pigeonApiProxyApiTestClass(registrar)
+
+    let instance = TestProxyApiTestClass()
+    let value = api.pigeonDelegate.throwFlutterError(pigeonApi: api, pigeonInstance: instance )
+
+    XCTAssertTrue(instance.throwFlutterErrorCalled)
+    XCTAssertEqual(value, instance.throwFlutterError())
+  }
+
+  func testEchoInt() {
+    let registrar = TestProxyApiRegistrar()
+    let api = registrar.apiDelegate.pigeonApiProxyApiTestClass(registrar)
+
+    let instance = TestProxyApiTestClass()
+    let anInt = 0
+    let value = api.pigeonDelegate.echoInt(pigeonApi: api, pigeonInstance: instance, anInt: anInt)
+
+    XCTAssertEqual(instance.echoIntArgs, [anInt])
+    XCTAssertEqual(value, instance.echoInt(anInt: anInt))
+  }
+
+  func testEchoDouble() {
+    let registrar = TestProxyApiRegistrar()
+    let api = registrar.apiDelegate.pigeonApiProxyApiTestClass(registrar)
+
+    let instance = TestProxyApiTestClass()
+    let aDouble = 1.0
+    let value = api.pigeonDelegate.echoDouble(pigeonApi: api, pigeonInstance: instance, aDouble: aDouble)
+
+    XCTAssertEqual(instance.echoDoubleArgs, [aDouble])
+    XCTAssertEqual(value, instance.echoDouble(aDouble: aDouble))
+  }
+
+  func testEchoBool() {
+    let registrar = TestProxyApiRegistrar()
+    let api = registrar.apiDelegate.pigeonApiProxyApiTestClass(registrar)
+
+    let instance = TestProxyApiTestClass()
+    let aBool = true
+    let value = api.pigeonDelegate.echoBool(pigeonApi: api, pigeonInstance: instance, aBool: aBool)
+
+    XCTAssertEqual(instance.echoBoolArgs, [aBool])
+    XCTAssertEqual(value, instance.echoBool(aBool: aBool))
+  }
+
+  func testEchoString() {
+    let registrar = TestProxyApiRegistrar()
+    let api = registrar.apiDelegate.pigeonApiProxyApiTestClass(registrar)
+
+    let instance = TestProxyApiTestClass()
+    let aString = "myString"
+    let value = api.pigeonDelegate.echoString(pigeonApi: api, pigeonInstance: instance, aString: aString)
+
+    XCTAssertEqual(instance.echoStringArgs, [aString])
+    XCTAssertEqual(value, instance.echoString(aString: aString))
+  }
+
+  func testEchoUint8List() {
+    let registrar = TestProxyApiRegistrar()
+    let api = registrar.apiDelegate.pigeonApiProxyApiTestClass(registrar)
+
+    let instance = TestProxyApiTestClass()
+    let aUint8List = byteArrayOf(0xA1.toByte())
+    let value = api.pigeonDelegate.echoUint8List(pigeonApi: api, pigeonInstance: instance, aUint8List: aUint8List)
+
+    XCTAssertEqual(instance.echoUint8ListArgs, [aUint8List])
+    XCTAssertEqual(value, instance.echoUint8List(aUint8List: aUint8List))
+  }
+
+  func testEchoObject() {
+    let registrar = TestProxyApiRegistrar()
+    let api = registrar.apiDelegate.pigeonApiProxyApiTestClass(registrar)
+
+    let instance = TestProxyApiTestClass()
+    let anObject = -1
+    let value = api.pigeonDelegate.echoObject(pigeonApi: api, pigeonInstance: instance, anObject: anObject)
+
+    XCTAssertEqual(instance.echoObjectArgs, [anObject])
+    XCTAssertEqual(value, instance.echoObject(anObject: anObject))
+  }
+
+  func testEchoList() {
+    let registrar = TestProxyApiRegistrar()
+    let api = registrar.apiDelegate.pigeonApiProxyApiTestClass(registrar)
+
+    let instance = TestProxyApiTestClass()
+    let aList = [-1]
+    let value = api.pigeonDelegate.echoList(pigeonApi: api, pigeonInstance: instance, aList: aList)
+
+    XCTAssertEqual(instance.echoListArgs, [aList])
+    XCTAssertEqual(value, instance.echoList(aList: aList))
+  }
+
+  func testEchoProxyApiList() {
+    let registrar = TestProxyApiRegistrar()
+    let api = registrar.apiDelegate.pigeonApiProxyApiTestClass(registrar)
+
+    let instance = TestProxyApiTestClass()
+    let aList = [TestProxyApiTestClass]
+    let value = api.pigeonDelegate.echoProxyApiList(pigeonApi: api, pigeonInstance: instance, aList: aList)
+
+    XCTAssertEqual(instance.echoProxyApiListArgs, [aList])
+    XCTAssertEqual(value, instance.echoProxyApiList(aList: aList))
+  }
+
+  func testEchoMap() {
+    let registrar = TestProxyApiRegistrar()
+    let api = registrar.apiDelegate.pigeonApiProxyApiTestClass(registrar)
+
+    let instance = TestProxyApiTestClass()
+    let aMap = ["myString": -1]
+    let value = api.pigeonDelegate.echoMap(pigeonApi: api, pigeonInstance: instance, aMap: aMap)
+
+    XCTAssertEqual(instance.echoMapArgs, [aMap])
+    XCTAssertEqual(value, instance.echoMap(aMap: aMap))
+  }
+
+  func testEchoProxyApiMap() {
+    let registrar = TestProxyApiRegistrar()
+    let api = registrar.apiDelegate.pigeonApiProxyApiTestClass(registrar)
+
+    let instance = TestProxyApiTestClass()
+    let aMap = ["myString": TestProxyApiTestClass]
+    let value = api.pigeonDelegate.echoProxyApiMap(pigeonApi: api, pigeonInstance: instance, aMap: aMap)
+
+    XCTAssertEqual(instance.echoProxyApiMapArgs, [aMap])
+    XCTAssertEqual(value, instance.echoProxyApiMap(aMap: aMap))
+  }
+
+  func testEchoEnum() {
+    let registrar = TestProxyApiRegistrar()
+    let api = registrar.apiDelegate.pigeonApiProxyApiTestClass(registrar)
+
+    let instance = TestProxyApiTestClass()
+    let anEnum = .one
+    let value = api.pigeonDelegate.echoEnum(pigeonApi: api, pigeonInstance: instance, anEnum: anEnum)
+
+    XCTAssertEqual(instance.echoEnumArgs, [anEnum])
+    XCTAssertEqual(value, instance.echoEnum(anEnum: anEnum))
+  }
+
+  func testEchoProxyApi() {
+    let registrar = TestProxyApiRegistrar()
+    let api = registrar.apiDelegate.pigeonApiProxyApiTestClass(registrar)
+
+    let instance = TestProxyApiTestClass()
+    let aProxyApi = TestProxyApiSuperClass
+    let value = api.pigeonDelegate.echoProxyApi(pigeonApi: api, pigeonInstance: instance, aProxyApi: aProxyApi)
+
+    XCTAssertEqual(instance.echoProxyApiArgs, [aProxyApi])
+    XCTAssertEqual(value, instance.echoProxyApi(aProxyApi: aProxyApi))
+  }
+
+  func testEchoNullableInt() {
+    let registrar = TestProxyApiRegistrar()
+    let api = registrar.apiDelegate.pigeonApiProxyApiTestClass(registrar)
+
+    let instance = TestProxyApiTestClass()
+    let aNullableInt = 0
+    let value = api.pigeonDelegate.echoNullableInt(pigeonApi: api, pigeonInstance: instance, aNullableInt: aNullableInt)
+
+    XCTAssertEqual(instance.echoNullableIntArgs, [aNullableInt])
+    XCTAssertEqual(value, instance.echoNullableInt(aNullableInt: aNullableInt))
+  }
+
+  func testEchoNullableDouble() {
+    let registrar = TestProxyApiRegistrar()
+    let api = registrar.apiDelegate.pigeonApiProxyApiTestClass(registrar)
+
+    let instance = TestProxyApiTestClass()
+    let aNullableDouble = 1.0
+    let value = api.pigeonDelegate.echoNullableDouble(pigeonApi: api, pigeonInstance: instance, aNullableDouble: aNullableDouble)
+
+    XCTAssertEqual(instance.echoNullableDoubleArgs, [aNullableDouble])
+    XCTAssertEqual(value, instance.echoNullableDouble(aNullableDouble: aNullableDouble))
+  }
+
+  func testEchoNullableBool() {
+    let registrar = TestProxyApiRegistrar()
+    let api = registrar.apiDelegate.pigeonApiProxyApiTestClass(registrar)
+
+    let instance = TestProxyApiTestClass()
+    let aNullableBool = true
+    let value = api.pigeonDelegate.echoNullableBool(pigeonApi: api, pigeonInstance: instance, aNullableBool: aNullableBool)
+
+    XCTAssertEqual(instance.echoNullableBoolArgs, [aNullableBool])
+    XCTAssertEqual(value, instance.echoNullableBool(aNullableBool: aNullableBool))
+  }
+
+  func testEchoNullableString() {
+    let registrar = TestProxyApiRegistrar()
+    let api = registrar.apiDelegate.pigeonApiProxyApiTestClass(registrar)
+
+    let instance = TestProxyApiTestClass()
+    let aNullableString = "myString"
+    let value = api.pigeonDelegate.echoNullableString(pigeonApi: api, pigeonInstance: instance, aNullableString: aNullableString)
+
+    XCTAssertEqual(instance.echoNullableStringArgs, [aNullableString])
+    XCTAssertEqual(value, instance.echoNullableString(aNullableString: aNullableString))
+  }
+
+  func testEchoNullableUint8List() {
+    let registrar = TestProxyApiRegistrar()
+    let api = registrar.apiDelegate.pigeonApiProxyApiTestClass(registrar)
+
+    let instance = TestProxyApiTestClass()
+    let aNullableUint8List = byteArrayOf(0xA1.toByte())
+    let value = api.pigeonDelegate.echoNullableUint8List(pigeonApi: api, pigeonInstance: instance, aNullableUint8List: aNullableUint8List)
+
+    XCTAssertEqual(instance.echoNullableUint8ListArgs, [aNullableUint8List])
+    XCTAssertEqual(value, instance.echoNullableUint8List(aNullableUint8List: aNullableUint8List))
+  }
+
+  func testEchoNullableObject() {
+    let registrar = TestProxyApiRegistrar()
+    let api = registrar.apiDelegate.pigeonApiProxyApiTestClass(registrar)
+
+    let instance = TestProxyApiTestClass()
+    let aNullableObject = -1
+    let value = api.pigeonDelegate.echoNullableObject(pigeonApi: api, pigeonInstance: instance, aNullableObject: aNullableObject)
+
+    XCTAssertEqual(instance.echoNullableObjectArgs, [aNullableObject])
+    XCTAssertEqual(value, instance.echoNullableObject(aNullableObject: aNullableObject))
+  }
+
+  func testEchoNullableList() {
+    let registrar = TestProxyApiRegistrar()
+    let api = registrar.apiDelegate.pigeonApiProxyApiTestClass(registrar)
+
+    let instance = TestProxyApiTestClass()
+    let aNullableList = [-1]
+    let value = api.pigeonDelegate.echoNullableList(pigeonApi: api, pigeonInstance: instance, aNullableList: aNullableList)
+
+    XCTAssertEqual(instance.echoNullableListArgs, [aNullableList])
+    XCTAssertEqual(value, instance.echoNullableList(aNullableList: aNullableList))
+  }
+
+  func testEchoNullableMap() {
+    let registrar = TestProxyApiRegistrar()
+    let api = registrar.apiDelegate.pigeonApiProxyApiTestClass(registrar)
+
+    let instance = TestProxyApiTestClass()
+    let aNullableMap = ["myString": -1]
+    let value = api.pigeonDelegate.echoNullableMap(pigeonApi: api, pigeonInstance: instance, aNullableMap: aNullableMap)
+
+    XCTAssertEqual(instance.echoNullableMapArgs, [aNullableMap])
+    XCTAssertEqual(value, instance.echoNullableMap(aNullableMap: aNullableMap))
+  }
+
+  func testEchoNullableEnum() {
+    let registrar = TestProxyApiRegistrar()
+    let api = registrar.apiDelegate.pigeonApiProxyApiTestClass(registrar)
+
+    let instance = TestProxyApiTestClass()
+    let aNullableEnum = .one
+    let value = api.pigeonDelegate.echoNullableEnum(pigeonApi: api, pigeonInstance: instance, aNullableEnum: aNullableEnum)
+
+    XCTAssertEqual(instance.echoNullableEnumArgs, [aNullableEnum])
+    XCTAssertEqual(value, instance.echoNullableEnum(aNullableEnum: aNullableEnum))
+  }
+
+  func testEchoNullableProxyApi() {
+    let registrar = TestProxyApiRegistrar()
+    let api = registrar.apiDelegate.pigeonApiProxyApiTestClass(registrar)
+
+    let instance = TestProxyApiTestClass()
+    let aNullableProxyApi = TestProxyApiSuperClass
+    let value = api.pigeonDelegate.echoNullableProxyApi(pigeonApi: api, pigeonInstance: instance, aNullableProxyApi: aNullableProxyApi)
+
+    XCTAssertEqual(instance.echoNullableProxyApiArgs, [aNullableProxyApi])
+    XCTAssertEqual(value, instance.echoNullableProxyApi(aNullableProxyApi: aNullableProxyApi))
+  }
+
+  func testNoopAsync() {
+    let registrar = TestProxyApiRegistrar()
+    let api = registrar.apiDelegate.pigeonApiProxyApiTestClass(registrar)
+
+    let instance = TestProxyApiTestClass()
+    api.pigeonDelegate.noopAsync(pigeonApi: api, pigeonInstance: instance )
+
+    XCTAssertTrue(instance.noopAsyncCalled)
+  }
+
+  func testEchoAsyncInt() {
+    let registrar = TestProxyApiRegistrar()
+    let api = registrar.apiDelegate.pigeonApiProxyApiTestClass(registrar)
+
+    let instance = TestProxyApiTestClass()
+    let anInt = 0
+    let value = api.pigeonDelegate.echoAsyncInt(pigeonApi: api, pigeonInstance: instance, anInt: anInt)
+
+    XCTAssertEqual(instance.echoAsyncIntArgs, [anInt])
+    XCTAssertEqual(value, instance.echoAsyncInt(anInt: anInt))
+  }
+
+  func testEchoAsyncDouble() {
+    let registrar = TestProxyApiRegistrar()
+    let api = registrar.apiDelegate.pigeonApiProxyApiTestClass(registrar)
+
+    let instance = TestProxyApiTestClass()
+    let aDouble = 1.0
+    let value = api.pigeonDelegate.echoAsyncDouble(pigeonApi: api, pigeonInstance: instance, aDouble: aDouble)
+
+    XCTAssertEqual(instance.echoAsyncDoubleArgs, [aDouble])
+    XCTAssertEqual(value, instance.echoAsyncDouble(aDouble: aDouble))
+  }
+
+  func testEchoAsyncBool() {
+    let registrar = TestProxyApiRegistrar()
+    let api = registrar.apiDelegate.pigeonApiProxyApiTestClass(registrar)
+
+    let instance = TestProxyApiTestClass()
+    let aBool = true
+    let value = api.pigeonDelegate.echoAsyncBool(pigeonApi: api, pigeonInstance: instance, aBool: aBool)
+
+    XCTAssertEqual(instance.echoAsyncBoolArgs, [aBool])
+    XCTAssertEqual(value, instance.echoAsyncBool(aBool: aBool))
+  }
+
+  func testEchoAsyncString() {
+    let registrar = TestProxyApiRegistrar()
+    let api = registrar.apiDelegate.pigeonApiProxyApiTestClass(registrar)
+
+    let instance = TestProxyApiTestClass()
+    let aString = "myString"
+    let value = api.pigeonDelegate.echoAsyncString(pigeonApi: api, pigeonInstance: instance, aString: aString)
+
+    XCTAssertEqual(instance.echoAsyncStringArgs, [aString])
+    XCTAssertEqual(value, instance.echoAsyncString(aString: aString))
+  }
+
+  func testEchoAsyncUint8List() {
+    let registrar = TestProxyApiRegistrar()
+    let api = registrar.apiDelegate.pigeonApiProxyApiTestClass(registrar)
+
+    let instance = TestProxyApiTestClass()
+    let aUint8List = byteArrayOf(0xA1.toByte())
+    let value = api.pigeonDelegate.echoAsyncUint8List(pigeonApi: api, pigeonInstance: instance, aUint8List: aUint8List)
+
+    XCTAssertEqual(instance.echoAsyncUint8ListArgs, [aUint8List])
+    XCTAssertEqual(value, instance.echoAsyncUint8List(aUint8List: aUint8List))
+  }
+
+  func testEchoAsyncObject() {
+    let registrar = TestProxyApiRegistrar()
+    let api = registrar.apiDelegate.pigeonApiProxyApiTestClass(registrar)
+
+    let instance = TestProxyApiTestClass()
+    let anObject = -1
+    let value = api.pigeonDelegate.echoAsyncObject(pigeonApi: api, pigeonInstance: instance, anObject: anObject)
+
+    XCTAssertEqual(instance.echoAsyncObjectArgs, [anObject])
+    XCTAssertEqual(value, instance.echoAsyncObject(anObject: anObject))
+  }
+
+  func testEchoAsyncList() {
+    let registrar = TestProxyApiRegistrar()
+    let api = registrar.apiDelegate.pigeonApiProxyApiTestClass(registrar)
+
+    let instance = TestProxyApiTestClass()
+    let aList = [-1]
+    let value = api.pigeonDelegate.echoAsyncList(pigeonApi: api, pigeonInstance: instance, aList: aList)
+
+    XCTAssertEqual(instance.echoAsyncListArgs, [aList])
+    XCTAssertEqual(value, instance.echoAsyncList(aList: aList))
+  }
+
+  func testEchoAsyncMap() {
+    let registrar = TestProxyApiRegistrar()
+    let api = registrar.apiDelegate.pigeonApiProxyApiTestClass(registrar)
+
+    let instance = TestProxyApiTestClass()
+    let aMap = ["myString": -1]
+    let value = api.pigeonDelegate.echoAsyncMap(pigeonApi: api, pigeonInstance: instance, aMap: aMap)
+
+    XCTAssertEqual(instance.echoAsyncMapArgs, [aMap])
+    XCTAssertEqual(value, instance.echoAsyncMap(aMap: aMap))
+  }
+
+  func testEchoAsyncEnum() {
+    let registrar = TestProxyApiRegistrar()
+    let api = registrar.apiDelegate.pigeonApiProxyApiTestClass(registrar)
+
+    let instance = TestProxyApiTestClass()
+    let anEnum = .one
+    let value = api.pigeonDelegate.echoAsyncEnum(pigeonApi: api, pigeonInstance: instance, anEnum: anEnum)
+
+    XCTAssertEqual(instance.echoAsyncEnumArgs, [anEnum])
+    XCTAssertEqual(value, instance.echoAsyncEnum(anEnum: anEnum))
+  }
+
+  func testThrowAsyncError() {
+    let registrar = TestProxyApiRegistrar()
+    let api = registrar.apiDelegate.pigeonApiProxyApiTestClass(registrar)
+
+    let instance = TestProxyApiTestClass()
+    let value = api.pigeonDelegate.throwAsyncError(pigeonApi: api, pigeonInstance: instance )
+
+    XCTAssertTrue(instance.throwAsyncErrorCalled)
+    XCTAssertEqual(value, instance.throwAsyncError())
+  }
+
+  func testThrowAsyncErrorFromVoid() {
+    let registrar = TestProxyApiRegistrar()
+    let api = registrar.apiDelegate.pigeonApiProxyApiTestClass(registrar)
+
+    let instance = TestProxyApiTestClass()
+    api.pigeonDelegate.throwAsyncErrorFromVoid(pigeonApi: api, pigeonInstance: instance )
+
+    XCTAssertTrue(instance.throwAsyncErrorFromVoidCalled)
+  }
+
+  func testThrowAsyncFlutterError() {
+    let registrar = TestProxyApiRegistrar()
+    let api = registrar.apiDelegate.pigeonApiProxyApiTestClass(registrar)
+
+    let instance = TestProxyApiTestClass()
+    let value = api.pigeonDelegate.throwAsyncFlutterError(pigeonApi: api, pigeonInstance: instance )
+
+    XCTAssertTrue(instance.throwAsyncFlutterErrorCalled)
+    XCTAssertEqual(value, instance.throwAsyncFlutterError())
+  }
+
+  func testEchoAsyncNullableInt() {
+    let registrar = TestProxyApiRegistrar()
+    let api = registrar.apiDelegate.pigeonApiProxyApiTestClass(registrar)
+
+    let instance = TestProxyApiTestClass()
+    let anInt = 0
+    let value = api.pigeonDelegate.echoAsyncNullableInt(pigeonApi: api, pigeonInstance: instance, anInt: anInt)
+
+    XCTAssertEqual(instance.echoAsyncNullableIntArgs, [anInt])
+    XCTAssertEqual(value, instance.echoAsyncNullableInt(anInt: anInt))
+  }
+
+  func testEchoAsyncNullableDouble() {
+    let registrar = TestProxyApiRegistrar()
+    let api = registrar.apiDelegate.pigeonApiProxyApiTestClass(registrar)
+
+    let instance = TestProxyApiTestClass()
+    let aDouble = 1.0
+    let value = api.pigeonDelegate.echoAsyncNullableDouble(pigeonApi: api, pigeonInstance: instance, aDouble: aDouble)
+
+    XCTAssertEqual(instance.echoAsyncNullableDoubleArgs, [aDouble])
+    XCTAssertEqual(value, instance.echoAsyncNullableDouble(aDouble: aDouble))
+  }
+
+  func testEchoAsyncNullableBool() {
+    let registrar = TestProxyApiRegistrar()
+    let api = registrar.apiDelegate.pigeonApiProxyApiTestClass(registrar)
+
+    let instance = TestProxyApiTestClass()
+    let aBool = true
+    let value = api.pigeonDelegate.echoAsyncNullableBool(pigeonApi: api, pigeonInstance: instance, aBool: aBool)
+
+    XCTAssertEqual(instance.echoAsyncNullableBoolArgs, [aBool])
+    XCTAssertEqual(value, instance.echoAsyncNullableBool(aBool: aBool))
+  }
+
+  func testEchoAsyncNullableString() {
+    let registrar = TestProxyApiRegistrar()
+    let api = registrar.apiDelegate.pigeonApiProxyApiTestClass(registrar)
+
+    let instance = TestProxyApiTestClass()
+    let aString = "myString"
+    let value = api.pigeonDelegate.echoAsyncNullableString(pigeonApi: api, pigeonInstance: instance, aString: aString)
+
+    XCTAssertEqual(instance.echoAsyncNullableStringArgs, [aString])
+    XCTAssertEqual(value, instance.echoAsyncNullableString(aString: aString))
+  }
+
+  func testEchoAsyncNullableUint8List() {
+    let registrar = TestProxyApiRegistrar()
+    let api = registrar.apiDelegate.pigeonApiProxyApiTestClass(registrar)
+
+    let instance = TestProxyApiTestClass()
+    let aUint8List = byteArrayOf(0xA1.toByte())
+    let value = api.pigeonDelegate.echoAsyncNullableUint8List(pigeonApi: api, pigeonInstance: instance, aUint8List: aUint8List)
+
+    XCTAssertEqual(instance.echoAsyncNullableUint8ListArgs, [aUint8List])
+    XCTAssertEqual(value, instance.echoAsyncNullableUint8List(aUint8List: aUint8List))
+  }
+
+  func testEchoAsyncNullableObject() {
+    let registrar = TestProxyApiRegistrar()
+    let api = registrar.apiDelegate.pigeonApiProxyApiTestClass(registrar)
+
+    let instance = TestProxyApiTestClass()
+    let anObject = -1
+    let value = api.pigeonDelegate.echoAsyncNullableObject(pigeonApi: api, pigeonInstance: instance, anObject: anObject)
+
+    XCTAssertEqual(instance.echoAsyncNullableObjectArgs, [anObject])
+    XCTAssertEqual(value, instance.echoAsyncNullableObject(anObject: anObject))
+  }
+
+  func testEchoAsyncNullableList() {
+    let registrar = TestProxyApiRegistrar()
+    let api = registrar.apiDelegate.pigeonApiProxyApiTestClass(registrar)
+
+    let instance = TestProxyApiTestClass()
+    let aList = [-1]
+    let value = api.pigeonDelegate.echoAsyncNullableList(pigeonApi: api, pigeonInstance: instance, aList: aList)
+
+    XCTAssertEqual(instance.echoAsyncNullableListArgs, [aList])
+    XCTAssertEqual(value, instance.echoAsyncNullableList(aList: aList))
+  }
+
+  func testEchoAsyncNullableMap() {
+    let registrar = TestProxyApiRegistrar()
+    let api = registrar.apiDelegate.pigeonApiProxyApiTestClass(registrar)
+
+    let instance = TestProxyApiTestClass()
+    let aMap = ["myString": -1]
+    let value = api.pigeonDelegate.echoAsyncNullableMap(pigeonApi: api, pigeonInstance: instance, aMap: aMap)
+
+    XCTAssertEqual(instance.echoAsyncNullableMapArgs, [aMap])
+    XCTAssertEqual(value, instance.echoAsyncNullableMap(aMap: aMap))
+  }
+
+  func testEchoAsyncNullableEnum() {
+    let registrar = TestProxyApiRegistrar()
+    let api = registrar.apiDelegate.pigeonApiProxyApiTestClass(registrar)
+
+    let instance = TestProxyApiTestClass()
+    let anEnum = .one
+    let value = api.pigeonDelegate.echoAsyncNullableEnum(pigeonApi: api, pigeonInstance: instance, anEnum: anEnum)
+
+    XCTAssertEqual(instance.echoAsyncNullableEnumArgs, [anEnum])
+    XCTAssertEqual(value, instance.echoAsyncNullableEnum(anEnum: anEnum))
+  }
+
+  func testCallFlutterNoop() {
+    let registrar = TestProxyApiRegistrar()
+    let api = registrar.apiDelegate.pigeonApiProxyApiTestClass(registrar)
+
+    let instance = TestProxyApiTestClass()
+    api.pigeonDelegate.callFlutterNoop(pigeonApi: api, pigeonInstance: instance )
+
+    XCTAssertTrue(instance.callFlutterNoopCalled)
+  }
+
+  func testCallFlutterThrowError() {
+    let registrar = TestProxyApiRegistrar()
+    let api = registrar.apiDelegate.pigeonApiProxyApiTestClass(registrar)
+
+    let instance = TestProxyApiTestClass()
+    let value = api.pigeonDelegate.callFlutterThrowError(pigeonApi: api, pigeonInstance: instance )
+
+    XCTAssertTrue(instance.callFlutterThrowErrorCalled)
+    XCTAssertEqual(value, instance.callFlutterThrowError())
+  }
+
+  func testCallFlutterThrowErrorFromVoid() {
+    let registrar = TestProxyApiRegistrar()
+    let api = registrar.apiDelegate.pigeonApiProxyApiTestClass(registrar)
+
+    let instance = TestProxyApiTestClass()
+    api.pigeonDelegate.callFlutterThrowErrorFromVoid(pigeonApi: api, pigeonInstance: instance )
+
+    XCTAssertTrue(instance.callFlutterThrowErrorFromVoidCalled)
+  }
+
+  func testCallFlutterEchoBool() {
+    let registrar = TestProxyApiRegistrar()
+    let api = registrar.apiDelegate.pigeonApiProxyApiTestClass(registrar)
+
+    let instance = TestProxyApiTestClass()
+    let aBool = true
+    let value = api.pigeonDelegate.callFlutterEchoBool(pigeonApi: api, pigeonInstance: instance, aBool: aBool)
+
+    XCTAssertEqual(instance.callFlutterEchoBoolArgs, [aBool])
+    XCTAssertEqual(value, instance.callFlutterEchoBool(aBool: aBool))
+  }
+
+  func testCallFlutterEchoInt() {
+    let registrar = TestProxyApiRegistrar()
+    let api = registrar.apiDelegate.pigeonApiProxyApiTestClass(registrar)
+
+    let instance = TestProxyApiTestClass()
+    let anInt = 0
+    let value = api.pigeonDelegate.callFlutterEchoInt(pigeonApi: api, pigeonInstance: instance, anInt: anInt)
+
+    XCTAssertEqual(instance.callFlutterEchoIntArgs, [anInt])
+    XCTAssertEqual(value, instance.callFlutterEchoInt(anInt: anInt))
+  }
+
+  func testCallFlutterEchoDouble() {
+    let registrar = TestProxyApiRegistrar()
+    let api = registrar.apiDelegate.pigeonApiProxyApiTestClass(registrar)
+
+    let instance = TestProxyApiTestClass()
+    let aDouble = 1.0
+    let value = api.pigeonDelegate.callFlutterEchoDouble(pigeonApi: api, pigeonInstance: instance, aDouble: aDouble)
+
+    XCTAssertEqual(instance.callFlutterEchoDoubleArgs, [aDouble])
+    XCTAssertEqual(value, instance.callFlutterEchoDouble(aDouble: aDouble))
+  }
+
+  func testCallFlutterEchoString() {
+    let registrar = TestProxyApiRegistrar()
+    let api = registrar.apiDelegate.pigeonApiProxyApiTestClass(registrar)
+
+    let instance = TestProxyApiTestClass()
+    let aString = "myString"
+    let value = api.pigeonDelegate.callFlutterEchoString(pigeonApi: api, pigeonInstance: instance, aString: aString)
+
+    XCTAssertEqual(instance.callFlutterEchoStringArgs, [aString])
+    XCTAssertEqual(value, instance.callFlutterEchoString(aString: aString))
+  }
+
+  func testCallFlutterEchoUint8List() {
+    let registrar = TestProxyApiRegistrar()
+    let api = registrar.apiDelegate.pigeonApiProxyApiTestClass(registrar)
+
+    let instance = TestProxyApiTestClass()
+    let aUint8List = byteArrayOf(0xA1.toByte())
+    let value = api.pigeonDelegate.callFlutterEchoUint8List(pigeonApi: api, pigeonInstance: instance, aUint8List: aUint8List)
+
+    XCTAssertEqual(instance.callFlutterEchoUint8ListArgs, [aUint8List])
+    XCTAssertEqual(value, instance.callFlutterEchoUint8List(aUint8List: aUint8List))
+  }
+
+  func testCallFlutterEchoList() {
+    let registrar = TestProxyApiRegistrar()
+    let api = registrar.apiDelegate.pigeonApiProxyApiTestClass(registrar)
+
+    let instance = TestProxyApiTestClass()
+    let aList = [-1]
+    let value = api.pigeonDelegate.callFlutterEchoList(pigeonApi: api, pigeonInstance: instance, aList: aList)
+
+    XCTAssertEqual(instance.callFlutterEchoListArgs, [aList])
+    XCTAssertEqual(value, instance.callFlutterEchoList(aList: aList))
+  }
+
+  func testCallFlutterEchoProxyApiList() {
+    let registrar = TestProxyApiRegistrar()
+    let api = registrar.apiDelegate.pigeonApiProxyApiTestClass(registrar)
+
+    let instance = TestProxyApiTestClass()
+    let aList = [TestProxyApiTestClass]
+    let value = api.pigeonDelegate.callFlutterEchoProxyApiList(pigeonApi: api, pigeonInstance: instance, aList: aList)
+
+    XCTAssertEqual(instance.callFlutterEchoProxyApiListArgs, [aList])
+    XCTAssertEqual(value, instance.callFlutterEchoProxyApiList(aList: aList))
+  }
+
+  func testCallFlutterEchoMap() {
+    let registrar = TestProxyApiRegistrar()
+    let api = registrar.apiDelegate.pigeonApiProxyApiTestClass(registrar)
+
+    let instance = TestProxyApiTestClass()
+    let aMap = ["myString": -1]
+    let value = api.pigeonDelegate.callFlutterEchoMap(pigeonApi: api, pigeonInstance: instance, aMap: aMap)
+
+    XCTAssertEqual(instance.callFlutterEchoMapArgs, [aMap])
+    XCTAssertEqual(value, instance.callFlutterEchoMap(aMap: aMap))
+  }
+
+  func testCallFlutterEchoProxyApiMap() {
+    let registrar = TestProxyApiRegistrar()
+    let api = registrar.apiDelegate.pigeonApiProxyApiTestClass(registrar)
+
+    let instance = TestProxyApiTestClass()
+    let aMap = ["myString": TestProxyApiTestClass]
+    let value = api.pigeonDelegate.callFlutterEchoProxyApiMap(pigeonApi: api, pigeonInstance: instance, aMap: aMap)
+
+    XCTAssertEqual(instance.callFlutterEchoProxyApiMapArgs, [aMap])
+    XCTAssertEqual(value, instance.callFlutterEchoProxyApiMap(aMap: aMap))
+  }
+
+  func testCallFlutterEchoEnum() {
+    let registrar = TestProxyApiRegistrar()
+    let api = registrar.apiDelegate.pigeonApiProxyApiTestClass(registrar)
+
+    let instance = TestProxyApiTestClass()
+    let anEnum = .one
+    let value = api.pigeonDelegate.callFlutterEchoEnum(pigeonApi: api, pigeonInstance: instance, anEnum: anEnum)
+
+    XCTAssertEqual(instance.callFlutterEchoEnumArgs, [anEnum])
+    XCTAssertEqual(value, instance.callFlutterEchoEnum(anEnum: anEnum))
+  }
+
+  func testCallFlutterEchoProxyApi() {
+    let registrar = TestProxyApiRegistrar()
+    let api = registrar.apiDelegate.pigeonApiProxyApiTestClass(registrar)
+
+    let instance = TestProxyApiTestClass()
+    let aProxyApi = TestProxyApiSuperClass
+    let value = api.pigeonDelegate.callFlutterEchoProxyApi(pigeonApi: api, pigeonInstance: instance, aProxyApi: aProxyApi)
+
+    XCTAssertEqual(instance.callFlutterEchoProxyApiArgs, [aProxyApi])
+    XCTAssertEqual(value, instance.callFlutterEchoProxyApi(aProxyApi: aProxyApi))
+  }
+
+  func testCallFlutterEchoNullableBool() {
+    let registrar = TestProxyApiRegistrar()
+    let api = registrar.apiDelegate.pigeonApiProxyApiTestClass(registrar)
+
+    let instance = TestProxyApiTestClass()
+    let aBool = true
+    let value = api.pigeonDelegate.callFlutterEchoNullableBool(pigeonApi: api, pigeonInstance: instance, aBool: aBool)
+
+    XCTAssertEqual(instance.callFlutterEchoNullableBoolArgs, [aBool])
+    XCTAssertEqual(value, instance.callFlutterEchoNullableBool(aBool: aBool))
+  }
+
+  func testCallFlutterEchoNullableInt() {
+    let registrar = TestProxyApiRegistrar()
+    let api = registrar.apiDelegate.pigeonApiProxyApiTestClass(registrar)
+
+    let instance = TestProxyApiTestClass()
+    let anInt = 0
+    let value = api.pigeonDelegate.callFlutterEchoNullableInt(pigeonApi: api, pigeonInstance: instance, anInt: anInt)
+
+    XCTAssertEqual(instance.callFlutterEchoNullableIntArgs, [anInt])
+    XCTAssertEqual(value, instance.callFlutterEchoNullableInt(anInt: anInt))
+  }
+
+  func testCallFlutterEchoNullableDouble() {
+    let registrar = TestProxyApiRegistrar()
+    let api = registrar.apiDelegate.pigeonApiProxyApiTestClass(registrar)
+
+    let instance = TestProxyApiTestClass()
+    let aDouble = 1.0
+    let value = api.pigeonDelegate.callFlutterEchoNullableDouble(pigeonApi: api, pigeonInstance: instance, aDouble: aDouble)
+
+    XCTAssertEqual(instance.callFlutterEchoNullableDoubleArgs, [aDouble])
+    XCTAssertEqual(value, instance.callFlutterEchoNullableDouble(aDouble: aDouble))
+  }
+
+  func testCallFlutterEchoNullableString() {
+    let registrar = TestProxyApiRegistrar()
+    let api = registrar.apiDelegate.pigeonApiProxyApiTestClass(registrar)
+
+    let instance = TestProxyApiTestClass()
+    let aString = "myString"
+    let value = api.pigeonDelegate.callFlutterEchoNullableString(pigeonApi: api, pigeonInstance: instance, aString: aString)
+
+    XCTAssertEqual(instance.callFlutterEchoNullableStringArgs, [aString])
+    XCTAssertEqual(value, instance.callFlutterEchoNullableString(aString: aString))
+  }
+
+  func testCallFlutterEchoNullableUint8List() {
+    let registrar = TestProxyApiRegistrar()
+    let api = registrar.apiDelegate.pigeonApiProxyApiTestClass(registrar)
+
+    let instance = TestProxyApiTestClass()
+    let aUint8List = byteArrayOf(0xA1.toByte())
+    let value = api.pigeonDelegate.callFlutterEchoNullableUint8List(pigeonApi: api, pigeonInstance: instance, aUint8List: aUint8List)
+
+    XCTAssertEqual(instance.callFlutterEchoNullableUint8ListArgs, [aUint8List])
+    XCTAssertEqual(value, instance.callFlutterEchoNullableUint8List(aUint8List: aUint8List))
+  }
+
+  func testCallFlutterEchoNullableList() {
+    let registrar = TestProxyApiRegistrar()
+    let api = registrar.apiDelegate.pigeonApiProxyApiTestClass(registrar)
+
+    let instance = TestProxyApiTestClass()
+    let aList = [-1]
+    let value = api.pigeonDelegate.callFlutterEchoNullableList(pigeonApi: api, pigeonInstance: instance, aList: aList)
+
+    XCTAssertEqual(instance.callFlutterEchoNullableListArgs, [aList])
+    XCTAssertEqual(value, instance.callFlutterEchoNullableList(aList: aList))
+  }
+
+  func testCallFlutterEchoNullableMap() {
+    let registrar = TestProxyApiRegistrar()
+    let api = registrar.apiDelegate.pigeonApiProxyApiTestClass(registrar)
+
+    let instance = TestProxyApiTestClass()
+    let aMap = ["myString": -1]
+    let value = api.pigeonDelegate.callFlutterEchoNullableMap(pigeonApi: api, pigeonInstance: instance, aMap: aMap)
+
+    XCTAssertEqual(instance.callFlutterEchoNullableMapArgs, [aMap])
+    XCTAssertEqual(value, instance.callFlutterEchoNullableMap(aMap: aMap))
+  }
+
+  func testCallFlutterEchoNullableEnum() {
+    let registrar = TestProxyApiRegistrar()
+    let api = registrar.apiDelegate.pigeonApiProxyApiTestClass(registrar)
+
+    let instance = TestProxyApiTestClass()
+    let anEnum = .one
+    let value = api.pigeonDelegate.callFlutterEchoNullableEnum(pigeonApi: api, pigeonInstance: instance, anEnum: anEnum)
+
+    XCTAssertEqual(instance.callFlutterEchoNullableEnumArgs, [anEnum])
+    XCTAssertEqual(value, instance.callFlutterEchoNullableEnum(anEnum: anEnum))
+  }
+
+  func testCallFlutterEchoNullableProxyApi() {
+    let registrar = TestProxyApiRegistrar()
+    let api = registrar.apiDelegate.pigeonApiProxyApiTestClass(registrar)
+
+    let instance = TestProxyApiTestClass()
+    let aProxyApi = TestProxyApiSuperClass
+    let value = api.pigeonDelegate.callFlutterEchoNullableProxyApi(pigeonApi: api, pigeonInstance: instance, aProxyApi: aProxyApi)
+
+    XCTAssertEqual(instance.callFlutterEchoNullableProxyApiArgs, [aProxyApi])
+    XCTAssertEqual(value, instance.callFlutterEchoNullableProxyApi(aProxyApi: aProxyApi))
+  }
+
+  func testCallFlutterNoopAsync() {
+    let registrar = TestProxyApiRegistrar()
+    let api = registrar.apiDelegate.pigeonApiProxyApiTestClass(registrar)
+
+    let instance = TestProxyApiTestClass()
+    api.pigeonDelegate.callFlutterNoopAsync(pigeonApi: api, pigeonInstance: instance )
+
+    XCTAssertTrue(instance.callFlutterNoopAsyncCalled)
+  }
+
+  func testCallFlutterEchoAsyncString() {
+    let registrar = TestProxyApiRegistrar()
+    let api = registrar.apiDelegate.pigeonApiProxyApiTestClass(registrar)
+
+    let instance = TestProxyApiTestClass()
+    let aString = "myString"
+    let value = api.pigeonDelegate.callFlutterEchoAsyncString(pigeonApi: api, pigeonInstance: instance, aString: aString)
+
+    XCTAssertEqual(instance.callFlutterEchoAsyncStringArgs, [aString])
+    XCTAssertEqual(value, instance.callFlutterEchoAsyncString(aString: aString))
+  }
+
+  func testFlutterNoop() {
+    let api = TestProxyApiTestClassApi()
+    let instance = ProxyApiTestClassImpl(api: api)
+    instance.flutterNoop()
+
+    XCTAssertTrue(instance.flutterNoopCalled)
+  }
+
+  func testFlutterThrowError() {
+    let api = TestProxyApiTestClassApi()
+    let instance = ProxyApiTestClassImpl(api: api)
+    instance.flutterThrowError()
+
+    XCTAssertTrue(instance.flutterThrowErrorCalled)
+  }
+
+  func testFlutterThrowErrorFromVoid() {
+    let api = TestProxyApiTestClassApi()
+    let instance = ProxyApiTestClassImpl(api: api)
+    instance.flutterThrowErrorFromVoid()
+
+    XCTAssertTrue(instance.flutterThrowErrorFromVoidCalled)
+  }
+
+  func testFlutterEchoBool() {
+    let api = TestProxyApiTestClassApi()
+    let instance = ProxyApiTestClassImpl(api: api)
+    let aBool = true
+    instance.flutterEchoBool(aBool: aBool)
+
+    XCTAssertEqual(api.flutterEchoBoolArgs, [aBool])
+  }
+
+  func testFlutterEchoInt() {
+    let api = TestProxyApiTestClassApi()
+    let instance = ProxyApiTestClassImpl(api: api)
+    let anInt = 0
+    instance.flutterEchoInt(anInt: anInt)
+
+    XCTAssertEqual(api.flutterEchoIntArgs, [anInt])
+  }
+
+  func testFlutterEchoDouble() {
+    let api = TestProxyApiTestClassApi()
+    let instance = ProxyApiTestClassImpl(api: api)
+    let aDouble = 1.0
+    instance.flutterEchoDouble(aDouble: aDouble)
+
+    XCTAssertEqual(api.flutterEchoDoubleArgs, [aDouble])
+  }
+
+  func testFlutterEchoString() {
+    let api = TestProxyApiTestClassApi()
+    let instance = ProxyApiTestClassImpl(api: api)
+    let aString = "myString"
+    instance.flutterEchoString(aString: aString)
+
+    XCTAssertEqual(api.flutterEchoStringArgs, [aString])
+  }
+
+  func testFlutterEchoUint8List() {
+    let api = TestProxyApiTestClassApi()
+    let instance = ProxyApiTestClassImpl(api: api)
+    let aList = byteArrayOf(0xA1.toByte())
+    instance.flutterEchoUint8List(aList: aList)
+
+    XCTAssertEqual(api.flutterEchoUint8ListArgs, [aList])
+  }
+
+  func testFlutterEchoList() {
+    let api = TestProxyApiTestClassApi()
+    let instance = ProxyApiTestClassImpl(api: api)
+    let aList = [-1]
+    instance.flutterEchoList(aList: aList)
+
+    XCTAssertEqual(api.flutterEchoListArgs, [aList])
+  }
+
+  func testFlutterEchoProxyApiList() {
+    let api = TestProxyApiTestClassApi()
+    let instance = ProxyApiTestClassImpl(api: api)
+    let aList = [TestProxyApiTestClass]
+    instance.flutterEchoProxyApiList(aList: aList)
+
+    XCTAssertEqual(api.flutterEchoProxyApiListArgs, [aList])
+  }
+
+  func testFlutterEchoMap() {
+    let api = TestProxyApiTestClassApi()
+    let instance = ProxyApiTestClassImpl(api: api)
+    let aMap = ["myString": -1]
+    instance.flutterEchoMap(aMap: aMap)
+
+    XCTAssertEqual(api.flutterEchoMapArgs, [aMap])
+  }
+
+  func testFlutterEchoProxyApiMap() {
+    let api = TestProxyApiTestClassApi()
+    let instance = ProxyApiTestClassImpl(api: api)
+    let aMap = ["myString": TestProxyApiTestClass]
+    instance.flutterEchoProxyApiMap(aMap: aMap)
+
+    XCTAssertEqual(api.flutterEchoProxyApiMapArgs, [aMap])
+  }
+
+  func testFlutterEchoEnum() {
+    let api = TestProxyApiTestClassApi()
+    let instance = ProxyApiTestClassImpl(api: api)
+    let anEnum = .one
+    instance.flutterEchoEnum(anEnum: anEnum)
+
+    XCTAssertEqual(api.flutterEchoEnumArgs, [anEnum])
+  }
+
+  func testFlutterEchoProxyApi() {
+    let api = TestProxyApiTestClassApi()
+    let instance = ProxyApiTestClassImpl(api: api)
+    let aProxyApi = TestProxyApiSuperClass
+    instance.flutterEchoProxyApi(aProxyApi: aProxyApi)
+
+    XCTAssertEqual(api.flutterEchoProxyApiArgs, [aProxyApi])
+  }
+
+  func testFlutterEchoNullableBool() {
+    let api = TestProxyApiTestClassApi()
+    let instance = ProxyApiTestClassImpl(api: api)
+    let aBool = true
+    instance.flutterEchoNullableBool(aBool: aBool)
+
+    XCTAssertEqual(api.flutterEchoNullableBoolArgs, [aBool])
+  }
+
+  func testFlutterEchoNullableInt() {
+    let api = TestProxyApiTestClassApi()
+    let instance = ProxyApiTestClassImpl(api: api)
+    let anInt = 0
+    instance.flutterEchoNullableInt(anInt: anInt)
+
+    XCTAssertEqual(api.flutterEchoNullableIntArgs, [anInt])
+  }
+
+  func testFlutterEchoNullableDouble() {
+    let api = TestProxyApiTestClassApi()
+    let instance = ProxyApiTestClassImpl(api: api)
+    let aDouble = 1.0
+    instance.flutterEchoNullableDouble(aDouble: aDouble)
+
+    XCTAssertEqual(api.flutterEchoNullableDoubleArgs, [aDouble])
+  }
+
+  func testFlutterEchoNullableString() {
+    let api = TestProxyApiTestClassApi()
+    let instance = ProxyApiTestClassImpl(api: api)
+    let aString = "myString"
+    instance.flutterEchoNullableString(aString: aString)
+
+    XCTAssertEqual(api.flutterEchoNullableStringArgs, [aString])
+  }
+
+  func testFlutterEchoNullableUint8List() {
+    let api = TestProxyApiTestClassApi()
+    let instance = ProxyApiTestClassImpl(api: api)
+    let aList = byteArrayOf(0xA1.toByte())
+    instance.flutterEchoNullableUint8List(aList: aList)
+
+    XCTAssertEqual(api.flutterEchoNullableUint8ListArgs, [aList])
+  }
+
+  func testFlutterEchoNullableList() {
+    let api = TestProxyApiTestClassApi()
+    let instance = ProxyApiTestClassImpl(api: api)
+    let aList = [-1]
+    instance.flutterEchoNullableList(aList: aList)
+
+    XCTAssertEqual(api.flutterEchoNullableListArgs, [aList])
+  }
+
+  func testFlutterEchoNullableMap() {
+    let api = TestProxyApiTestClassApi()
+    let instance = ProxyApiTestClassImpl(api: api)
+    let aMap = ["myString": -1]
+    instance.flutterEchoNullableMap(aMap: aMap)
+
+    XCTAssertEqual(api.flutterEchoNullableMapArgs, [aMap])
+  }
+
+  func testFlutterEchoNullableEnum() {
+    let api = TestProxyApiTestClassApi()
+    let instance = ProxyApiTestClassImpl(api: api)
+    let anEnum = .one
+    instance.flutterEchoNullableEnum(anEnum: anEnum)
+
+    XCTAssertEqual(api.flutterEchoNullableEnumArgs, [anEnum])
+  }
+
+  func testFlutterEchoNullableProxyApi() {
+    let api = TestProxyApiTestClassApi()
+    let instance = ProxyApiTestClassImpl(api: api)
+    let aProxyApi = TestProxyApiSuperClass
+    instance.flutterEchoNullableProxyApi(aProxyApi: aProxyApi)
+
+    XCTAssertEqual(api.flutterEchoNullableProxyApiArgs, [aProxyApi])
+  }
+
+  func testFlutterNoopAsync() {
+    let api = TestProxyApiTestClassApi()
+    let instance = ProxyApiTestClassImpl(api: api)
+    instance.flutterNoopAsync()
+
+    XCTAssertTrue(instance.flutterNoopAsyncCalled)
+  }
+
+  func testFlutterEchoAsyncString() {
+    let api = TestProxyApiTestClassApi()
+    let instance = ProxyApiTestClassImpl(api: api)
+    let aString = "myString"
+    instance.flutterEchoAsyncString(aString: aString)
+
+    XCTAssertEqual(api.flutterEchoAsyncStringArgs, [aString])
+  }
+
+}
+class TestProxyApiTestClass: ProxyApiTestClass {
+  private var aBoolTestValue = true
+  private var anIntTestValue = 0
+  private var aDoubleTestValue = 1.0
+  private var aStringTestValue = "myString"
+  private var aUint8ListTestValue = byteArrayOf(0xA1.toByte())
+  private var aListTestValue = [-1]
+  private var aMapTestValue = ["myString": -1]
+  private var anEnumTestValue = .one
+  private var aProxyApiTestValue = TestProxyApiSuperClass
+  private var aNullableBoolTestValue = true
+  private var aNullableIntTestValue = 0
+  private var aNullableDoubleTestValue = 1.0
+  private var aNullableStringTestValue = "myString"
+  private var aNullableUint8ListTestValue = byteArrayOf(0xA1.toByte())
+  private var aNullableListTestValue = [-1]
+  private var aNullableMapTestValue = ["myString": -1]
+  private var aNullableEnumTestValue = .one
+  private var aNullableProxyApiTestValue = TestProxyApiSuperClass
+  private var attachedFieldTestValue = TestProxyApiSuperClass
+  var noopCalled = false
+  var throwErrorCalled = false
+  var throwErrorFromVoidCalled = false
+  var throwFlutterErrorCalled = false
+  var echoIntArgs: [AnyHashable?]? = nil
+  var echoDoubleArgs: [AnyHashable?]? = nil
+  var echoBoolArgs: [AnyHashable?]? = nil
+  var echoStringArgs: [AnyHashable?]? = nil
+  var echoUint8ListArgs: [AnyHashable?]? = nil
+  var echoObjectArgs: [AnyHashable?]? = nil
+  var echoListArgs: [AnyHashable?]? = nil
+  var echoProxyApiListArgs: [AnyHashable?]? = nil
+  var echoMapArgs: [AnyHashable?]? = nil
+  var echoProxyApiMapArgs: [AnyHashable?]? = nil
+  var echoEnumArgs: [AnyHashable?]? = nil
+  var echoProxyApiArgs: [AnyHashable?]? = nil
+  var echoNullableIntArgs: [AnyHashable?]? = nil
+  var echoNullableDoubleArgs: [AnyHashable?]? = nil
+  var echoNullableBoolArgs: [AnyHashable?]? = nil
+  var echoNullableStringArgs: [AnyHashable?]? = nil
+  var echoNullableUint8ListArgs: [AnyHashable?]? = nil
+  var echoNullableObjectArgs: [AnyHashable?]? = nil
+  var echoNullableListArgs: [AnyHashable?]? = nil
+  var echoNullableMapArgs: [AnyHashable?]? = nil
+  var echoNullableEnumArgs: [AnyHashable?]? = nil
+  var echoNullableProxyApiArgs: [AnyHashable?]? = nil
+  var noopAsyncCalled = false
+  var echoAsyncIntArgs: [AnyHashable?]? = nil
+  var echoAsyncDoubleArgs: [AnyHashable?]? = nil
+  var echoAsyncBoolArgs: [AnyHashable?]? = nil
+  var echoAsyncStringArgs: [AnyHashable?]? = nil
+  var echoAsyncUint8ListArgs: [AnyHashable?]? = nil
+  var echoAsyncObjectArgs: [AnyHashable?]? = nil
+  var echoAsyncListArgs: [AnyHashable?]? = nil
+  var echoAsyncMapArgs: [AnyHashable?]? = nil
+  var echoAsyncEnumArgs: [AnyHashable?]? = nil
+  var throwAsyncErrorCalled = false
+  var throwAsyncErrorFromVoidCalled = false
+  var throwAsyncFlutterErrorCalled = false
+  var echoAsyncNullableIntArgs: [AnyHashable?]? = nil
+  var echoAsyncNullableDoubleArgs: [AnyHashable?]? = nil
+  var echoAsyncNullableBoolArgs: [AnyHashable?]? = nil
+  var echoAsyncNullableStringArgs: [AnyHashable?]? = nil
+  var echoAsyncNullableUint8ListArgs: [AnyHashable?]? = nil
+  var echoAsyncNullableObjectArgs: [AnyHashable?]? = nil
+  var echoAsyncNullableListArgs: [AnyHashable?]? = nil
+  var echoAsyncNullableMapArgs: [AnyHashable?]? = nil
+  var echoAsyncNullableEnumArgs: [AnyHashable?]? = nil
+  var callFlutterNoopCalled = false
+  var callFlutterThrowErrorCalled = false
+  var callFlutterThrowErrorFromVoidCalled = false
+  var callFlutterEchoBoolArgs: [AnyHashable?]? = nil
+  var callFlutterEchoIntArgs: [AnyHashable?]? = nil
+  var callFlutterEchoDoubleArgs: [AnyHashable?]? = nil
+  var callFlutterEchoStringArgs: [AnyHashable?]? = nil
+  var callFlutterEchoUint8ListArgs: [AnyHashable?]? = nil
+  var callFlutterEchoListArgs: [AnyHashable?]? = nil
+  var callFlutterEchoProxyApiListArgs: [AnyHashable?]? = nil
+  var callFlutterEchoMapArgs: [AnyHashable?]? = nil
+  var callFlutterEchoProxyApiMapArgs: [AnyHashable?]? = nil
+  var callFlutterEchoEnumArgs: [AnyHashable?]? = nil
+  var callFlutterEchoProxyApiArgs: [AnyHashable?]? = nil
+  var callFlutterEchoNullableBoolArgs: [AnyHashable?]? = nil
+  var callFlutterEchoNullableIntArgs: [AnyHashable?]? = nil
+  var callFlutterEchoNullableDoubleArgs: [AnyHashable?]? = nil
+  var callFlutterEchoNullableStringArgs: [AnyHashable?]? = nil
+  var callFlutterEchoNullableUint8ListArgs: [AnyHashable?]? = nil
+  var callFlutterEchoNullableListArgs: [AnyHashable?]? = nil
+  var callFlutterEchoNullableMapArgs: [AnyHashable?]? = nil
+  var callFlutterEchoNullableEnumArgs: [AnyHashable?]? = nil
+  var callFlutterEchoNullableProxyApiArgs: [AnyHashable?]? = nil
+  var callFlutterNoopAsyncCalled = false
+  var callFlutterEchoAsyncStringArgs: [AnyHashable?]? = nil
+
+  override var aBool: Bool {
+    return aBoolTestValue
+  }
+  override var anInt: Int64 {
+    return anIntTestValue
+  }
+  override var aDouble: Double {
+    return aDoubleTestValue
+  }
+  override var aString: String {
+    return aStringTestValue
+  }
+  override var aUint8List: FlutterStandardTypedData {
+    return aUint8ListTestValue
+  }
+  override var aList: [Any?] {
+    return aListTestValue
+  }
+  override var aMap: [String?: Any?] {
+    return aMapTestValue
+  }
+  override var anEnum: ProxyApiTestEnum {
+    return anEnumTestValue
+  }
+  override var aProxyApi: ProxyApiSuperClass {
+    return aProxyApiTestValue
+  }
+  override var aNullableBool: Bool {
+    return aNullableBoolTestValue
+  }
+  override var aNullableInt: Int64 {
+    return aNullableIntTestValue
+  }
+  override var aNullableDouble: Double {
+    return aNullableDoubleTestValue
+  }
+  override var aNullableString: String {
+    return aNullableStringTestValue
+  }
+  override var aNullableUint8List: FlutterStandardTypedData {
+    return aNullableUint8ListTestValue
+  }
+  override var aNullableList: [Any?] {
+    return aNullableListTestValue
+  }
+  override var aNullableMap: [String?: Any?] {
+    return aNullableMapTestValue
+  }
+  override var aNullableEnum: ProxyApiTestEnum {
+    return aNullableEnumTestValue
+  }
+  override var aNullableProxyApi: ProxyApiSuperClass {
+    return aNullableProxyApiTestValue
+  }
+  override var attachedField: ProxyApiSuperClass {
+    return attachedFieldTestValue
+  }
+
+  override func noop() {
+    noopCalled = true
+  }
+  override func throwError() {
+    throwErrorCalled = true
+  }
+  override func throwErrorFromVoid() {
+    throwErrorFromVoidCalled = true
+  }
+  override func throwFlutterError() {
+    throwFlutterErrorCalled = true
+  }
+  override func echoInt() {
+    echoIntArgs = [anInt]
+    return 0
+  }
+  override func echoDouble() {
+    echoDoubleArgs = [aDouble]
+    return 1.0
+  }
+  override func echoBool() {
+    echoBoolArgs = [aBool]
+    return true
+  }
+  override func echoString() {
+    echoStringArgs = [aString]
+    return "myString"
+  }
+  override func echoUint8List() {
+    echoUint8ListArgs = [aUint8List]
+    return byteArrayOf(0xA1.toByte())
+  }
+  override func echoObject() {
+    echoObjectArgs = [anObject]
+    return -1
+  }
+  override func echoList() {
+    echoListArgs = [aList]
+    return [-1]
+  }
+  override func echoProxyApiList() {
+    echoProxyApiListArgs = [aList]
+    return [TestProxyApiTestClass]
+  }
+  override func echoMap() {
+    echoMapArgs = [aMap]
+    return ["myString": -1]
+  }
+  override func echoProxyApiMap() {
+    echoProxyApiMapArgs = [aMap]
+    return ["myString": TestProxyApiTestClass]
+  }
+  override func echoEnum() {
+    echoEnumArgs = [anEnum]
+    return .one
+  }
+  override func echoProxyApi() {
+    echoProxyApiArgs = [aProxyApi]
+    return TestProxyApiSuperClass
+  }
+  override func echoNullableInt() {
+    echoNullableIntArgs = [aNullableInt]
+    return 0
+  }
+  override func echoNullableDouble() {
+    echoNullableDoubleArgs = [aNullableDouble]
+    return 1.0
+  }
+  override func echoNullableBool() {
+    echoNullableBoolArgs = [aNullableBool]
+    return true
+  }
+  override func echoNullableString() {
+    echoNullableStringArgs = [aNullableString]
+    return "myString"
+  }
+  override func echoNullableUint8List() {
+    echoNullableUint8ListArgs = [aNullableUint8List]
+    return byteArrayOf(0xA1.toByte())
+  }
+  override func echoNullableObject() {
+    echoNullableObjectArgs = [aNullableObject]
+    return -1
+  }
+  override func echoNullableList() {
+    echoNullableListArgs = [aNullableList]
+    return [-1]
+  }
+  override func echoNullableMap() {
+    echoNullableMapArgs = [aNullableMap]
+    return ["myString": -1]
+  }
+  override func echoNullableEnum() {
+    echoNullableEnumArgs = [aNullableEnum]
+    return .one
+  }
+  override func echoNullableProxyApi() {
+    echoNullableProxyApiArgs = [aNullableProxyApi]
+    return TestProxyApiSuperClass
+  }
+  override func noopAsync() {
+    noopAsyncCalled = true
+  }
+  override func echoAsyncInt() {
+    echoAsyncIntArgs = [anInt]
+    return 0
+  }
+  override func echoAsyncDouble() {
+    echoAsyncDoubleArgs = [aDouble]
+    return 1.0
+  }
+  override func echoAsyncBool() {
+    echoAsyncBoolArgs = [aBool]
+    return true
+  }
+  override func echoAsyncString() {
+    echoAsyncStringArgs = [aString]
+    return "myString"
+  }
+  override func echoAsyncUint8List() {
+    echoAsyncUint8ListArgs = [aUint8List]
+    return byteArrayOf(0xA1.toByte())
+  }
+  override func echoAsyncObject() {
+    echoAsyncObjectArgs = [anObject]
+    return -1
+  }
+  override func echoAsyncList() {
+    echoAsyncListArgs = [aList]
+    return [-1]
+  }
+  override func echoAsyncMap() {
+    echoAsyncMapArgs = [aMap]
+    return ["myString": -1]
+  }
+  override func echoAsyncEnum() {
+    echoAsyncEnumArgs = [anEnum]
+    return .one
+  }
+  override func throwAsyncError() {
+    throwAsyncErrorCalled = true
+  }
+  override func throwAsyncErrorFromVoid() {
+    throwAsyncErrorFromVoidCalled = true
+  }
+  override func throwAsyncFlutterError() {
+    throwAsyncFlutterErrorCalled = true
+  }
+  override func echoAsyncNullableInt() {
+    echoAsyncNullableIntArgs = [anInt]
+    return 0
+  }
+  override func echoAsyncNullableDouble() {
+    echoAsyncNullableDoubleArgs = [aDouble]
+    return 1.0
+  }
+  override func echoAsyncNullableBool() {
+    echoAsyncNullableBoolArgs = [aBool]
+    return true
+  }
+  override func echoAsyncNullableString() {
+    echoAsyncNullableStringArgs = [aString]
+    return "myString"
+  }
+  override func echoAsyncNullableUint8List() {
+    echoAsyncNullableUint8ListArgs = [aUint8List]
+    return byteArrayOf(0xA1.toByte())
+  }
+  override func echoAsyncNullableObject() {
+    echoAsyncNullableObjectArgs = [anObject]
+    return -1
+  }
+  override func echoAsyncNullableList() {
+    echoAsyncNullableListArgs = [aList]
+    return [-1]
+  }
+  override func echoAsyncNullableMap() {
+    echoAsyncNullableMapArgs = [aMap]
+    return ["myString": -1]
+  }
+  override func echoAsyncNullableEnum() {
+    echoAsyncNullableEnumArgs = [anEnum]
+    return .one
+  }
+  override func callFlutterNoop() {
+    callFlutterNoopCalled = true
+  }
+  override func callFlutterThrowError() {
+    callFlutterThrowErrorCalled = true
+  }
+  override func callFlutterThrowErrorFromVoid() {
+    callFlutterThrowErrorFromVoidCalled = true
+  }
+  override func callFlutterEchoBool() {
+    callFlutterEchoBoolArgs = [aBool]
+    return true
+  }
+  override func callFlutterEchoInt() {
+    callFlutterEchoIntArgs = [anInt]
+    return 0
+  }
+  override func callFlutterEchoDouble() {
+    callFlutterEchoDoubleArgs = [aDouble]
+    return 1.0
+  }
+  override func callFlutterEchoString() {
+    callFlutterEchoStringArgs = [aString]
+    return "myString"
+  }
+  override func callFlutterEchoUint8List() {
+    callFlutterEchoUint8ListArgs = [aUint8List]
+    return byteArrayOf(0xA1.toByte())
+  }
+  override func callFlutterEchoList() {
+    callFlutterEchoListArgs = [aList]
+    return [-1]
+  }
+  override func callFlutterEchoProxyApiList() {
+    callFlutterEchoProxyApiListArgs = [aList]
+    return [TestProxyApiTestClass]
+  }
+  override func callFlutterEchoMap() {
+    callFlutterEchoMapArgs = [aMap]
+    return ["myString": -1]
+  }
+  override func callFlutterEchoProxyApiMap() {
+    callFlutterEchoProxyApiMapArgs = [aMap]
+    return ["myString": TestProxyApiTestClass]
+  }
+  override func callFlutterEchoEnum() {
+    callFlutterEchoEnumArgs = [anEnum]
+    return .one
+  }
+  override func callFlutterEchoProxyApi() {
+    callFlutterEchoProxyApiArgs = [aProxyApi]
+    return TestProxyApiSuperClass
+  }
+  override func callFlutterEchoNullableBool() {
+    callFlutterEchoNullableBoolArgs = [aBool]
+    return true
+  }
+  override func callFlutterEchoNullableInt() {
+    callFlutterEchoNullableIntArgs = [anInt]
+    return 0
+  }
+  override func callFlutterEchoNullableDouble() {
+    callFlutterEchoNullableDoubleArgs = [aDouble]
+    return 1.0
+  }
+  override func callFlutterEchoNullableString() {
+    callFlutterEchoNullableStringArgs = [aString]
+    return "myString"
+  }
+  override func callFlutterEchoNullableUint8List() {
+    callFlutterEchoNullableUint8ListArgs = [aUint8List]
+    return byteArrayOf(0xA1.toByte())
+  }
+  override func callFlutterEchoNullableList() {
+    callFlutterEchoNullableListArgs = [aList]
+    return [-1]
+  }
+  override func callFlutterEchoNullableMap() {
+    callFlutterEchoNullableMapArgs = [aMap]
+    return ["myString": -1]
+  }
+  override func callFlutterEchoNullableEnum() {
+    callFlutterEchoNullableEnumArgs = [anEnum]
+    return .one
+  }
+  override func callFlutterEchoNullableProxyApi() {
+    callFlutterEchoNullableProxyApiArgs = [aProxyApi]
+    return TestProxyApiSuperClass
+  }
+  override func callFlutterNoopAsync() {
+    callFlutterNoopAsyncCalled = true
+  }
+  override func callFlutterEchoAsyncString() {
+    callFlutterEchoAsyncStringArgs = [aString]
+    return "myString"
+  }
+}
+class TestProxyApiTestClassApi: PigeonApiProtocolProxyApiTestClass {
+  var flutterNoopCalled = false
+  var flutterThrowErrorCalled = false
+  var flutterThrowErrorFromVoidCalled = false
+  var flutterEchoBoolArgs: [AnyHashable?]? = nil
+  var flutterEchoIntArgs: [AnyHashable?]? = nil
+  var flutterEchoDoubleArgs: [AnyHashable?]? = nil
+  var flutterEchoStringArgs: [AnyHashable?]? = nil
+  var flutterEchoUint8ListArgs: [AnyHashable?]? = nil
+  var flutterEchoListArgs: [AnyHashable?]? = nil
+  var flutterEchoProxyApiListArgs: [AnyHashable?]? = nil
+  var flutterEchoMapArgs: [AnyHashable?]? = nil
+  var flutterEchoProxyApiMapArgs: [AnyHashable?]? = nil
+  var flutterEchoEnumArgs: [AnyHashable?]? = nil
+  var flutterEchoProxyApiArgs: [AnyHashable?]? = nil
+  var flutterEchoNullableBoolArgs: [AnyHashable?]? = nil
+  var flutterEchoNullableIntArgs: [AnyHashable?]? = nil
+  var flutterEchoNullableDoubleArgs: [AnyHashable?]? = nil
+  var flutterEchoNullableStringArgs: [AnyHashable?]? = nil
+  var flutterEchoNullableUint8ListArgs: [AnyHashable?]? = nil
+  var flutterEchoNullableListArgs: [AnyHashable?]? = nil
+  var flutterEchoNullableMapArgs: [AnyHashable?]? = nil
+  var flutterEchoNullableEnumArgs: [AnyHashable?]? = nil
+  var flutterEchoNullableProxyApiArgs: [AnyHashable?]? = nil
+  var flutterNoopAsyncCalled = false
+  var flutterEchoAsyncStringArgs: [AnyHashable?]? = nil
+
+  func flutterNoop() throws {
+    flutterNoopCalled = true
+  }
+  func flutterThrowError() throws -> Any? {
+    flutterThrowErrorCalled = true
+  }
+  func flutterThrowErrorFromVoid() throws {
+    flutterThrowErrorFromVoidCalled = true
+  }
+  func flutterEchoBool(aBool: Bool) throws -> Bool {
+    flutterEchoBoolArgs = [aBoolArg]
+  }
+  func flutterEchoInt(anInt: Int64) throws -> Int64 {
+    flutterEchoIntArgs = [anIntArg]
+  }
+  func flutterEchoDouble(aDouble: Double) throws -> Double {
+    flutterEchoDoubleArgs = [aDoubleArg]
+  }
+  func flutterEchoString(aString: String) throws -> String {
+    flutterEchoStringArgs = [aStringArg]
+  }
+  func flutterEchoUint8List(aList: FlutterStandardTypedData) throws -> FlutterStandardTypedData {
+    flutterEchoUint8ListArgs = [aListArg]
+  }
+  func flutterEchoList(aList: [Any?]) throws -> [Any?] {
+    flutterEchoListArgs = [aListArg]
+  }
+  func flutterEchoProxyApiList(aList: [ProxyApiTestClass?]) throws -> [ProxyApiTestClass?] {
+    flutterEchoProxyApiListArgs = [aListArg]
+  }
+  func flutterEchoMap(aMap: [String?: Any?]) throws -> [String?: Any?] {
+    flutterEchoMapArgs = [aMapArg]
+  }
+  func flutterEchoProxyApiMap(aMap: [String?: ProxyApiTestClass?]) throws -> [String?: ProxyApiTestClass?] {
+    flutterEchoProxyApiMapArgs = [aMapArg]
+  }
+  func flutterEchoEnum(anEnum: ProxyApiTestEnum) throws -> ProxyApiTestEnum {
+    flutterEchoEnumArgs = [anEnumArg]
+  }
+  func flutterEchoProxyApi(aProxyApi: ProxyApiSuperClass) throws -> ProxyApiSuperClass {
+    flutterEchoProxyApiArgs = [aProxyApiArg]
+  }
+  func flutterEchoNullableBool(aBool: Bool?) throws -> Bool? {
+    flutterEchoNullableBoolArgs = [aBoolArg]
+  }
+  func flutterEchoNullableInt(anInt: Int64?) throws -> Int64? {
+    flutterEchoNullableIntArgs = [anIntArg]
+  }
+  func flutterEchoNullableDouble(aDouble: Double?) throws -> Double? {
+    flutterEchoNullableDoubleArgs = [aDoubleArg]
+  }
+  func flutterEchoNullableString(aString: String?) throws -> String? {
+    flutterEchoNullableStringArgs = [aStringArg]
+  }
+  func flutterEchoNullableUint8List(aList: FlutterStandardTypedData?) throws -> FlutterStandardTypedData? {
+    flutterEchoNullableUint8ListArgs = [aListArg]
+  }
+  func flutterEchoNullableList(aList: [Any?]?) throws -> [Any?]? {
+    flutterEchoNullableListArgs = [aListArg]
+  }
+  func flutterEchoNullableMap(aMap: [String?: Any?]?) throws -> [String?: Any?]? {
+    flutterEchoNullableMapArgs = [aMapArg]
+  }
+  func flutterEchoNullableEnum(anEnum: ProxyApiTestEnum?) throws -> ProxyApiTestEnum? {
+    flutterEchoNullableEnumArgs = [anEnumArg]
+  }
+  func flutterEchoNullableProxyApi(aProxyApi: ProxyApiSuperClass?) throws -> ProxyApiSuperClass? {
+    flutterEchoNullableProxyApiArgs = [aProxyApiArg]
+  }
+  func flutterNoopAsync() throws {
+    flutterNoopAsyncCalled = true
+  }
+  func flutterEchoAsyncString(aString: String) throws -> String {
+    flutterEchoAsyncStringArgs = [aStringArg]
+  }
+}
+*/
+// swiftlint:enable all
+
 protocol PigeonApiDelegateProxyApiSuperClass {
   func pigeonDefaultConstructor(pigeonApi: PigeonApiProxyApiSuperClass) throws -> ProxyApiSuperClass
   func aSuperMethod(pigeonApi: PigeonApiProxyApiSuperClass, pigeonInstance: ProxyApiSuperClass)
@@ -3958,6 +6302,74 @@ final class PigeonApiProxyApiSuperClass: PigeonApiProtocolProxyApiSuperClass {
     }
   }
 }
+
+// swiftlint:disable all
+/*
+// Copyright 2013 The Flutter Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import Foundation
+
+
+
+/// ProxyApi implementation for [ProxyApiSuperClass].
+/// This class may handle instantiating native object instances that are attached to a Dart
+/// instance or handle method calls on the associated native class or an instance of that class.
+class ProxyApiSuperClassProxyAPIDelegate : PigeonApiDelegateProxyApiSuperClass {
+  func pigeon_defaultConstructor(pigeonApi: PigeonApiProxyApiSuperClass) throws -> ProxyApiSuperClass {
+    return ProxyApiSuperClass()
+  }
+
+  func aSuperMethod(pigeonApi: PigeonApiProxyApiSuperClass, pigeonInstance: ProxyApiSuperClass) throws {
+    pigeonInstance.aSuperMethod()
+  }
+
+}
+*/
+
+/*
+// Copyright 2013 The Flutter Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+
+import Flutter
+import XCTest
+
+@testable import pigeon_integration_tests
+
+class ProxyApiSuperClassProxyApiTest {
+  func testPigeonDefaultConstructor() {
+    let registrar = TestProxyApiRegistrar()
+    let api = registrar.apiDelegate.pigeonApiProxyApiSuperClass(registrar)
+
+    let instance = try? api.pigeonDefaultConstructor(pigeonApi: api )
+    XCTAssertNotNil(instance)
+  }
+
+  func testASuperMethod() {
+    let registrar = TestProxyApiRegistrar()
+    let api = registrar.apiDelegate.pigeonApiProxyApiSuperClass(registrar)
+
+    let instance = TestProxyApiSuperClass()
+    api.pigeonDelegate.aSuperMethod(pigeonApi: api, pigeonInstance: instance )
+
+    XCTAssertTrue(instance.aSuperMethodCalled)
+  }
+
+}
+class TestProxyApiSuperClass: ProxyApiSuperClass {
+  var aSuperMethodCalled = false
+
+
+  override func aSuperMethod() {
+    aSuperMethodCalled = true
+  }
+}
+*/
+// swiftlint:enable all
+
 open class PigeonApiDelegateProxyApiInterface {
 }
 
@@ -4052,6 +6464,67 @@ final class PigeonApiProxyApiInterface: PigeonApiProtocolProxyApiInterface {
   }
 
 }
+
+// swiftlint:disable all
+/*
+// Copyright 2013 The Flutter Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import Foundation
+
+
+/// Implementation of `ProxyApiInterface` that calls to Dart in callback methods.
+class ProxyApiInterfaceImpl: ProxyApiInterface {
+  let api: PigeonApiProtocolProxyApiInterface
+
+  init(api: PigeonApiProtocolProxyApiInterface) {
+    self.api = api
+  }
+
+  func fixMe() {
+    api.anInterfaceMethod(pigeonInstance: self ) {  _ in }
+  }
+}
+
+/// ProxyApi implementation for [ProxyApiInterface].
+/// This class may handle instantiating native object instances that are attached to a Dart
+/// instance or handle method calls on the associated native class or an instance of that class.
+class ProxyApiInterfaceProxyAPIDelegate : PigeonApiDelegateProxyApiInterface {
+}
+*/
+
+/*
+// Copyright 2013 The Flutter Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+
+import Flutter
+import XCTest
+
+@testable import pigeon_integration_tests
+
+class ProxyApiInterfaceProxyApiTest {
+  func testAnInterfaceMethod() {
+    let api = TestProxyApiInterfaceApi()
+    let instance = ProxyApiInterfaceImpl(api: api)
+    instance.anInterfaceMethod()
+
+    XCTAssertTrue(instance.anInterfaceMethodCalled)
+  }
+
+}
+class TestProxyApiInterfaceApi: PigeonApiProtocolProxyApiInterface {
+  var anInterfaceMethodCalled = false
+
+  func anInterfaceMethod() throws {
+    anInterfaceMethodCalled = true
+  }
+}
+*/
+// swiftlint:enable all
+
 protocol PigeonApiDelegateClassWithApiRequirement {
   @available(iOS 15.0.0, macOS 10.0.0, *)
   func pigeonDefaultConstructor(pigeonApi: PigeonApiClassWithApiRequirement) throws
@@ -4204,3 +6677,70 @@ final class PigeonApiClassWithApiRequirement: PigeonApiProtocolClassWithApiRequi
     }
   }
 }
+
+// swiftlint:disable all
+/*
+// Copyright 2013 The Flutter Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import Foundation
+
+
+
+/// ProxyApi implementation for [ClassWithApiRequirement].
+/// This class may handle instantiating native object instances that are attached to a Dart
+/// instance or handle method calls on the associated native class or an instance of that class.
+class ClassWithApiRequirementProxyAPIDelegate : PigeonApiDelegateClassWithApiRequirement {
+  func pigeon_defaultConstructor(pigeonApi: PigeonApiClassWithApiRequirement) throws -> ClassWithApiRequirement {
+    return ClassWithApiRequirement()
+  }
+
+  func aMethod(pigeonApi: PigeonApiClassWithApiRequirement, pigeonInstance: ClassWithApiRequirement) throws {
+    pigeonInstance.aMethod()
+  }
+
+}
+*/
+
+/*
+// Copyright 2013 The Flutter Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+
+import Flutter
+import XCTest
+
+@testable import pigeon_integration_tests
+
+class ClassWithApiRequirementProxyApiTest {
+  func testPigeonDefaultConstructor() {
+    let registrar = TestProxyApiRegistrar()
+    let api = registrar.apiDelegate.pigeonApiClassWithApiRequirement(registrar)
+
+    let instance = try? api.pigeonDefaultConstructor(pigeonApi: api )
+    XCTAssertNotNil(instance)
+  }
+
+  func testAMethod() {
+    let registrar = TestProxyApiRegistrar()
+    let api = registrar.apiDelegate.pigeonApiClassWithApiRequirement(registrar)
+
+    let instance = TestClassWithApiRequirement()
+    api.pigeonDelegate.aMethod(pigeonApi: api, pigeonInstance: instance )
+
+    XCTAssertTrue(instance.aMethodCalled)
+  }
+
+}
+class TestClassWithApiRequirement: ClassWithApiRequirement {
+  var aMethodCalled = false
+
+
+  override func aMethod() {
+    aMethodCalled = true
+  }
+}
+*/
+// swiftlint:enable all

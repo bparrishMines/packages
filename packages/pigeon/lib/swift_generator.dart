@@ -1217,6 +1217,7 @@ if (wrapped == nil) {
     // }
 
     indent.newln();
+    indent.writeln('// swiftlint:disable all');
     indent.writeln('/*');
     _writeProxyApiImpl(indent, api);
     indent.writeln('*/');
@@ -1229,6 +1230,7 @@ if (wrapped == nil) {
       errorTypeName: _getErrorClassName(generatorOptions),
     );
     indent.writeln('*/');
+    indent.writeln('// swiftlint:enable all');
     indent.newln();
   }
 
