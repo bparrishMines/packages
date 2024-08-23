@@ -1217,7 +1217,6 @@ if (wrapped == nil) {
     // }
 
     indent.newln();
-    indent.writeln('// swiftlint:disable all');
     indent.writeln('/*');
     _writeProxyApiImpl(indent, api);
     indent.writeln('*/');
@@ -1230,7 +1229,6 @@ if (wrapped == nil) {
       errorTypeName: _getErrorClassName(generatorOptions),
     );
     indent.writeln('*/');
-    indent.writeln('// swiftlint:enable all');
     indent.newln();
   }
 
@@ -2566,9 +2564,9 @@ private func nilOrValue<T>(_ value: Any?) -> T? {
               indent.writeln('self.api = api');
             },
           );
-          indent.newln();
 
           for (final Method method in api.flutterMethods) {
+            indent.newln();
             indent.writeScoped('func fixMe() {', '}', () {
               indent.writeln(
                 'api.${method.name}(pigeonInstance: self${maybeComma(method.parameters)} ${_getParameterNames(method.parameters)}) {  _ in }',
@@ -2584,8 +2582,9 @@ private func nilOrValue<T>(_ value: Any?) -> T? {
       indent,
       <String>[
         ' ProxyApi implementation for [${api.name}].',
-        ' This class may handle instantiating native object instances that are attached to a Dart',
-        ' instance or handle method calls on the associated native class or an instance of that class.',
+        '',
+        ' This class may handle instantiating native object instances that are attached to a Dart instance',
+        ' or handle method calls on the associated native class or an instance of that class.',
       ],
       _docCommentSpec,
     );
@@ -2646,7 +2645,7 @@ private func nilOrValue<T>(_ value: Any?) -> T? {
                       final String memberName = member.name;
                       indent.writeScoped('case .$memberName', '', () {
                         indent.writeln('return .$memberName');
-                      });
+                      }, addTrailingNewline: false);
                     }
                     indent.writeScoped('@unknown default:', '', () {
                       indent.writeln('return .unknown');
@@ -2798,7 +2797,10 @@ private func nilOrValue<T>(_ value: Any?) -> T? {
             writeApiVar(indent);
 
             final String parameterValues = getParameterValues(
-              constructor.parameters,
+              <Parameter>[
+                ...api.unattachedFields.map(_apiFieldAsParameter),
+                ...constructor.parameters,
+              ],
             );
             indent.writeln(
               'let instance = try? api.$constructorName(pigeonApi: api${maybeComma(constructor.parameters)} $parameterValues)',

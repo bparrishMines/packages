@@ -3946,7 +3946,7 @@ class ProxyApiTestClassImpl: ProxyApiTestClass {
 }
 
 /// ProxyApi implementation for [ProxyApiTestClass].
-/// This class may handle instantiating native object instances that are attached to a Dart
+/// This class may handle instantiating native object instances that are attached to a Dart instance
 /// instance or handle method calls on the associated native class or an instance of that class.
 class ProxyApiTestClassProxyAPIDelegate : PigeonApiDelegateProxyApiTestClass {
   func pigeon_defaultConstructor(pigeonApi: PigeonApiProxyApiTestClass, aBool: Bool, anInt: Int64, aDouble: Double, aString: String, aUint8List: FlutterStandardTypedData, aList: [Any?], aMap: [String?: Any?], anEnum: ProxyApiTestEnum, aProxyApi: ProxyApiSuperClass, aNullableBool: Bool?, aNullableInt: Int64?, aNullableDouble: Double?, aNullableString: String?, aNullableUint8List: FlutterStandardTypedData?, aNullableList: [Any?]?, aNullableMap: [String?: Any?]?, aNullableEnum: ProxyApiTestEnum?, aNullableProxyApi: ProxyApiSuperClass?, boolParam: Bool, intParam: Int64, doubleParam: Double, stringParam: String, aUint8ListParam: FlutterStandardTypedData, listParam: [Any?], mapParam: [String?: Any?], enumParam: ProxyApiTestEnum, proxyApiParam: ProxyApiSuperClass, nullableBoolParam: Bool?, nullableIntParam: Int64?, nullableDoubleParam: Double?, nullableStringParam: String?, nullableUint8ListParam: FlutterStandardTypedData?, nullableListParam: [Any?]?, nullableMapParam: [String?: Any?]?, nullableEnumParam: ProxyApiTestEnum?, nullableProxyApiParam: ProxyApiSuperClass?) throws -> ProxyApiTestClass {
