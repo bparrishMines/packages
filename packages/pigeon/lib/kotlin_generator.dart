@@ -661,7 +661,7 @@ if (wrapped == null) {
     addDocumentationComments(
       indent,
       <String>[
-        'Generated API for managing the Dart and native `InstanceManager`s.',
+        ' Generated API for managing the Dart and native `InstanceManager`s.',
       ],
       _docCommentSpec,
     );
@@ -672,20 +672,25 @@ if (wrapped == null) {
         indent.writeScoped('companion object {', '}', () {
           addDocumentationComments(
             indent,
-            <String>['The codec used by $instanceManagerApiName.'],
+            <String>[' The codec used by $instanceManagerApiName.'],
             _docCommentSpec,
           );
-          indent.writeScoped('val codec: MessageCodec<Any?> by lazy {', '}',
-              () {
-            indent.writeln('StandardMessageCodec()');
-          });
+          indent.writeScoped(
+            'val codec: MessageCodec<Any?> by lazy {',
+            '}',
+            () {
+              indent.writeln(
+                '${generatorOptions.fileSpecificClassNameComponent}$_codecName()',
+              );
+            },
+          );
           indent.newln();
 
           addDocumentationComments(
             indent,
             <String>[
-              'Sets up an instance of `$instanceManagerApiName` to handle messages from the',
-              '`binaryMessenger`.',
+              ' Sets up an instance of `$instanceManagerApiName` to handle messages from the',
+              ' `binaryMessenger`.',
             ],
             _docCommentSpec,
           );
@@ -808,13 +813,11 @@ if (wrapped == null) {
           override fun readValueOfType(type: Byte, buffer: ByteBuffer): Any? {
             return when (type) {
               $proxyApiCodecInstanceManagerKey.toByte() -> {
-                return registrar.instanceManager.getInstance(
-                    readValue(buffer).let { if (it is Int) it.toLong() else it as Long })
+                return registrar.instanceManager.getInstance(readValue(buffer) as Long)
               }
               else -> super.readValueOfType(type, buffer)
             }
           }''',
-          trimIndentation: true,
         );
         indent.newln();
 
@@ -865,7 +868,6 @@ if (wrapped == null) {
                   ${index > 0 ? ' else ' : ''}if (${versionCheck}value is $className) {
                     registrar.get$hostProxyApiPrefix${api.name}().${classMemberNamePrefix}newInstance(value) { }
                   }''',
-                  trimIndentation: true,
                 );
               },
             );
@@ -880,7 +882,6 @@ if (wrapped == null) {
                 }
                 else -> throw IllegalArgumentException("Unsupported value: '\$value' of type '\${value.javaClass.name}'")
               }''',
-              trimIndentation: true,
             );
           },
         );
@@ -957,6 +958,7 @@ if (wrapped == null) {
               kotlinApiName: kotlinApiName,
               dartPackageName: dartPackageName,
               fullKotlinClassName: fullKotlinClassName,
+              generatorOptions: generatorOptions,
             );
           });
           indent.newln();
@@ -1375,8 +1377,8 @@ if (wrapped == null) {
     addDocumentationComments(
       indent,
       <String>[
-        'Provides implementations for each ProxyApi implementation and provides access to resources',
-        'needed by any implementation.',
+        ' Provides implementations for each ProxyApi implementation and provides access to resources',
+        ' needed by any implementation.',
       ],
       _docCommentSpec,
     );
@@ -1393,8 +1395,8 @@ if (wrapped == null) {
         indent.format(
           '''
           val instanceManager: $instanceManagerName
-          private var _codec: StandardMessageCodec? = null
-          val codec: StandardMessageCodec
+          private var _codec: ${proxyApiCodecName(generatorOptions)}? = null
+          val codec: ${proxyApiCodecName(generatorOptions)}
             get() {
               if (_codec == null) {
                 _codec = ${proxyApiCodecName(generatorOptions)}(this)
@@ -1419,7 +1421,6 @@ if (wrapped == null) {
               }
             )
           }''',
-          trimIndentation: true,
         );
         for (final AstProxyApi api in allProxyApis) {
           _writeMethodDeclaration(
@@ -1430,8 +1431,8 @@ if (wrapped == null) {
             isOpen:
                 !api.hasAnyHostMessageCalls() && api.unattachedFields.isEmpty,
             documentationComments: <String>[
-              'An implementation of [$hostProxyApiPrefix${api.name}] used to add a new Dart instance of',
-              '`${api.name}` to the Dart `InstanceManager`.'
+              ' An implementation of [$hostProxyApiPrefix${api.name}] used to add a new Dart instance of',
+              ' `${api.name}` to the Dart `InstanceManager`.'
             ],
             returnType: TypeDeclaration(
               baseName: '$hostProxyApiPrefix${api.name}',
@@ -1616,6 +1617,7 @@ if (wrapped == null) {
     required String kotlinApiName,
     required String dartPackageName,
     required String fullKotlinClassName,
+    required KotlinOptions generatorOptions,
   }) {
     indent.writeln('@Suppress("LocalVariableName")');
     indent.writeScoped(
@@ -1623,7 +1625,7 @@ if (wrapped == null) {
       '}',
       () {
         indent.writeln(
-          'val codec = api?.pigeonRegistrar?.codec ?: StandardMessageCodec()',
+          'val codec = api?.pigeonRegistrar?.codec ?: ${generatorOptions.fileSpecificClassNameComponent}$_codecName()',
         );
         void writeWithApiCheckIfNecessary(
           List<TypeDeclaration> types, {
@@ -1660,7 +1662,6 @@ if (wrapped == null) {
                 } else {
                   channel.setMessageHandler(null)
                 }''',
-                trimIndentation: true,
               );
             });
           } else {
@@ -1817,7 +1818,7 @@ if (wrapped == null) {
       name: newInstanceMethodName,
       returnType: const TypeDeclaration.voidDeclaration(),
       documentationComments: <String>[
-        'Creates a Dart instance of ${api.name} and attaches it to [${classMemberNamePrefix}instanceArg].',
+        ' Creates a Dart instance of ${api.name} and attaches it to [${classMemberNamePrefix}instanceArg].',
       ],
       channelName: makeChannelNameWithStrings(
         apiName: api.name,
@@ -1856,7 +1857,6 @@ if (wrapped == null) {
                   Result.failure(
                       $errorClassName("ignore-calls-error", "Calls to Dart are being ignored.", "")))
               return''',
-              trimIndentation: true,
             );
           },
         );
@@ -1962,7 +1962,6 @@ if (wrapped == null) {
                     Result.failure(
                         $errorClassName("ignore-calls-error", "Calls to Dart are being ignored.", "")))
                 return''',
-                trimIndentation: true,
               );
             },
           );
@@ -1997,7 +1996,7 @@ if (wrapped == null) {
         indent,
         name: '${classMemberNamePrefix}get$apiName',
         documentationComments: <String>[
-          'An implementation of [$apiName] used to access callback methods',
+          ' An implementation of [$apiName] used to access callback methods',
         ],
         returnType: TypeDeclaration(baseName: apiName, isNullable: false),
         parameters: <Parameter>[],
