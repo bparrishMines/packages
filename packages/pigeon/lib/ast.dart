@@ -4,6 +4,8 @@
 
 import 'package:collection/collection.dart' show ListEquality;
 import 'package:meta/meta.dart';
+
+import 'generator_tools.dart';
 import 'kotlin_generator.dart' show KotlinProxyApiOptions;
 import 'pigeon_lib.dart';
 
@@ -279,6 +281,11 @@ class AstProxyApi extends Api {
   /// Whether the API has any message calls from host to Dart.
   bool hasAnyFlutterMessageCalls() =>
       hasCallbackConstructor() || flutterMethods.isNotEmpty;
+
+  /// Whether the host proxy API class will have methods that need to be
+  /// implemented.
+  bool hasMethodsRequiringImplementation() =>
+      hasAnyHostMessageCalls() || unattachedFields.isNotEmpty;
 
   // Recursively search for all the interfaces apis from a list of names of
   // interfaces.
@@ -770,6 +777,11 @@ class Root extends Node {
 
   /// All of the enums contained in the AST.
   List<Enum> enums;
+
+  /// Returns true if the number of custom types would exceed the available enumerations
+  /// on the standard codec.
+  bool get requiresOverflowClass =>
+      classes.length + enums.length >= totalCustomCodecKeysAllowed;
 
   @override
   String toString() {

@@ -2,7 +2,6 @@
 
 [![Release Status](https://github.com/flutter/packages/actions/workflows/release.yml/badge.svg)](https://github.com/flutter/packages/actions/workflows/release.yml)
 [![Flutter CI Status](https://flutter-dashboard.appspot.com/api/public/build-status-badge?repo=packages)](https://flutter-dashboard.appspot.com/#/build?repo=packages)
-[![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/flutter/packages/badge)](https://deps.dev/project/github/flutter%2Fpackages)
 
 This repo is a companion repo to the main [flutter repo](
 https://github.com/flutter/flutter). It contains the source code for Flutter's
@@ -21,10 +20,10 @@ Issues pertaining to this repository are [labeled
 ## Contributing
 
 If you wish to contribute a new package to the Flutter ecosystem, please
-see the documentation for [developing packages](https://flutter.io/developing-packages/). You can store
+see the documentation for [developing packages](https://flutter.dev/to/develop-packages). You can store
 your package source code in any GitHub repository (the present repo is only
 intended for packages developed by the core Flutter team). Once your package
-is ready you can [publish](https://flutter.io/developing-packages/#publish)
+is ready you can [publish](https://flutter.dev/to/develop-packages#publish)
 to the [pub repository](https://pub.dev/).
 
 If you wish to contribute a change to any of the existing packages in this repo,
