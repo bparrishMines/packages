@@ -804,7 +804,7 @@ if (wrapped == null) {
     );
 
     indent.writeScoped(
-      'private class ${proxyApiCodecName(generatorOptions)}(val registrar: ${proxyApiRegistrarName(generatorOptions)}) : '
+      'class ${proxyApiCodecName(generatorOptions)}(val registrar: ${proxyApiRegistrarName(generatorOptions)}) : '
           '${generatorOptions.fileSpecificClassNameComponent}$_codecName() {',
       '}',
       () {
