@@ -916,7 +916,6 @@ if (wrapped == nil) {
                   default:
                     return super.readValue(ofType: type)
                   }''',
-                  trimIndentation: true,
                 );
               },
             );
@@ -1027,7 +1026,6 @@ if (wrapped == nil) {
                         return
                       }
                       ${unsupportedPlatforms != null ? '#endif' : ''}''',
-                      trimIndentation: true,
                     );
                   },
                 );
@@ -1045,7 +1043,6 @@ if (wrapped == nil) {
                     assert(false, "Unsupported value for $filePrefix${classNamePrefix}ProxyApiCodecWriter")
                   }
                   ''',
-                  trimIndentation: true,
                 );
               },
             );
@@ -1058,7 +1055,6 @@ if (wrapped == nil) {
           init(pigeonRegistrar: $registrarName) {
             self.pigeonRegistrar = pigeonRegistrar
           }''',
-          trimIndentation: true,
         );
         indent.newln();
 
@@ -1067,7 +1063,6 @@ if (wrapped == nil) {
           override func reader(with data: Data) -> FlutterStandardReader {
             return $filePrefix${classNamePrefix}ProxyApiCodecReader(data: data, pigeonRegistrar: pigeonRegistrar)
           }''',
-          trimIndentation: true,
         );
         indent.newln();
 
@@ -1076,7 +1071,6 @@ if (wrapped == nil) {
           override func writer(with data: NSMutableData) -> FlutterStandardWriter {
             return $filePrefix${classNamePrefix}ProxyApiCodecWriter(data: data, pigeonRegistrar: pigeonRegistrar)
           }''',
-          trimIndentation: true,
         );
       },
     );
@@ -1601,7 +1595,6 @@ private func nilOrValue<T>(_ value: Any?) -> T? {
             func pigeonApi${api.name}(_ registrar: ${proxyApiRegistrarName(generatorOptions)}) -> $hostApiName {
               return $hostApiName(pigeonRegistrar: registrar, delegate: $swiftApiDelegateName())
             }''',
-            trimIndentation: true,
           );
         }
       });
@@ -1635,7 +1628,6 @@ private func nilOrValue<T>(_ value: Any?) -> T? {
           }
           return _codec!
         }''',
-        trimIndentation: true,
       );
       indent.newln();
 
@@ -1654,7 +1646,6 @@ private func nilOrValue<T>(_ value: Any?) -> T? {
             }
           }
         }''',
-        trimIndentation: true,
       );
       indent.newln();
 
@@ -1667,7 +1658,6 @@ private func nilOrValue<T>(_ value: Any?) -> T? {
             finalizerDelegate: InstanceManagerApiFinalizerDelegate(
               $instanceManagerApiName(binaryMessenger: binaryMessenger)))
         }''',
-        trimIndentation: true,
       );
       indent.newln();
 
@@ -1983,7 +1973,6 @@ private func nilOrValue<T>(_ value: Any?) -> T? {
             ? FlutterStandardMessageCodec(
               readerWriter: ${proxyApiReaderWriterName(generatorOptions)}(pigeonRegistrar: api!.pigeonRegistrar))
             : FlutterStandardMessageCodec.sharedInstance()''',
-          trimIndentation: true,
         );
         void writeWithApiCheckIfNecessary(
           List<TypeDeclaration> types, {
@@ -2023,7 +2012,6 @@ private func nilOrValue<T>(_ value: Any?) -> T? {
                 } else {
                   $varChannelName.setMessageHandler(nil)
                 }''',
-                trimIndentation: true,
               );
             });
           } else {
@@ -2248,7 +2236,6 @@ private func nilOrValue<T>(_ value: Any?) -> T? {
                   code: "ignore-calls-error",
                   message: "Calls to Dart are being ignored.", details: "")))
             return''',
-            trimIndentation: true,
           );
         },
       );
@@ -2372,7 +2359,6 @@ private func nilOrValue<T>(_ value: Any?) -> T? {
                       code: "ignore-calls-error",
                       message: "Calls to Dart are being ignored.", details: "")))
                 return''',
-                trimIndentation: true,
               );
             },
           );
