@@ -2650,7 +2650,7 @@ private func nilOrValue<T>(_ value: Any?) -> T? {
 
         for (final ApiField field in api.unattachedFields) {
           indent.writeScoped(
-            'func ${field.name}(pigeonApi: PigeonApi${api.name}, pigeonInstance: ${api.name}) throws -> ${_nullsafeSwiftTypeForDartType(field.type)} {',
+            'func ${field.name}(pigeonApi: PigeonApi${api.name}, pigeonInstance: ${api.name}) throws -> ${_nullSafeSwiftTypeForDartType(field.type)} {',
             '}',
             () {
               if (field.type.isEnum) {
@@ -2685,7 +2685,7 @@ private func nilOrValue<T>(_ value: Any?) -> T? {
           final String instanceVar =
               field.isStatic ? '' : ', pigeon_instance: ${api.name}';
           indent.writeScoped(
-            'func ${field.name}(pigeonApi: PigeonApi${api.name}$instanceVar): ${_nullsafeSwiftTypeForDartType(field.type)} {',
+            'func ${field.name}(pigeonApi: PigeonApi${api.name}$instanceVar): ${_nullSafeSwiftTypeForDartType(field.type)} {',
             '}',
             () {
               final String fromVar =
