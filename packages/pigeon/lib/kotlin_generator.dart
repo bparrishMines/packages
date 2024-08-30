@@ -1354,8 +1354,8 @@ if (wrapped == null) {
         indent.format(
           '''
           val instanceManager: $instanceManagerName
-          private var _codec: ${proxyApiCodecName(generatorOptions)}? = null
-          val codec: ${proxyApiCodecName(generatorOptions)}
+          private var _codec: MessageCodec<Any?>? = null
+          val codec: MessageCodec<Any?>
             get() {
               if (_codec == null) {
                 _codec = ${proxyApiCodecName(generatorOptions)}(this)
