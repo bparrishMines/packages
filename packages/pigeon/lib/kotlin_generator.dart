@@ -2023,7 +2023,11 @@ if (wrapped == null) {
     );
   }
 
-  void _writeProxyApiImports(Indent indent, AstProxyApi api) {
+  void _writeProxyApiImports(
+    Indent indent,
+    AstProxyApi api, {
+    bool includeSemicolons = false,
+  }) {
     Iterable<AstProxyApi> onlyProxyApis(Iterable<TypeDeclaration> types) {
       return <AstProxyApi>[
         ...types.where((TypeDeclaration type) {
@@ -2076,7 +2080,8 @@ if (wrapped == null) {
     final String classImports = includedApis
         .where((AstProxyApi api) => api.kotlinOptions?.fullClassName != null)
         .map((AstProxyApi api) => api.kotlinOptions!.fullClassName!)
-        .map((String fullClassName) => 'import $fullClassName')
+        .map((String fullClassName) =>
+            'import $fullClassName${includeSemicolons ? ';' : ''}')
         .join('\n');
 
     indent.writeln(classImports);
@@ -2100,15 +2105,15 @@ if (wrapped == null) {
     _writeProxyApiImports(indent, api);
     indent.newln();
 
-    indent.format(
-      '''
-      /**
-       * ProxyApi implementation for [${api.name}].
-       *
-       * <p>This class may handle instantiating native object instances that are attached to a Dart
-       * instance or handle method calls on the associated native class or an instance of that class.
-       */''',
-      trimIndentation: true,
+    addDocumentationComments(
+      indent,
+      <String>[
+        ' ProxyApi implementation for [${api.name}].',
+        '',
+        ' This class may handle instantiating native object instances that are attached to a Dart',
+        ' instance or handle method calls on the associated native class or an instance of that class.',
+      ],
+      _docCommentSpec,
     );
     indent.writeScoped(
       'class ${api.name}ProxyApi(override val pigeonRegistrar: ProxyApiRegistrar) : PigeonApi${api.name}(pigeonRegistrar) {',
@@ -2461,6 +2466,203 @@ if (wrapped == null) {
         indent.newln();
       }
     });
+  }
+
+  void _writeJavaProxyApiImpl(
+    Indent indent,
+    AstProxyApi api, {
+    required String package,
+  }) {
+    _writeLicense(indent);
+    indent.newln();
+
+    indent.writeln('package $package;');
+    indent.newln();
+
+    _writeProxyApiImports(indent, api, includeSemicolons: true);
+    indent.writeln('import androidx.annotation.NonNull;');
+    indent.writeln('import androidx.annotation.Nullable;');
+    indent.newln();
+
+    addDocumentationComments(
+      indent,
+      <String>[
+        ' ProxyApi implementation for {@link ${api.name}}.',
+        '',
+        ' This class may handle instantiating native object instances that are attached to a Dart',
+        ' instance or handle method calls on the associated native class or an instance of that class.',
+      ],
+      _docCommentSpec,
+    );
+    indent.writeScoped(
+      'class ${api.name}ProxyApi extends PigeonApi${api.name} {',
+      '}',
+      () {
+        indent.writeScoped(
+          '${api.name}ProxyApi(@NonNull ProxyApiRegistrar pigeonRegistrar) {',
+          '}',
+          () {
+            indent.writeln('super(pigeonRegistrar);');
+          },
+        );
+
+        String getMethodParameterNames(Iterable<Parameter> parameters) {
+          return parameters
+              .map(
+                (Parameter parameter) =>
+                    '${parameter.type.isNullable ? '@Nullable' : '@NonNull'} ${_nullSafeKotlinTypeForDartType(parameter.type)} ${parameter.name}',
+              )
+              .join(', ');
+        }
+
+        final bool hasImplClass = api.flutterMethods.isNotEmpty ||
+            api.flutterMethodsFromInterfaces().isNotEmpty;
+        if (hasImplClass) {
+          addDocumentationComments(
+            indent,
+            <String>[
+              ' Implementation of {@link ${api.name}} that passes arguments of callback methods to Dart.',
+            ],
+            _docCommentSpec,
+          );
+          indent.writeScoped(
+            'static class ${api.name}Impl extends ${api.name} {',
+            '}',
+            () {
+              indent.writeln('private final ${api.name}ProxyApi api;');
+
+              indent.writeScoped(
+                '${api.name}Impl(@NonNull ${api.name}ProxyApi api) {',
+                '}',
+                () {
+                  indent.writeln('this.api = api;');
+                },
+              );
+              for (final Method method in api.flutterMethods) {
+                final String parameterDecl =
+                    getMethodParameterNames(method.parameters);
+                indent.writeln('@Override');
+                indent.writeScoped(
+                  'public void ${method.name}($parameterDecl) {',
+                  '}',
+                  () {
+                    indent.writeln(
+                      'api.getPigeonRegistrar().runOnMainThread(() -> api.${method.name}(this${maybeComma(method.parameters)} ${_getParameterNames(method.parameters)}, reply -> null));',
+                    );
+                  },
+                );
+              }
+            },
+          );
+        }
+        indent.newln();
+
+        for (final Constructor constructor in api.constructors) {
+          final String constructorName = constructor.name.isEmpty
+              ? 'pigeon_defaultConstructor'
+              : constructor.name;
+          final String parameterDecl =
+              getMethodParameterNames(constructor.parameters);
+          indent.writeln('@NonNull');
+          indent.writeln('@Override');
+          indent.writeScoped(
+            'public ${api.name} $constructorName($parameterDecl) {',
+            '}',
+            () {
+              indent.writeln(
+                'return ${api.name}${hasImplClass ? 'Impl' : ''}(${_getParameterNames(constructor.parameters)});',
+              );
+            },
+          );
+          indent.newln();
+        }
+
+        for (final ApiField field in api.unattachedFields) {
+          indent.writeln(field.type.isNullable ? '@Nullable' : '@NonNull');
+          indent.writeln('@Override');
+          indent.writeScoped(
+            'public ${_nullSafeKotlinTypeForDartType(field.type)} ${field.name}(${api.name} pigeon_instance) {',
+            '}',
+            () {
+              if (field.type.isEnum) {
+                indent.writeScoped(
+                  'switch (pigeon_instance.${field.name}) {',
+                  '}',
+                  () {
+                    for (final EnumMember member
+                        in field.type.associatedEnum!.members) {
+                      if (member.name == 'unknown') {
+                        continue;
+                      }
+                      final String memberName = member.name
+                          .replaceAllMapped(RegExp(r'(?<=[a-z])[A-Z]'),
+                              (Match m) => '_${m.group(0)}')
+                          .toUpperCase();
+                      indent.writeln(
+                        'case ${field.type.baseName}.$memberName: return $package.${field.type.baseName}.$memberName;',
+                      );
+                    }
+                    indent.writeln(
+                      'default: return $package.${field.type.baseName}.UNKNOWN;',
+                    );
+                  },
+                );
+              } else {
+                indent.writeln('return pigeon_instance.get${field.name}();');
+              }
+            },
+          );
+          indent.newln();
+        }
+
+        for (final ApiField field in api.attachedFields) {
+          final String instanceVar =
+              field.isStatic ? '' : '${api.name} pigeon_instance';
+          indent.writeln('@NonNull');
+          indent.writeln('@Override');
+          indent.writeScoped(
+            'public ${_nullSafeKotlinTypeForDartType(field.type)} ${field.name}($instanceVar) {',
+            '}',
+            () {
+              final String fromVar =
+                  field.isStatic ? api.name : 'pigeon_instance';
+              indent.writeln('return $fromVar.get${field.name}();');
+            },
+          );
+          indent.newln();
+        }
+
+        for (final Method method in api.hostMethods) {
+          final String parameterDecl =
+              getMethodParameterNames(method.parameters);
+
+          final String instanceDecl = method.isStatic
+              ? ''
+              : '${api.name}${maybeComma(method.parameters)} pigeon_instance';
+
+          if (!method.returnType.isVoid) {
+            indent.writeln(
+              method.returnType.isNullable ? '@Nullable' : '@NonNull',
+            );
+          }
+          indent.writeln('@Override');
+          indent.writeScoped(
+            'public ${_nullSafeKotlinTypeForDartType(method.returnType)} ${method.name}($instanceDecl$parameterDecl) {',
+            '}',
+            () {
+              final String maybeReturn =
+                  method.returnType.isVoid ? '' : 'return ';
+              final String fromVar =
+                  method.isStatic ? api.name : 'pigeon_instance';
+              indent.writeln(
+                '$maybeReturn$fromVar.${method.name}(${_getParameterNames(method.parameters)});',
+              );
+            },
+          );
+          indent.newln();
+        }
+      },
+    );
   }
 }
 
