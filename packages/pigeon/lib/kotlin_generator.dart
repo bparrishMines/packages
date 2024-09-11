@@ -988,40 +988,40 @@ if (wrapped == null) {
     final StringBuffer implFileBuffer = StringBuffer();
     final Indent implFileIndent = Indent(implFileBuffer);
     final File implFile = File(
-      'android/src/main/kotlin/${generatorOptions.package!.replaceAll('.', '/')}/${api.name}ProxyApi.kt',
+      'android/src/main/java/${generatorOptions.package!.replaceAll('.', '/')}/${api.name}ProxyApi.kt',
     );
     print('${implFile.path}: ${implFile.existsSync()}');
-    if (!implFile.existsSync()) {
-      _writeProxyApiImpl(
-        implFileIndent,
-        api,
-        package: generatorOptions.package ?? '',
-      );
-      implFile.writeAsStringSync(implFileBuffer.toString());
-    }
+    // if (!implFile.existsSync()) {
+    //   _writeJavaProxyApiImpl(
+    //     implFileIndent,
+    //     api,
+    //     package: generatorOptions.package ?? '',
+    //   );
+    //   implFile.writeAsStringSync(implFileBuffer.toString());
+    // }
 
     final StringBuffer testFileBuffer = StringBuffer();
     final Indent testFileIndent = Indent(testFileBuffer);
     final File testFile = File(
-      'android/src/test/kotlin/${generatorOptions.package!.replaceAll('.', '/')}/${api.name}ProxyApiTest.kt',
+      'android/src/test/java/${generatorOptions.package!.replaceAll('.', '/')}/${api.name}ProxyApiTest.kt',
     );
     print('${testFile.path}: ${testFile.existsSync()}');
-    if (!testFile.existsSync()) {
-      _writeProxyApiTest(
-        testFileIndent,
-        api,
-        package: generatorOptions.package ?? '',
-      );
-      testFile.writeAsStringSync(testFileBuffer.toString());
-    }
+    // if (!testFile.existsSync()) {
+    //   _writeJavaProxyApiTest(
+    //     testFileIndent,
+    //     api,
+    //     package: generatorOptions.package ?? '',
+    //   );
+    //   testFile.writeAsStringSync(testFileBuffer.toString());
+    // }
 
+    // indent.newln();
+    // indent.writeln('/*');
+    // _writeJavaProxyApiImpl(indent, api, package: generatorOptions.package ?? '');
+    // indent.writeln('*/');
     indent.newln();
     indent.writeln('/*');
-    _writeProxyApiImpl(indent, api, package: generatorOptions.package ?? '');
-    indent.writeln('*/');
-    indent.newln();
-    indent.writeln('/*');
-    _writeProxyApiTest(indent, api, package: generatorOptions.package ?? '');
+    _writeJavaProxyApiTest(indent, api, package: generatorOptions.package ?? '');
     indent.writeln('*/');
   }
 
