@@ -2468,6 +2468,14 @@ if (wrapped == null) {
     });
   }
 
+  String capitalizeName(String name) {
+    if (name.length > 1) {
+      return name.split('').first.toUpperCase() + name.substring(1);
+    }
+
+    return name.toUpperCase();
+  }
+
   void _writeJavaProxyApiImpl(
     Indent indent,
     AstProxyApi api, {
@@ -2608,7 +2616,8 @@ if (wrapped == null) {
                   },
                 );
               } else {
-                indent.writeln('return pigeon_instance.get${field.name}();');
+                indent.writeln(
+                    'return pigeon_instance.get${capitalizeName(field.name)}();');
               }
             },
           );
@@ -2626,7 +2635,8 @@ if (wrapped == null) {
             () {
               final String fromVar =
                   field.isStatic ? api.name : 'pigeon_instance';
-              indent.writeln('return $fromVar.get${field.name}();');
+              indent.writeln(
+                  'return $fromVar.get${capitalizeName(field.name)}();');
             },
           );
           indent.newln();
@@ -2663,6 +2673,212 @@ if (wrapped == null) {
         }
       },
     );
+  }
+
+  void _writeJavaProxyApiTest(
+    Indent indent,
+    AstProxyApi api, {
+    required String package,
+  }) {
+    _writeLicense(indent);
+    indent.newln();
+
+    indent.writeln('package $package');
+    indent.newln();
+
+    _writeProxyApiImports(indent, api);
+    indent.format(
+      '''
+      import org.junit.Test;
+      import static org.junit.Assert.assertEquals;
+      import static org.junit.Assert.assertTrue;
+      import org.mockito.Mockito;
+      import org.mockito.Mockito.any;
+      import java.util.HashMap;
+      import static org.mockito.Mockito.eq;
+      import static org.mockito.Mockito.mock;
+      import org.mockito.Mockito.verify;
+      import static org.mockito.Mockito.when;''',
+    );
+    indent.newln();
+
+    String getDefaultTestValue(TypeDeclaration type) {
+      if (type.isProxyApi) {
+        return 'mock(${type.baseName}.class)';
+      }
+
+      if (type.isEnum) {
+        return '$package.${type.baseName}.${type.associatedEnum!.members.first.name.replaceAllMapped(RegExp(r'(?<=[a-z])[A-Z]'), (Match m) => '_${m.group(0)}').toUpperCase()}';
+      }
+
+      return switch (type.baseName) {
+        'bool' => 'true',
+        'String' => '"myString"',
+        'int' => '0',
+        'double' => '1.0',
+        'Uint8List' => '{0xA1}',
+        'List' =>
+          'Arrays.asList(${getDefaultTestValue(type.typeArguments[0])})',
+        'Map' =>
+          'new HashMap<String, String>() {{put(${getDefaultTestValue(type.typeArguments[0])}, ${getDefaultTestValue(type.typeArguments[1])})}}',
+        _ => '-1'
+      };
+    }
+
+    String getParameterValues(Iterable<Parameter> parameters) {
+      return parameters
+          .map((Parameter parameter) => getDefaultTestValue(parameter.type))
+          .join(', ');
+    }
+
+    bool hasInterfaceImpl(AstProxyApi api) {
+      return api.constructors.length == 1 &&
+          api.constructors[0].parameters.isEmpty &&
+          api.fields.where((ApiField field) => !field.isStatic).isEmpty &&
+          api.hostMethods.where((Method method) => !method.isStatic).isEmpty;
+    }
+
+    indent.writeScoped('public class ${api.name}ProxyApiTest {', '}', () {
+      void writeApiVar(Indent indent) {
+        indent.writeln(
+          'final $hostProxyApiPrefix${api.name} api = new TestProxyApiRegistrar().getPigeonApi${api.name}();',
+        );
+        indent.newln();
+      }
+
+      for (final Constructor constructor in api.constructors) {
+        indent.writeln('@Test');
+        final String constructorName = constructor.name.isEmpty
+            ? 'pigeon_defaultConstructor'
+            : constructor.name;
+        indent.writeScoped('public void $constructorName() {', '}', () {
+          writeApiVar(indent);
+
+          final String parameterValues = getParameterValues(
+            constructor.parameters,
+          );
+          indent.writeln(
+            'assertTrue(api.$constructorName($parameterValues) instanceof ${api.name}ProxyApi.${api.name}${hasInterfaceImpl(api) ? 'Impl' : ''});',
+          );
+        });
+        indent.newln();
+      }
+
+      for (final ApiField field in api.unattachedFields) {
+        indent.writeln('@Test');
+        indent.writeScoped('public void ${field.name}() {', '}', () {
+          writeApiVar(indent);
+
+          indent.writeln(
+            'final ${api.name} instance = mock(${api.name}.class);',
+          );
+          indent.writeln(
+              'final ${_kotlinTypeForDartType(field.type)} value = ${getDefaultTestValue(field.type)};');
+          indent.writeln(
+            'when(instance.get${capitalizeName(field.name)}()).thenReturn(value);',
+          );
+          indent.newln();
+
+          indent.writeln('assertEquals(value, api.${field.name}(instance));');
+        });
+        indent.newln();
+      }
+
+      for (final ApiField field
+          in api.attachedFields.where((ApiField f) => !f.isStatic)) {
+        indent.writeln('@Test');
+        indent.writeScoped('public void ${field.name}() {', '}', () {
+          writeApiVar(indent);
+
+          indent.writeln(
+            'final ${api.name} instance = mock(${api.name}.class);',
+          );
+          indent.writeln(
+            'final ${_kotlinTypeForDartType(field.type)} value = ${getDefaultTestValue(field.type)};',
+          );
+          indent.writeln(
+            'when(instance.get${capitalizeName(field.name)}()).thenReturn(value);',
+          );
+          indent.newln();
+
+          indent.writeln('assertEquals(value, api.${field.name}(instance));');
+        });
+        indent.newln();
+      }
+
+      for (final Method method
+          in api.hostMethods.where((Method m) => !m.isStatic)) {
+        indent.writeln('@Test');
+        indent.writeScoped('public void ${method.name}() {', '}', () {
+          writeApiVar(indent);
+
+          indent
+              .writeln('final ${api.name} instance = mock(${api.name}.class);');
+
+          final String parameterNames = _getParameterNames(method.parameters);
+
+          for (final Parameter parameter in method.parameters) {
+            indent.writeln(
+              'final ${_kotlinTypeForDartType(parameter.type)} ${parameter.name} = ${getDefaultTestValue(parameter.type)};',
+            );
+          }
+
+          if (method.returnType.isVoid) {
+            indent.writeln(
+                'api.${method.name}(instance${maybeComma(method.parameters)} $parameterNames);');
+            indent.newln();
+
+            indent.writeln('verify(instance).${method.name}($parameterNames);');
+          } else {
+            indent.writeln(
+              'final ${_kotlinTypeForDartType(method.returnType)} value = ${getDefaultTestValue(method.returnType)};',
+            );
+            indent.writeln(
+              'when(instance.${method.name}($parameterNames)).thenReturn(value);',
+            );
+            indent.newln();
+
+            indent.writeln(
+              'assertEquals(value, api.${method.name}(instance${maybeComma(method.parameters)} $parameterNames));',
+            );
+          }
+        });
+        indent.newln();
+      }
+
+      for (final Method method in api.flutterMethods) {
+        indent.writeln('@Test');
+        indent.writeScoped('public void ${method.name}() {', '}', () {
+          indent.writeln(
+              'final ${api.name}ProxyApi mockApi = mock(${api.name}ProxyApi.class);');
+          indent.writeln(
+            'when(mockApi.pigeonRegistrar).thenReturn(new TestProxyApiRegistrar());',
+          );
+          indent.newln();
+
+          indent.writeln(
+              'final ${api.name}Impl instance = new ${api.name}Impl(mockApi);');
+          for (final Parameter parameter in method.parameters) {
+            indent.writeln(
+              'final ${_kotlinTypeForDartType(parameter.type)} ${parameter.name} = ${getDefaultTestValue(parameter.type)};',
+            );
+          }
+
+          final String parameterNames = _getParameterNames(method.parameters);
+          indent.writeln('instance.${method.name}($parameterNames);');
+          indent.newln();
+
+          final String checkValueParamNames = method.parameters
+              .map((Parameter parameter) => 'eq(${parameter.name})')
+              .join(', ');
+
+          indent.writeln(
+            'verify(mockApi).${method.name}(eq(instance)${maybeComma(method.parameters)} $checkValueParamNames, any());',
+          );
+        });
+        indent.newln();
+      }
+    });
   }
 }
 
