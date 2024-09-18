@@ -1450,29 +1450,14 @@ private func nilOrValue<T>(_ value: Any?) -> T? {
             fieldType: fieldType,
             type: returnType,
           );
-          indent.writeln('completion(.success(result))');
+          // There is a swift bug with unwrapping maps of nullable Enums;
+          final String enumMapForceUnwrap = returnType.baseName == 'Map' &&
+                  returnType.typeArguments
+                      .any((TypeDeclaration type) => type.isEnum)
+              ? '!'
+              : '';
+          indent.writeln('completion(.success(result$enumMapForceUnwrap))');
         }
-        indent.addScoped('else {', '}', () {
-          if (returnType.isVoid) {
-            indent.writeln('completion(.success(Void()))');
-          } else {
-            final String fieldType = _swiftTypeForDartType(returnType);
-            _writeGenericCasting(
-              indent: indent,
-              value: 'listResponse[0]',
-              variableName: 'result',
-              fieldType: fieldType,
-              type: returnType,
-            );
-            // There is a swift bug with unwrapping maps of nullable Enums;
-            final String enumMapForceUnwrap = returnType.baseName == 'Map' &&
-                    returnType.typeArguments
-                        .any((TypeDeclaration type) => type.isEnum)
-                ? '!'
-                : '';
-            indent.writeln('completion(.success(result$enumMapForceUnwrap))');
-          }
-        });
       });
     });
   }
@@ -3174,8 +3159,7 @@ String _flattenTypeArguments(List<TypeDeclaration> args) {
 }
 
 String _swiftTypeForBuiltinGenericDartType(TypeDeclaration type) {
-  if (type.typeArguments.isEmpty ||
-      (type.typeArguments.first.baseName == 'Object')) {
+  if (type.typeArguments.isEmpty) {
     if (type.baseName == 'List') {
       return '[Any?]';
     } else if (type.baseName == 'Map') {
@@ -3187,14 +3171,17 @@ String _swiftTypeForBuiltinGenericDartType(TypeDeclaration type) {
     if (type.baseName == 'List') {
       return '[${_nullSafeSwiftTypeForDartType(type.typeArguments.first)}]';
     } else if (type.baseName == 'Map') {
-      return '[${_nullSafeSwiftTypeForDartType(type.typeArguments.first)}: ${_nullSafeSwiftTypeForDartType(type.typeArguments.last)}]';
+      return '[${_nullSafeSwiftTypeForDartType(type.typeArguments.first, mapKey: true)}: ${_nullSafeSwiftTypeForDartType(type.typeArguments.last)}]';
     } else {
       return '${type.baseName}<${_flattenTypeArguments(type.typeArguments)}>';
     }
   }
 }
 
-String? _swiftTypeForBuiltinDartType(TypeDeclaration type) {
+String? _swiftTypeForBuiltinDartType(
+  TypeDeclaration type, {
+  bool mapKey = false,
+}) {
   const Map<String, String> swiftTypeForDartTypeMap = <String, String>{
     'void': 'Void',
     'bool': 'Bool',
@@ -3208,8 +3195,9 @@ String? _swiftTypeForBuiltinDartType(TypeDeclaration type) {
     'Float64List': 'FlutterStandardTypedData',
     'Object': 'Any',
   };
-
-  if (swiftTypeForDartTypeMap.containsKey(type.baseName)) {
+  if (mapKey && type.baseName == 'Object') {
+    return 'AnyHashable';
+  } else if (swiftTypeForDartTypeMap.containsKey(type.baseName)) {
     return swiftTypeForDartTypeMap[type.baseName];
   } else if (type.baseName == 'List' || type.baseName == 'Map') {
     return _swiftTypeForBuiltinGenericDartType(type);
@@ -3227,15 +3215,18 @@ String? _swiftTypeForProxyApiType(TypeDeclaration type) {
   return null;
 }
 
-String _swiftTypeForDartType(TypeDeclaration type) {
-  return _swiftTypeForBuiltinDartType(type) ??
+String _swiftTypeForDartType(TypeDeclaration type, {bool mapKey = false}) {
+  return _swiftTypeForBuiltinDartType(type, mapKey: mapKey) ??
       _swiftTypeForProxyApiType(type) ??
       type.baseName;
 }
 
-String _nullSafeSwiftTypeForDartType(TypeDeclaration type) {
+String _nullSafeSwiftTypeForDartType(
+  TypeDeclaration type, {
+  bool mapKey = false,
+}) {
   final String nullSafe = type.isNullable ? '?' : '';
-  return '${_swiftTypeForDartType(type)}$nullSafe';
+  return '${_swiftTypeForDartType(type, mapKey: mapKey)}$nullSafe';
 }
 
 String _getMethodSignature({
