@@ -2776,53 +2776,75 @@ private func nilOrValue<T>(_ value: Any?) -> T? {
     // }
 
     indent.writeScoped(
-        'class ${apiNameWithoutPrefix(api.name)}ProxyApiTest {', '}', () {
-      void writeApiVar(Indent indent) {
-        indent.writeln('let registrar = TestProxyApiRegistrar()');
-        indent.writeln(
-          'let api = registrar.apiDelegate.pigeonApi${api.name}(registrar)',
-        );
-        indent.newln();
-      }
-
-      String toUpperCamelCase(String name) {
-        if (name.length == 1) {
-          return name.toUpperCase();
+      'class ${apiNameWithoutPrefix(api.name)}ProxyApiTests: XCTestCase {',
+      '}',
+      () {
+        void writeApiVar(Indent indent) {
+          indent.writeln('let registrar = TestProxyApiRegistrar()');
+          indent.writeln(
+            'let api = registrar.apiDelegate.pigeonApi${api.name}(registrar)',
+          );
+          indent.newln();
         }
-        return name[0].toUpperCase() + name.substring(1);
-      }
 
-      for (final Constructor constructor in api.constructors) {
-        final String constructorName = constructor.name.isEmpty
-            ? 'pigeonDefaultConstructor'
-            : constructor.name;
-        indent.writeScoped(
-          'func test${toUpperCamelCase(constructorName)}() {',
-          '}',
-          () {
-            writeApiVar(indent);
+        String toUpperCamelCase(String name) {
+          if (name.length == 1) {
+            return name.toUpperCase();
+          }
+          return name[0].toUpperCase() + name.substring(1);
+        }
 
-            final String parameterValues = getParameterValues(
-              <Parameter>[
-                ...api.unattachedFields.map(_apiFieldAsParameter),
-                ...constructor.parameters,
-              ],
-            );
-            indent.writeln(
-              'let instance = try? api.$constructorName(pigeonApi: api${maybeComma(constructor.parameters)} $parameterValues)',
-            );
+        for (final Constructor constructor in api.constructors) {
+          final String constructorName = constructor.name.isEmpty
+              ? 'pigeonDefaultConstructor'
+              : constructor.name;
+          indent.writeScoped(
+            'func test${toUpperCamelCase(constructorName)}() {',
+            '}',
+            () {
+              writeApiVar(indent);
 
-            indent.writeln('XCTAssertNotNil(instance)');
-          },
-        );
-        indent.newln();
-      }
+              final String parameterValues = getParameterValues(
+                <Parameter>[
+                  ...api.unattachedFields.map(_apiFieldAsParameter),
+                  ...constructor.parameters,
+                ],
+              );
+              indent.writeln(
+                'let instance = try? api.$constructorName(pigeonApi: api${maybeComma(constructor.parameters)} $parameterValues)',
+              );
 
-      for (final ApiField field in api.unattachedFields) {
-        indent.writeScoped(
-          'func test${toUpperCamelCase(field.name)}() {',
-          '}',
-          () {
+              indent.writeln('XCTAssertNotNil(instance)');
+            },
+          );
+          indent.newln();
+        }
+
+        for (final ApiField field in api.unattachedFields) {
+          indent.writeScoped(
+            'func test${toUpperCamelCase(field.name)}() {',
+            '}',
+            () {
+              writeApiVar(indent);
+
+              indent.writeln(
+                'let instance = Test${apiNameWithoutPrefix(api.name)}()',
+              );
+              indent.writeln(
+                'let value = try? api.pigeonDelegate.${field.name}(pigeonApi: api, pigeonInstance: instance)',
+              );
+              indent.newln();
+
+              indent.writeln('XCTAssertEqual(value, instance.${field.name})');
+            },
+          );
+          indent.newln();
+        }
+
+        for (final ApiField field
+            in api.attachedFields.where((ApiField f) => !f.isStatic)) {
+          indent.writeScoped(
+              'func test${toUpperCamelCase(field.name)}() {', '}', () {
             writeApiVar(indent);
 
             indent.writeln(
@@ -2834,108 +2856,91 @@ private func nilOrValue<T>(_ value: Any?) -> T? {
             indent.newln();
 
             indent.writeln('XCTAssertEqual(value, instance.${field.name})');
-          },
-        );
-        indent.newln();
-      }
+          });
+          indent.newln();
+        }
 
-      for (final ApiField field
-          in api.attachedFields.where((ApiField f) => !f.isStatic)) {
-        indent.writeScoped('func test${toUpperCamelCase(field.name)}() {', '}',
+        for (final Method method
+            in api.hostMethods.where((Method m) => !m.isStatic)) {
+          indent.writeScoped(
+            'func test${toUpperCamelCase(method.name)}() {',
+            '}',
             () {
-          writeApiVar(indent);
+              writeApiVar(indent);
 
-          indent.writeln(
-            'let instance = Test${apiNameWithoutPrefix(api.name)}()',
-          );
-          indent.writeln(
-            'let value = try? api.pigeonDelegate.${field.name}(pigeonApi: api, pigeonInstance: instance)',
+              indent.writeln(
+                'let instance = Test${apiNameWithoutPrefix(api.name)}()',
+              );
+
+              final String parameterNames =
+                  _getParameterNames(method.parameters);
+
+              for (final Parameter parameter in method.parameters) {
+                indent.writeln(
+                  'let ${parameter.name} = ${getDefaultTestValue(parameter.type)}',
+                );
+              }
+
+              indent.writeln(
+                '${!method.returnType.isVoid ? 'let value = ' : ''}api.pigeonDelegate.${method.name}(pigeonApi: api, pigeonInstance: instance${maybeComma(method.parameters)} $parameterNames)',
+              );
+              indent.newln();
+
+              if (method.parameters.isEmpty) {
+                indent.writeln('XCTAssertTrue(instance.${method.name}Called)');
+              } else {
+                indent.writeln(
+                  'XCTAssertEqual(instance.${method.name}Args, [${_getParameterNamesList(method.parameters)}])',
+                );
+              }
+
+              if (!method.returnType.isVoid) {
+                indent.writeln(
+                  'XCTAssertEqual(value, instance.${method.name}($parameterNames))',
+                );
+              }
+            },
           );
           indent.newln();
+        }
 
-          indent.writeln('XCTAssertEqual(value, instance.${field.name})');
-        });
-        indent.newln();
-      }
-
-      for (final Method method
-          in api.hostMethods.where((Method m) => !m.isStatic)) {
-        indent.writeScoped(
-          'func test${toUpperCamelCase(method.name)}() {',
-          '}',
-          () {
-            writeApiVar(indent);
-
-            indent.writeln(
-              'let instance = Test${apiNameWithoutPrefix(api.name)}()',
-            );
-
-            final String parameterNames = _getParameterNames(method.parameters);
-
-            for (final Parameter parameter in method.parameters) {
+        // TODO: maybe test return value. is rare tho lololoolol
+        for (final Method method in api.flutterMethods) {
+          indent.writeScoped(
+            'func test${toUpperCamelCase(method.name)}() {',
+            '}',
+            () {
               indent.writeln(
-                'let ${parameter.name} = ${getDefaultTestValue(parameter.type)}',
+                'let api = Test${apiNameWithoutPrefix(api.name)}Api()',
               );
-            }
-
-            indent.writeln(
-              '${!method.returnType.isVoid ? 'let value = ' : ''}api.pigeonDelegate.${method.name}(pigeonApi: api, pigeonInstance: instance${maybeComma(method.parameters)} $parameterNames)',
-            );
-            indent.newln();
-
-            if (method.parameters.isEmpty) {
-              indent.writeln('XCTAssertTrue(instance.${method.name}Called)');
-            } else {
               indent.writeln(
-                'XCTAssertEqual(instance.${method.name}Args, [${_getParameterNamesList(method.parameters)}])',
+                'let instance = ${apiNameWithoutPrefix(api.name)}Impl(api: api)',
               );
-            }
 
-            if (!method.returnType.isVoid) {
-              indent.writeln(
-                'XCTAssertEqual(value, instance.${method.name}($parameterNames))',
-              );
-            }
-          },
-        );
-        indent.newln();
-      }
+              for (final Parameter parameter in method.parameters) {
+                indent.writeln(
+                  'let ${parameter.name} = ${getDefaultTestValue(parameter.type)}',
+                );
+              }
 
-      // TODO: maybe test return value. is rare tho lololoolol
-      for (final Method method in api.flutterMethods) {
-        indent.writeScoped(
-          'func test${toUpperCamelCase(method.name)}() {',
-          '}',
-          () {
-            indent.writeln(
-              'let api = Test${apiNameWithoutPrefix(api.name)}Api()',
-            );
-            indent.writeln(
-              'let instance = ${apiNameWithoutPrefix(api.name)}Impl(api: api)',
-            );
+              final String parameterNames =
+                  _getParameterNames(method.parameters);
+              indent.writeln('instance.${method.name}($parameterNames)');
+              indent.newln();
 
-            for (final Parameter parameter in method.parameters) {
-              indent.writeln(
-                'let ${parameter.name} = ${getDefaultTestValue(parameter.type)}',
-              );
-            }
-
-            final String parameterNames = _getParameterNames(method.parameters);
-            indent.writeln('instance.${method.name}($parameterNames)');
-            indent.newln();
-
-            if (method.parameters.isEmpty) {
-              indent.writeln('XCTAssertTrue(instance.${method.name}Called)');
-            } else {
-              indent.writeln(
-                'XCTAssertEqual(api.${method.name}Args, [${_getParameterNamesList(method.parameters)}])',
-              );
-            }
-          },
-        );
-        indent.newln();
-      }
-    });
+              if (method.parameters.isEmpty) {
+                indent.writeln('XCTAssertTrue(instance.${method.name}Called)');
+              } else {
+                indent.writeln(
+                  'XCTAssertEqual(api.${method.name}Args, [${_getParameterNamesList(method.parameters)}])',
+                );
+              }
+            },
+          );
+          indent.newln();
+        }
+      },
+    );
 
     if (api.hostMethods.where((Method m) => !m.isStatic).isNotEmpty ||
         api.attachedFields.where((ApiField f) => !f.isStatic).isNotEmpty) {
