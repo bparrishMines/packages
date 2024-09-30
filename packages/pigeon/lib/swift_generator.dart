@@ -2528,7 +2528,7 @@ private func nilOrValue<T>(_ value: Any?) -> T? {
     if (leadingUpperCaseCount == apiName.length && apiName.length > 2) {
       return apiName.substring(2);
     } else if (leadingUpperCaseCount > 1) {
-      return apiName.substring(leadingUpperCaseCount);
+      return apiName.substring(leadingUpperCaseCount - 1);
     } else {
       return apiName;
     }
