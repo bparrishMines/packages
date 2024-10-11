@@ -3835,6 +3835,7 @@ final class PigeonApiProxyApiTestClass: PigeonApiProtocolProxyApiTestClass {
   }
 
 }
+<<<<<<< HEAD
 
 // swiftlint:disable all
 /*
@@ -6179,6 +6180,8 @@ class TestProxyApiTestClassApi: PigeonApiProtocolProxyApiTestClass {
 */
 // swiftlint:enable all
 
+=======
+>>>>>>> 0da80be1c6fd9d07fe4880cd382f5d4e9c29259a
 protocol PigeonApiDelegateProxyApiSuperClass {
   func pigeonDefaultConstructor(pigeonApi: PigeonApiProxyApiSuperClass) throws -> ProxyApiSuperClass
   func aSuperMethod(pigeonApi: PigeonApiProxyApiSuperClass, pigeonInstance: ProxyApiSuperClass)
@@ -6287,6 +6290,7 @@ final class PigeonApiProxyApiSuperClass: PigeonApiProtocolProxyApiSuperClass {
     }
   }
 }
+<<<<<<< HEAD
 
 // swiftlint:disable all
 /*
@@ -6355,6 +6359,8 @@ class TestProxyApiSuperClass: ProxyApiSuperClass {
 */
 // swiftlint:enable all
 
+=======
+>>>>>>> 0da80be1c6fd9d07fe4880cd382f5d4e9c29259a
 open class PigeonApiDelegateProxyApiInterface {
 }
 
@@ -6449,6 +6455,7 @@ final class PigeonApiProxyApiInterface: PigeonApiProtocolProxyApiInterface {
   }
 
 }
+<<<<<<< HEAD
 
 // swiftlint:disable all
 /*
@@ -6510,6 +6517,8 @@ class TestProxyApiInterfaceApi: PigeonApiProtocolProxyApiInterface {
 */
 // swiftlint:enable all
 
+=======
+>>>>>>> 0da80be1c6fd9d07fe4880cd382f5d4e9c29259a
 protocol PigeonApiDelegateClassWithApiRequirement {
   @available(iOS 15.0.0, macOS 10.0.0, *)
   func pigeonDefaultConstructor(pigeonApi: PigeonApiClassWithApiRequirement) throws
@@ -6662,6 +6671,7 @@ final class PigeonApiClassWithApiRequirement: PigeonApiProtocolClassWithApiRequi
     }
   }
 }
+<<<<<<< HEAD
 
 // swiftlint:disable all
 /*
@@ -6729,3 +6739,5 @@ class TestClassWithApiRequirement: ClassWithApiRequirement {
 }
 */
 // swiftlint:enable all
+=======
+>>>>>>> 0da80be1c6fd9d07fe4880cd382f5d4e9c29259a
