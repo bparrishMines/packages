@@ -2593,7 +2593,7 @@ private func nilOrValue<T>(_ value: Any?) -> T? {
     addDocumentationComments(
       indent,
       <String>[
-        ' ProxyApi implementation for [${api.name}].',
+        ' ProxyApi implementation for `${api.name}`.',
         '',
         ' This class may handle instantiating native object instances that are attached to a Dart instance',
         ' or handle method calls on the associated native class or an instance of that class.',
@@ -2612,7 +2612,7 @@ private func nilOrValue<T>(_ value: Any?) -> T? {
 
         for (final Constructor constructor in api.constructors) {
           final String constructorName = constructor.name.isEmpty
-              ? 'pigeon_defaultConstructor'
+              ? 'pigeonDefaultConstructor'
               : constructor.name;
 
           final String methodSig = _getMethodSignature(
@@ -2646,7 +2646,7 @@ private func nilOrValue<T>(_ value: Any?) -> T? {
             () {
               if (field.type.isEnum) {
                 indent.writeScoped(
-                  'switch pigeon_instance.${field.name} {',
+                  'switch pigeonInstance.${field.name} {',
                   '}',
                   () {
                     for (final EnumMember member
@@ -2655,7 +2655,7 @@ private func nilOrValue<T>(_ value: Any?) -> T? {
                         continue;
                       }
                       final String memberName = member.name;
-                      indent.writeScoped('case .$memberName', '', () {
+                      indent.writeScoped('case .$memberName:', '', () {
                         indent.writeln('return .$memberName');
                       }, addTrailingNewline: false);
                     }
@@ -2665,7 +2665,7 @@ private func nilOrValue<T>(_ value: Any?) -> T? {
                   },
                 );
               } else {
-                indent.writeln('return pigeon_instance.${field.name}');
+                indent.writeln('return pigeonInstance.${field.name}');
               }
             },
           );
@@ -2674,13 +2674,13 @@ private func nilOrValue<T>(_ value: Any?) -> T? {
 
         for (final ApiField field in api.attachedFields) {
           final String instanceVar =
-              field.isStatic ? '' : ', pigeon_instance: ${api.name}';
+              field.isStatic ? '' : ', pigeonInstance: ${api.name}';
           indent.writeScoped(
             'func ${field.name}(pigeonApi: PigeonApi${api.name}$instanceVar): ${_nullSafeSwiftTypeForDartType(field.type)} {',
             '}',
             () {
               final String fromVar =
-                  field.isStatic ? api.name : 'pigeon_instance';
+                  field.isStatic ? api.name : 'pigeonInstance';
               indent.writeln('return $fromVar.${field.name}');
             },
           );
