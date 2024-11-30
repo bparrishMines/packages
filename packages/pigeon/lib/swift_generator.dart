@@ -2782,7 +2782,7 @@ private func nilOrValue<T>(_ value: Any?) -> T? {
     // }
 
     indent.writeScoped(
-      'class ${apiNameWithoutPrefix(api.name)}ProxyApiTests: XCTestCase {',
+      'class ${apiNameWithoutPrefix(api.name)}ProxyAPITests: XCTestCase {',
       '}',
       () {
         void writeApiVar(Indent indent) {
@@ -2817,7 +2817,7 @@ private func nilOrValue<T>(_ value: Any?) -> T? {
                 ],
               );
               indent.writeln(
-                'let instance = try? api.$constructorName(pigeonApi: api${maybeComma(constructor.parameters)} $parameterValues)',
+                'let instance = try? api.pigeonDelegate.$constructorName(pigeonApi: api${maybeComma(constructor.parameters)} $parameterValues)',
               );
 
               indent.writeln('XCTAssertNotNil(instance)');
