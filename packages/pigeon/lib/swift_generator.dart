@@ -1226,7 +1226,7 @@ if (wrapped == nil) {
 
     indent.newln();
     indent.writeln('/*');
-    _writeProxyApiImpl(indent, api);
+    _writeProxyApiImpl(indent, api, generatorOptions: generatorOptions);
     indent.writeln('*/');
     indent.newln();
     indent.writeln('/*');
@@ -2549,7 +2549,11 @@ private func nilOrValue<T>(_ value: Any?) -> T? {
     return Parameter(name: field.name, type: field.type);
   }
 
-  void _writeProxyApiImpl(Indent indent, AstProxyApi api) {
+  void _writeProxyApiImpl(
+    Indent indent,
+    AstProxyApi api, {
+    required SwiftOptions generatorOptions,
+  }) {
     _writeLicense(indent);
     indent.newln();
 
@@ -2712,16 +2716,32 @@ private func nilOrValue<T>(_ value: Any?) -> T? {
             ],
             returnType: method.returnType,
             isAsynchronous: method.isAsynchronous,
-            errorTypeName: 'Error',
+            errorTypeName: _getErrorClassName(generatorOptions),
           );
           indent.writeScoped('$methodSignature {', '}', () {
             final String maybeReturn =
                 method.returnType.isVoid ? '' : 'return ';
             final String fromVar =
                 method.isStatic ? api.name : 'pigeonInstance';
-            indent.writeln(
-              '$maybeReturn$fromVar.${method.name}(${_getParameterNames(method.parameters)})',
-            );
+            late final String methodSig;
+            if (method.name.length > 3 && method.name.startsWith('get')) {
+              final String nameWithoutGet = method.name.substring(3);
+              methodSig = nameWithoutGet.replaceFirst(
+                nameWithoutGet[0],
+                nameWithoutGet[0].toUpperCase(),
+              );
+            } else if (method.name.length > 3 &&
+                method.name.startsWith('set')) {
+              final String nameWithoutSet = method.name.substring(3);
+              methodSig =
+                  '${nameWithoutSet.replaceFirst(nameWithoutSet[0], nameWithoutSet[0].toUpperCase())} = ${_getParameterNames(<Parameter>[
+                    method.parameters.single
+                  ])}';
+            } else {
+              methodSig =
+                  '${method.name}(${_getParameterNames(method.parameters)})';
+            }
+            indent.writeln('$maybeReturn$fromVar.$methodSig');
           });
           indent.newln();
         }
