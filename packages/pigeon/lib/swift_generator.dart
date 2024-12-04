@@ -2735,6 +2735,7 @@ private func nilOrValue<T>(_ value: Any?) -> T? {
             } else if (method.name.length > 3 &&
                 method.parameters.length == 1 &&
                 method.name.startsWith('set')) {
+              print(method.name);
               final String nameWithoutSet = method.name.substring(3);
               methodSig =
                   '${nameWithoutSet.replaceFirst(nameWithoutSet[0], nameWithoutSet[0].toLowerCase())} = ${_getParameterNames(method.parameters)}';
