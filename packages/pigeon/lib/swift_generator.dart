@@ -2724,19 +2724,20 @@ private func nilOrValue<T>(_ value: Any?) -> T? {
             final String fromVar =
                 method.isStatic ? api.name : 'pigeonInstance';
             late final String methodSig;
-            if (method.name.length > 3 && method.name.startsWith('get')) {
+            if (method.name.length > 3 &&
+                method.parameters.isEmpty &&
+                method.name.startsWith('get')) {
               final String nameWithoutGet = method.name.substring(3);
               methodSig = nameWithoutGet.replaceFirst(
                 nameWithoutGet[0],
-                nameWithoutGet[0].toUpperCase(),
+                nameWithoutGet[0].toLowerCase(),
               );
             } else if (method.name.length > 3 &&
+                method.parameters.length == 1 &&
                 method.name.startsWith('set')) {
               final String nameWithoutSet = method.name.substring(3);
               methodSig =
-                  '${nameWithoutSet.replaceFirst(nameWithoutSet[0], nameWithoutSet[0].toUpperCase())} = ${_getParameterNames(<Parameter>[
-                    method.parameters.single
-                  ])}';
+                  '${nameWithoutSet.replaceFirst(nameWithoutSet[0], nameWithoutSet[0].toLowerCase())} = ${_getParameterNames(method.parameters)}';
             } else {
               methodSig =
                   '${method.name}(${_getParameterNames(method.parameters)})';
