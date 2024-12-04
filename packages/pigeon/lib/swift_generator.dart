@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'package:collection/collection.dart' as collection;
 import 'package:graphs/graphs.dart';
 import 'package:pub_semver/pub_semver.dart';
 
@@ -2512,6 +2513,9 @@ private func nilOrValue<T>(_ value: Any?) -> T? {
     final String classImports = includedApis
         .where((AstProxyApi api) => api.swiftOptions?.import != null)
         .map((AstProxyApi api) => api.swiftOptions!.import!)
+        .toSet()
+        .toList()
+        .sorted()
         .map((String import) => 'import $import')
         .join('\n');
 
