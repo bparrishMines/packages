@@ -1039,10 +1039,10 @@ if (wrapped == null) {
     //   testFile.writeAsStringSync(testFileBuffer.toString());
     // }
 
-    // indent.newln();
-    // indent.writeln('/*');
-    // _writeJavaProxyApiImpl(indent, api, package: generatorOptions.package ?? '');
-    // indent.writeln('*/');
+    indent.newln();
+    indent.writeln('/*');
+    _writeJavaProxyApiImpl(indent, api, package: generatorOptions.package ?? '');
+    indent.writeln('*/');
     indent.newln();
     indent.writeln('/*');
     _writeJavaProxyApiTest(indent, api, package: generatorOptions.package ?? '');
