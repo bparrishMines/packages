@@ -1012,22 +1012,22 @@ if (wrapped == null) {
     final StringBuffer implFileBuffer = StringBuffer();
     final Indent implFileIndent = Indent(implFileBuffer);
     final File implFile = File(
-      'android/src/main/java/${generatorOptions.package!.replaceAll('.', '/')}/${api.name}ProxyApi.kt',
+      'android/src/main/java/${generatorOptions.package!.replaceAll('.', '/')}/${api.name}ProxyApi.java',
     );
     print('${implFile.path}: ${implFile.existsSync()}');
-    // if (!implFile.existsSync()) {
-    //   _writeJavaProxyApiImpl(
-    //     implFileIndent,
-    //     api,
-    //     package: generatorOptions.package ?? '',
-    //   );
-    //   implFile.writeAsStringSync(implFileBuffer.toString());
-    // }
+    if (!implFile.existsSync()) {
+      _writeJavaProxyApiImpl(
+        implFileIndent,
+        api,
+        package: generatorOptions.package ?? '',
+      );
+      implFile.writeAsStringSync(implFileBuffer.toString());
+    }
 
     final StringBuffer testFileBuffer = StringBuffer();
     final Indent testFileIndent = Indent(testFileBuffer);
     final File testFile = File(
-      'android/src/test/java/${generatorOptions.package!.replaceAll('.', '/')}/${api.name}ProxyApiTest.kt',
+      'android/src/test/java/${generatorOptions.package!.replaceAll('.', '/')}/${api.name}ProxyApiTest.java',
     );
     print('${testFile.path}: ${testFile.existsSync()}');
     // if (!testFile.existsSync()) {
@@ -1041,11 +1041,13 @@ if (wrapped == null) {
 
     indent.newln();
     indent.writeln('/*');
-    _writeJavaProxyApiImpl(indent, api, package: generatorOptions.package ?? '');
+    _writeJavaProxyApiImpl(indent, api,
+        package: generatorOptions.package ?? '');
     indent.writeln('*/');
     indent.newln();
     indent.writeln('/*');
-    _writeJavaProxyApiTest(indent, api, package: generatorOptions.package ?? '');
+    _writeJavaProxyApiTest(indent, api,
+        package: generatorOptions.package ?? '');
     indent.writeln('*/');
   }
 
@@ -2578,7 +2580,6 @@ if (wrapped == null) {
       indent,
       <String>[
         ' ProxyApi implementation for {@link ${api.name}}.',
-        '',
         ' This class may handle instantiating native object instances that are attached to a Dart',
         ' instance or handle method calls on the associated native class or an instance of that class.',
       ],
@@ -2651,8 +2652,14 @@ if (wrapped == null) {
           final String constructorName = constructor.name.isEmpty
               ? 'pigeon_defaultConstructor'
               : constructor.name;
-          final String parameterDecl =
-              getMethodParameterNames(constructor.parameters);
+          final String parameterDecl = getMethodParameterNames(
+            <Parameter>[
+              ...api.unattachedFields.map((ApiField field) {
+                return Parameter(name: field.name, type: field.type);
+              }),
+              ...constructor.parameters
+            ],
+          );
           indent.writeln('@NonNull');
           indent.writeln('@Override');
           indent.writeScoped(
