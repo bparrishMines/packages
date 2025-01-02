@@ -1030,14 +1030,14 @@ if (wrapped == null) {
       'android/src/test/java/${generatorOptions.package!.replaceAll('.', '/')}/${api.name}ProxyApiTest.java',
     );
     print('${testFile.path}: ${testFile.existsSync()}');
-    // if (!testFile.existsSync()) {
-    //   _writeJavaProxyApiTest(
-    //     testFileIndent,
-    //     api,
-    //     package: generatorOptions.package ?? '',
-    //   );
-    //   testFile.writeAsStringSync(testFileBuffer.toString());
-    // }
+    if (!testFile.existsSync()) {
+      _writeJavaProxyApiTest(
+        testFileIndent,
+        api,
+        package: generatorOptions.package ?? '',
+      );
+      testFile.writeAsStringSync(testFileBuffer.toString());
+    }
 
     indent.newln();
     indent.writeln('/*');

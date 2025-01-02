@@ -5,6 +5,7 @@
 import 'package:code_builder/code_builder.dart' as cb;
 import 'package:dart_style/dart_style.dart';
 import 'package:path/path.dart' as path;
+import 'package:recase/recase.dart';
 
 import 'ast.dart';
 import 'dart/templates.dart';
@@ -791,8 +792,24 @@ final BinaryMessenger? ${varNamePrefix}binaryMessenger;
   ) {
     indent.format(proxyApiBaseCodec);
 
+    final String proxyName =
+        '${path.basenameWithoutExtension(generatorOptions.sourceOutPath ?? 'MyLibrary').pascalCase}Proxy';
+    final cb.Parameter binaryMessengerParameter = cb.Parameter(
+      (cb.ParameterBuilder builder) => builder
+        ..name = '${classMemberNamePrefix}binaryMessenger'
+        ..named = true
+        ..type = cb.refer('BinaryMessenger?')
+        ..toSuper = true,
+    );
+    final cb.Parameter instanceManagerParameter = cb.Parameter(
+      (cb.ParameterBuilder builder) => builder
+        ..name = _instanceManagerVarName
+        ..named = true
+        ..type = cb.refer('$dartInstanceManagerClassName?')
+        ..toSuper = true,
+    );
     final cb.Class proxy = cb.Class((cb.ClassBuilder builder) => builder
-      ..name = 'InteractiveMediaAdsProxy'
+      ..name = proxyName
       ..docs.addAll(
         asDocumentationComments(
           <String>[
@@ -811,7 +828,7 @@ final BinaryMessenger? ${varNamePrefix}binaryMessenger;
       )
       ..constructors.add(cb.Constructor((cb.ConstructorBuilder builder) {
         builder
-          ..docs.add('/// Constructs an [InteractiveMediaAdsProxy].')
+          ..docs.add('/// Constructs an [$proxyName].')
           ..constant = true
           ..optionalParameters.addAll(
             <cb.Parameter>[
@@ -937,7 +954,11 @@ final BinaryMessenger? ${varNamePrefix}binaryMessenger;
                             }),
                           for (final ApiField field in api.unattachedFields
                               .where((ApiField f) => f.type.isNullable))
-                            field.name: _refer(field.type)
+                            field.name: _refer(field.type),
+                          binaryMessengerParameter.name:
+                              binaryMessengerParameter.type!,
+                          instanceManagerParameter.name:
+                              instanceManagerParameter.type!,
                         },
                       ),
                   );
@@ -959,7 +980,15 @@ final BinaryMessenger? ${varNamePrefix}binaryMessenger;
                     ..requiredParameters.addAll(<cb.Reference>[
                       for (final Parameter parameter in method.parameters)
                         _refer(parameter.type),
-                    ]);
+                    ])
+                    ..namedParameters.addAll(
+                      <String, cb.Reference>{
+                        binaryMessengerParameter.name:
+                            binaryMessengerParameter.type!,
+                        instanceManagerParameter.name:
+                            instanceManagerParameter.type!,
+                      },
+                    );
                 });
             }),
       ])

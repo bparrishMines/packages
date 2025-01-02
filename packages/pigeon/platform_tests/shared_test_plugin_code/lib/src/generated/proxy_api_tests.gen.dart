@@ -416,11 +416,13 @@ class _PigeonInternalProxyApiBaseCodec extends _PigeonCodec {
 ///
 /// By default each function calls the default constructor of the class it
 /// intends to return.
-class InteractiveMediaAdsProxy {
-  /// Constructs an [InteractiveMediaAdsProxy].
-  const InteractiveMediaAdsProxy({
+class MyLibraryProxy {
+  /// Constructs an [MyLibraryProxy].
+  const MyLibraryProxy({
     this.newProxyApiTestClass = ProxyApiTestClass.new,
+    this.namedConstructorProxyApiTestClass = ProxyApiTestClass.namedConstructor,
     this.newProxyApiSuperClass = ProxyApiSuperClass.new,
+    this.newClassWithApiRequirement = ClassWithApiRequirement.new,
     this.staticNoopProxyApiTestClass = ProxyApiTestClass.staticNoop,
     this.echoStaticStringProxyApiTestClass = ProxyApiTestClass.echoStaticString,
     this.staticAsyncNoopProxyApiTestClass = ProxyApiTestClass.staticAsyncNoop,
@@ -457,6 +459,94 @@ class InteractiveMediaAdsProxy {
     Map<String?, Object?>? nullableMapParam,
     ProxyApiTestEnum? nullableEnumParam,
     ProxyApiSuperClass? nullableProxyApiParam,
+    void Function(ProxyApiTestClass)? flutterNoop,
+    Object? Function(ProxyApiTestClass)? flutterThrowError,
+    void Function(ProxyApiTestClass)? flutterThrowErrorFromVoid,
+    bool Function(
+      ProxyApiTestClass,
+      bool,
+    )? flutterEchoBool,
+    int Function(
+      ProxyApiTestClass,
+      int,
+    )? flutterEchoInt,
+    double Function(
+      ProxyApiTestClass,
+      double,
+    )? flutterEchoDouble,
+    String Function(
+      ProxyApiTestClass,
+      String,
+    )? flutterEchoString,
+    Uint8List Function(
+      ProxyApiTestClass,
+      Uint8List,
+    )? flutterEchoUint8List,
+    List<Object?> Function(
+      ProxyApiTestClass,
+      List<Object?>,
+    )? flutterEchoList,
+    List<ProxyApiTestClass?> Function(
+      ProxyApiTestClass,
+      List<ProxyApiTestClass?>,
+    )? flutterEchoProxyApiList,
+    Map<String?, Object?> Function(
+      ProxyApiTestClass,
+      Map<String?, Object?>,
+    )? flutterEchoMap,
+    Map<String?, ProxyApiTestClass?> Function(
+      ProxyApiTestClass,
+      Map<String?, ProxyApiTestClass?>,
+    )? flutterEchoProxyApiMap,
+    ProxyApiTestEnum Function(
+      ProxyApiTestClass,
+      ProxyApiTestEnum,
+    )? flutterEchoEnum,
+    ProxyApiSuperClass Function(
+      ProxyApiTestClass,
+      ProxyApiSuperClass,
+    )? flutterEchoProxyApi,
+    bool? Function(
+      ProxyApiTestClass,
+      bool?,
+    )? flutterEchoNullableBool,
+    int? Function(
+      ProxyApiTestClass,
+      int?,
+    )? flutterEchoNullableInt,
+    double? Function(
+      ProxyApiTestClass,
+      double?,
+    )? flutterEchoNullableDouble,
+    String? Function(
+      ProxyApiTestClass,
+      String?,
+    )? flutterEchoNullableString,
+    Uint8List? Function(
+      ProxyApiTestClass,
+      Uint8List?,
+    )? flutterEchoNullableUint8List,
+    List<Object?>? Function(
+      ProxyApiTestClass,
+      List<Object?>?,
+    )? flutterEchoNullableList,
+    Map<String?, Object?>? Function(
+      ProxyApiTestClass,
+      Map<String?, Object?>?,
+    )? flutterEchoNullableMap,
+    ProxyApiTestEnum? Function(
+      ProxyApiTestClass,
+      ProxyApiTestEnum?,
+    )? flutterEchoNullableEnum,
+    ProxyApiSuperClass? Function(
+      ProxyApiTestClass,
+      ProxyApiSuperClass?,
+    )? flutterEchoNullableProxyApi,
+    Future<void> Function(ProxyApiTestClass)? flutterNoopAsync,
+    Future<String> Function(
+      ProxyApiTestClass,
+      String,
+    )? flutterEchoAsyncString,
     bool? aNullableBool,
     int? aNullableInt,
     double? aNullableDouble,
@@ -466,10 +556,133 @@ class InteractiveMediaAdsProxy {
     Map<String?, Object?>? aNullableMap,
     ProxyApiTestEnum? aNullableEnum,
     ProxyApiSuperClass? aNullableProxyApi,
+    BinaryMessenger? pigeon_binaryMessenger,
+    PigeonInstanceManager? pigeon_instanceManager,
   }) newProxyApiTestClass;
 
+  /// Constructs [ProxyApiTestClass].
+  final ProxyApiTestClass Function({
+    required bool aBool,
+    required int anInt,
+    required double aDouble,
+    required String aString,
+    required Uint8List aUint8List,
+    required List<Object?> aList,
+    required Map<String?, Object?> aMap,
+    required ProxyApiTestEnum anEnum,
+    required ProxyApiSuperClass aProxyApi,
+    void Function(ProxyApiTestClass)? flutterNoop,
+    Object? Function(ProxyApiTestClass)? flutterThrowError,
+    void Function(ProxyApiTestClass)? flutterThrowErrorFromVoid,
+    bool Function(
+      ProxyApiTestClass,
+      bool,
+    )? flutterEchoBool,
+    int Function(
+      ProxyApiTestClass,
+      int,
+    )? flutterEchoInt,
+    double Function(
+      ProxyApiTestClass,
+      double,
+    )? flutterEchoDouble,
+    String Function(
+      ProxyApiTestClass,
+      String,
+    )? flutterEchoString,
+    Uint8List Function(
+      ProxyApiTestClass,
+      Uint8List,
+    )? flutterEchoUint8List,
+    List<Object?> Function(
+      ProxyApiTestClass,
+      List<Object?>,
+    )? flutterEchoList,
+    List<ProxyApiTestClass?> Function(
+      ProxyApiTestClass,
+      List<ProxyApiTestClass?>,
+    )? flutterEchoProxyApiList,
+    Map<String?, Object?> Function(
+      ProxyApiTestClass,
+      Map<String?, Object?>,
+    )? flutterEchoMap,
+    Map<String?, ProxyApiTestClass?> Function(
+      ProxyApiTestClass,
+      Map<String?, ProxyApiTestClass?>,
+    )? flutterEchoProxyApiMap,
+    ProxyApiTestEnum Function(
+      ProxyApiTestClass,
+      ProxyApiTestEnum,
+    )? flutterEchoEnum,
+    ProxyApiSuperClass Function(
+      ProxyApiTestClass,
+      ProxyApiSuperClass,
+    )? flutterEchoProxyApi,
+    bool? Function(
+      ProxyApiTestClass,
+      bool?,
+    )? flutterEchoNullableBool,
+    int? Function(
+      ProxyApiTestClass,
+      int?,
+    )? flutterEchoNullableInt,
+    double? Function(
+      ProxyApiTestClass,
+      double?,
+    )? flutterEchoNullableDouble,
+    String? Function(
+      ProxyApiTestClass,
+      String?,
+    )? flutterEchoNullableString,
+    Uint8List? Function(
+      ProxyApiTestClass,
+      Uint8List?,
+    )? flutterEchoNullableUint8List,
+    List<Object?>? Function(
+      ProxyApiTestClass,
+      List<Object?>?,
+    )? flutterEchoNullableList,
+    Map<String?, Object?>? Function(
+      ProxyApiTestClass,
+      Map<String?, Object?>?,
+    )? flutterEchoNullableMap,
+    ProxyApiTestEnum? Function(
+      ProxyApiTestClass,
+      ProxyApiTestEnum?,
+    )? flutterEchoNullableEnum,
+    ProxyApiSuperClass? Function(
+      ProxyApiTestClass,
+      ProxyApiSuperClass?,
+    )? flutterEchoNullableProxyApi,
+    Future<void> Function(ProxyApiTestClass)? flutterNoopAsync,
+    Future<String> Function(
+      ProxyApiTestClass,
+      String,
+    )? flutterEchoAsyncString,
+    bool? aNullableBool,
+    int? aNullableInt,
+    double? aNullableDouble,
+    String? aNullableString,
+    Uint8List? aNullableUint8List,
+    List<Object?>? aNullableList,
+    Map<String?, Object?>? aNullableMap,
+    ProxyApiTestEnum? aNullableEnum,
+    ProxyApiSuperClass? aNullableProxyApi,
+    BinaryMessenger? pigeon_binaryMessenger,
+    PigeonInstanceManager? pigeon_instanceManager,
+  }) namedConstructorProxyApiTestClass;
+
   /// Constructs [ProxyApiSuperClass].
-  final ProxyApiSuperClass Function() newProxyApiSuperClass;
+  final ProxyApiSuperClass Function({
+    BinaryMessenger? pigeon_binaryMessenger,
+    PigeonInstanceManager? pigeon_instanceManager,
+  }) newProxyApiSuperClass;
+
+  /// Constructs [ClassWithApiRequirement].
+  final ClassWithApiRequirement Function({
+    BinaryMessenger? pigeon_binaryMessenger,
+    PigeonInstanceManager? pigeon_instanceManager,
+  }) newClassWithApiRequirement;
 
   /// Calls to [ProxyApiTestClass.staticNoop].
   final Future<void> Function() staticNoopProxyApiTestClass;
