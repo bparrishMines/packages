@@ -16,7 +16,7 @@ let package = Package(
     .library(name: "webview-flutter-wkwebview", targets: ["webview_flutter_wkwebview"])
   ],
   dependencies: [],
-  exclude: ["include/webview-umbrella.h"],
+  exclude: ["include/FlutterWebView.modulemap", "include/webview-umbrella.h"],
   targets: [
     .target(
       name: "webview_flutter_wkwebview",
