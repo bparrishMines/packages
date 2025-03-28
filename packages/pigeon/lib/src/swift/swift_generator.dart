@@ -10,6 +10,7 @@ import '../ast.dart';
 import '../functional.dart';
 import '../generator.dart';
 import '../generator_tools.dart';
+import '../types/task_queue.dart';
 import 'templates.dart';
 
 /// Documentation comment open symbol.
@@ -78,6 +79,49 @@ class SwiftOptions {
   }
 }
 
+/// Options that control how Swift code will be generated.
+class InternalSwiftOptions extends InternalOptions {
+  /// Creates a [InternalSwiftOptions] object
+  const InternalSwiftOptions({
+    this.copyrightHeader,
+    required this.swiftOut,
+    this.fileSpecificClassNameComponent,
+    this.errorClassName,
+    this.includeErrorClass = true,
+  });
+
+  /// Creates InternalSwiftOptions from SwiftOptions.
+  InternalSwiftOptions.fromSwiftOptions(
+    SwiftOptions options, {
+    required this.swiftOut,
+    Iterable<String>? copyrightHeader,
+  })  : copyrightHeader = options.copyrightHeader ?? copyrightHeader,
+        fileSpecificClassNameComponent =
+            options.fileSpecificClassNameComponent ??
+                swiftOut.split('/').lastOrNull?.split('.').firstOrNull ??
+                '',
+        errorClassName = options.errorClassName,
+        includeErrorClass = options.includeErrorClass;
+
+  /// A copyright header that will get prepended to generated code.
+  final Iterable<String>? copyrightHeader;
+
+  /// Path to the swift file that will be generated.
+  final String swiftOut;
+
+  /// A String to augment class names to avoid cross file collisions.
+  final String? fileSpecificClassNameComponent;
+
+  /// The name of the error class used for passing custom error parameters.
+  final String? errorClassName;
+
+  /// Whether to include the error class in generation.
+  ///
+  /// This should only ever be set to false if you have another generated
+  /// Swift file in the same directory.
+  final bool includeErrorClass;
+}
+
 /// Options that control how Swift code will be generated for a specific
 /// ProxyApi.
 class SwiftProxyApiOptions {
@@ -139,13 +183,13 @@ class SwiftEventChannelOptions {
 }
 
 /// Class that manages all Swift code generation.
-class SwiftGenerator extends StructuredGenerator<SwiftOptions> {
+class SwiftGenerator extends StructuredGenerator<InternalSwiftOptions> {
   /// Instantiates a Swift Generator.
   const SwiftGenerator();
 
   @override
   void writeFilePrologue(
-    SwiftOptions generatorOptions,
+    InternalSwiftOptions generatorOptions,
     Root root,
     Indent indent, {
     required String dartPackageName,
@@ -160,7 +204,7 @@ class SwiftGenerator extends StructuredGenerator<SwiftOptions> {
 
   @override
   void writeFileImports(
-    SwiftOptions generatorOptions,
+    InternalSwiftOptions generatorOptions,
     Root root,
     Indent indent, {
     required String dartPackageName,
@@ -182,7 +226,7 @@ class SwiftGenerator extends StructuredGenerator<SwiftOptions> {
 
   @override
   void writeEnum(
-    SwiftOptions generatorOptions,
+    InternalSwiftOptions generatorOptions,
     Root root,
     Indent indent,
     Enum anEnum, {
@@ -204,7 +248,7 @@ class SwiftGenerator extends StructuredGenerator<SwiftOptions> {
 
   @override
   void writeGeneralCodec(
-    SwiftOptions generatorOptions,
+    InternalSwiftOptions generatorOptions,
     Root root,
     Indent indent, {
     required String dartPackageName,
@@ -382,7 +426,7 @@ class SwiftGenerator extends StructuredGenerator<SwiftOptions> {
   }
 
   void _writeCodecOverflowUtilities(
-    SwiftOptions generatorOptions,
+    InternalSwiftOptions generatorOptions,
     Root root,
     Indent indent,
     List<EnumeratedType> types, {
@@ -455,7 +499,7 @@ if (wrapped == nil) {
 
   @override
   void writeDataClass(
-    SwiftOptions generatorOptions,
+    InternalSwiftOptions generatorOptions,
     Root root,
     Indent indent,
     Class classDefinition, {
@@ -526,7 +570,7 @@ if (wrapped == nil) {
 
   @override
   void writeClassEncode(
-    SwiftOptions generatorOptions,
+    InternalSwiftOptions generatorOptions,
     Root root,
     Indent indent,
     Class classDefinition, {
@@ -549,7 +593,7 @@ if (wrapped == nil) {
 
   @override
   void writeClassDecode(
-    SwiftOptions generatorOptions,
+    InternalSwiftOptions generatorOptions,
     Root root,
     Indent indent,
     Class classDefinition, {
@@ -601,7 +645,7 @@ if (wrapped == nil) {
 
   @override
   void writeApis(
-    SwiftOptions generatorOptions,
+    InternalSwiftOptions generatorOptions,
     Root root,
     Indent indent, {
     required String dartPackageName,
@@ -624,7 +668,7 @@ if (wrapped == nil) {
   /// }
   @override
   void writeFlutterApi(
-    SwiftOptions generatorOptions,
+    InternalSwiftOptions generatorOptions,
     Root root,
     Indent indent,
     AstFlutterApi api, {
@@ -693,7 +737,7 @@ if (wrapped == nil) {
   /// }
   @override
   void writeHostApi(
-    SwiftOptions generatorOptions,
+    InternalSwiftOptions generatorOptions,
     Root root,
     Indent indent,
     AstHostApi api, {
@@ -737,6 +781,21 @@ if (wrapped == nil) {
       indent.addScoped('{', '}', () {
         indent.writeln(
             r'let channelSuffix = messageChannelSuffix.count > 0 ? ".\(messageChannelSuffix)" : ""');
+        String? serialBackgroundQueue;
+        if (api.methods.any((Method m) =>
+            m.taskQueueType == TaskQueueType.serialBackgroundThread)) {
+          serialBackgroundQueue = 'taskQueue';
+          // TODO(stuartmorgan): Remove the ? once macOS supports task queues
+          // and this is no longer an optional protocol method.
+          // See https://github.com/flutter/flutter/issues/162613 for why this
+          // is an ifdef instead of just relying on the optionality check.
+          indent.format('''
+#if os(iOS)
+  let $serialBackgroundQueue = binaryMessenger.makeBackgroundTaskQueue?()
+#else
+  let $serialBackgroundQueue: FlutterTaskQueue? = nil
+#endif''');
+        }
         for (final Method method in api.methods) {
           _writeHostMethodMessageHandler(
             indent,
@@ -748,6 +807,10 @@ if (wrapped == nil) {
             isAsynchronous: method.isAsynchronous,
             swiftFunction: method.swiftFunction,
             documentationComments: method.documentationComments,
+            serialBackgroundQueue:
+                method.taskQueueType == TaskQueueType.serialBackgroundThread
+                    ? serialBackgroundQueue
+                    : null,
           );
         }
       });
@@ -756,7 +819,7 @@ if (wrapped == nil) {
 
   @override
   void writeInstanceManager(
-    SwiftOptions generatorOptions,
+    InternalSwiftOptions generatorOptions,
     Root root,
     Indent indent, {
     required String dartPackageName,
@@ -768,7 +831,7 @@ if (wrapped == nil) {
 
   @override
   void writeInstanceManagerApi(
-    SwiftOptions generatorOptions,
+    InternalSwiftOptions generatorOptions,
     Root root,
     Indent indent, {
     required String dartPackageName,
@@ -895,7 +958,7 @@ if (wrapped == nil) {
 
   @override
   void writeProxyApiBaseCodec(
-    SwiftOptions generatorOptions,
+    InternalSwiftOptions generatorOptions,
     Root root,
     Indent indent,
   ) {
@@ -1119,7 +1182,7 @@ if (wrapped == nil) {
 
   @override
   void writeProxyApi(
-    SwiftOptions generatorOptions,
+    InternalSwiftOptions generatorOptions,
     Root root,
     Indent indent,
     AstProxyApi api, {
@@ -1314,7 +1377,7 @@ if (wrapped == nil) {
     });
   }
 
-  void _writeWrapError(SwiftOptions generatorOptions, Indent indent) {
+  void _writeWrapError(InternalSwiftOptions generatorOptions, Indent indent) {
     indent.newln();
     indent.write('private func wrapError(_ error: Any) -> [Any?] ');
     indent.addScoped('{', '}', () {
@@ -1356,7 +1419,7 @@ private func nilOrValue<T>(_ value: Any?) -> T? {
   }
 
   void _writeCreateConnectionError(
-      SwiftOptions generatorOptions, Indent indent) {
+      InternalSwiftOptions generatorOptions, Indent indent) {
     indent.newln();
     indent.writeScoped(
         'private func createConnectionError(withChannelName channelName: String) -> ${_getErrorClassName(generatorOptions)} {',
@@ -1368,7 +1431,7 @@ private func nilOrValue<T>(_ value: Any?) -> T? {
 
   @override
   void writeGeneralUtilities(
-    SwiftOptions generatorOptions,
+    InternalSwiftOptions generatorOptions,
     Root root,
     Indent indent, {
     required String dartPackageName,
@@ -1391,7 +1454,7 @@ private func nilOrValue<T>(_ value: Any?) -> T? {
 
   @override
   void writeEventChannelApi(
-    SwiftOptions generatorOptions,
+    InternalSwiftOptions generatorOptions,
     Root root,
     Indent indent,
     AstEventChannelApi api, {
@@ -1447,7 +1510,7 @@ private func nilOrValue<T>(_ value: Any?) -> T? {
         func endOfStream() {
           sink(FlutterEndOfEventStream)
         }
-      
+
       }
       ''');
     }
@@ -1456,7 +1519,7 @@ private func nilOrValue<T>(_ value: Any?) -> T? {
     for (final Method func in api.methods) {
       indent.format('''
         class ${toUpperCamelCase(func.name)}StreamHandler: PigeonEventChannelWrapper<${_swiftTypeForDartType(func.returnType)}> {
-          static func register(with messenger: FlutterBinaryMessenger, 
+          static func register(with messenger: FlutterBinaryMessenger,
                               instanceName: String = "",
                               streamHandler: ${toUpperCamelCase(func.name)}StreamHandler) {
             var channelName = "${makeChannelName(api, func, dartPackageName)}"
@@ -1474,7 +1537,7 @@ private func nilOrValue<T>(_ value: Any?) -> T? {
 
   void _writeFlutterMethod(
     Indent indent, {
-    required SwiftOptions generatorOptions,
+    required InternalSwiftOptions generatorOptions,
     required String name,
     required String channelName,
     required List<Parameter> parameters,
@@ -1504,7 +1567,7 @@ private func nilOrValue<T>(_ value: Any?) -> T? {
 
   void _writeFlutterMethodMessageCall(
     Indent indent, {
-    required SwiftOptions generatorOptions,
+    required InternalSwiftOptions generatorOptions,
     required List<Parameter> parameters,
     required TypeDeclaration returnType,
     required String channelName,
@@ -1578,6 +1641,7 @@ private func nilOrValue<T>(_ value: Any?) -> T? {
     required TypeDeclaration returnType,
     required bool isAsynchronous,
     required String? swiftFunction,
+    String? serialBackgroundQueue,
     String setHandlerCondition = 'let api = api',
     List<String> documentationComments = const <String>[],
     String Function(List<String> safeArgNames, {required String apiVarName})?
@@ -1592,8 +1656,30 @@ private func nilOrValue<T>(_ value: Any?) -> T? {
 
     final String varChannelName = '${name}Channel';
     addDocumentationComments(indent, documentationComments, _docCommentSpec);
-    indent.writeln(
-        'let $varChannelName = FlutterBasicMessageChannel(name: "$channelName", binaryMessenger: binaryMessenger, codec: codec)');
+    final String baseArgs = 'name: "$channelName", '
+        'binaryMessenger: binaryMessenger, codec: codec';
+    // The version with taskQueue: is an optional protocol method that isn't
+    // implemented on macOS yet, so the call has to be conditionalized even
+    // though the taskQueue argument is nullable. The runtime branching can be
+    // removed once macOS supports task queues. The condition is on the task
+    // queue variable not being nil because the earlier code to set it will
+    // return nil on macOS where the optional parts of the protocol are not
+    // implemented.
+    final String channelCreationWithoutTaskQueue =
+        'FlutterBasicMessageChannel($baseArgs)';
+    if (serialBackgroundQueue == null) {
+      indent.writeln('let $varChannelName = $channelCreationWithoutTaskQueue');
+    } else {
+      final String channelCreationWithTaskQueue =
+          'FlutterBasicMessageChannel($baseArgs, taskQueue: $serialBackgroundQueue)';
+
+      indent.write('let $varChannelName = $serialBackgroundQueue == nil');
+      indent.addScoped('', '', () {
+        indent.writeln('? $channelCreationWithoutTaskQueue');
+        indent.writeln(': $channelCreationWithTaskQueue');
+      });
+    }
+
     indent.write('if $setHandlerCondition ');
     indent.addScoped('{', '}', () {
       indent.write('$varChannelName.setMessageHandler ');
@@ -1684,7 +1770,7 @@ private func nilOrValue<T>(_ value: Any?) -> T? {
 
   void _writeProxyApiRegistrar(
     Indent indent, {
-    required SwiftOptions generatorOptions,
+    required InternalSwiftOptions generatorOptions,
     required Iterable<AstProxyApi> allProxyApis,
   }) {
     final String delegateName =
@@ -2085,7 +2171,7 @@ private func nilOrValue<T>(_ value: Any?) -> T? {
   void _writeProxyApiMessageHandlerMethod(
     Indent indent,
     AstProxyApi api, {
-    required SwiftOptions generatorOptions,
+    required InternalSwiftOptions generatorOptions,
     required TypeDeclaration apiAsTypeDeclaration,
     required String swiftApiName,
     required String dartPackageName,
@@ -2313,7 +2399,7 @@ private func nilOrValue<T>(_ value: Any?) -> T? {
   void _writeProxyApiNewInstanceMethod(
     Indent indent,
     AstProxyApi api, {
-    required SwiftOptions generatorOptions,
+    required InternalSwiftOptions generatorOptions,
     required TypeDeclaration apiAsTypeDeclaration,
     required String newInstanceMethodName,
     required String dartPackageName,
@@ -2439,7 +2525,7 @@ private func nilOrValue<T>(_ value: Any?) -> T? {
   void _writeProxyApiFlutterMethods(
     Indent indent,
     AstProxyApi api, {
-    required SwiftOptions generatorOptions,
+    required InternalSwiftOptions generatorOptions,
     required TypeDeclaration apiAsTypeDeclaration,
     required String dartPackageName,
     bool writeBody = true,
@@ -2522,7 +2608,7 @@ private func nilOrValue<T>(_ value: Any?) -> T? {
     }
   }
 
-  void _writePigeonError(SwiftOptions generatorOptions, Indent indent) {
+  void _writePigeonError(InternalSwiftOptions generatorOptions, Indent indent) {
     indent.newln();
     indent.writeln(
         '/// Error class for passing custom error details to Dart side.');
@@ -3316,17 +3402,17 @@ String? _tryGetUnsupportedPlatformsCondition(Iterable<TypeDeclaration> types) {
 }
 
 /// Calculates the name of the codec that will be generated for [api].
-String _getMessageCodecName(SwiftOptions options) {
+String _getMessageCodecName(InternalSwiftOptions options) {
   return toUpperCamelCase(
       '${options.fileSpecificClassNameComponent}PigeonCodec');
 }
 
 /// Calculates the name of the codec that will be generated for [api].
-String _getMethodCodecVarName(SwiftOptions options) {
+String _getMethodCodecVarName(InternalSwiftOptions options) {
   return '${toLowerCamelCase(options.fileSpecificClassNameComponent ?? '')}PigeonMethodCodec';
 }
 
-String _getErrorClassName(SwiftOptions generatorOptions) {
+String _getErrorClassName(InternalSwiftOptions generatorOptions) {
   return generatorOptions.errorClassName ?? 'PigeonError';
 }
 

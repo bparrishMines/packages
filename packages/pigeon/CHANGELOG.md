@@ -1,3 +1,32 @@
+## 25.2.0
+
+* [kotlin] Adds equality methods to generated data classes.
+
+## 25.1.0
+
+* [dart] Adds equality methods to generated data classes.
+
+## 25.0.0
+
+* **Breaking Change** Removes `oneLanguage` field from `PigeonOptions`.
+* Separates internal options classes from user facing options.
+* Adds `mergeDefinitionFileOptions` parameter to `runWithOptions` method.
+* Relocates `injectOverflowTypes` to non-public facing method.
+
+## 24.2.2
+
+* Updates compileSdk 34 to flutter.compileSdkVersion.
+
+## 24.2.1
+
+* [dart] Fixes potential race condition caused by a ProxyApi constructor message call being made in an async method.
+
+## 24.2.0
+
+* Adjusts task queues to use a shared task queue for all methods in a single
+  API instance, to give the same ordering guarantees as non-task-queue usage.
+* [swift] Adds task queue support to the Swift generator.
+
 ## 24.1.1
 
 * [swift, kotlin] Adds an error message when a ProxyAPI callback method that returns a non-null

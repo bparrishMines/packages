@@ -3,8 +3,10 @@
 // found in the LICENSE file.
 
 #import "FLTCam.h"
+#import "FLTCaptureConnection.h"
 #import "FLTCaptureDevice.h"
 #import "FLTCapturePhotoOutput.h"
+#import "FLTCaptureVideoDataOutput.h"
 #import "FLTDeviceOrientationProviding.h"
 #import "FLTSavePhotoDelegate.h"
 
@@ -25,7 +27,7 @@
 @interface FLTCam ()
 
 /// The output for video capturing.
-@property(readonly, nonatomic) AVCaptureVideoDataOutput *captureVideoOutput;
+@property(strong, nonatomic) NSObject<FLTCaptureVideoDataOutput> *captureVideoOutput;
 
 /// The output for photo capturing. Exposed setter for unit tests.
 @property(strong, nonatomic) NSObject<FLTCapturePhotoOutput> *capturePhotoOutput;
@@ -45,7 +47,7 @@
 /// Exposed for unit tests.
 - (void)captureOutput:(AVCaptureOutput *)output
     didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
-           fromConnection:(AVCaptureConnection *)connection;
+           fromConnection:(NSObject<FLTCaptureConnection> *)connection;
 
 /// Start streaming images.
 - (void)startImageStreamWithMessenger:(NSObject<FlutterBinaryMessenger> *)messenger
