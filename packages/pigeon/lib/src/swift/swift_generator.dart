@@ -2748,7 +2748,7 @@ private func nilOrValue<T>(_ value: Any?) -> T? {
   void _writeProxyApiImpl(
     Indent indent,
     AstProxyApi api, {
-    required SwiftOptions generatorOptions,
+    required InternalSwiftOptions generatorOptions,
   }) {
     _writeLicense(indent);
     indent.newln();

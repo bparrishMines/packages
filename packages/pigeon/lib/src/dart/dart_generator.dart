@@ -876,7 +876,7 @@ final BinaryMessenger? ${varNamePrefix}binaryMessenger;
     indent.format(proxyApiBaseCodec);
 
     final String proxyName =
-        '${path.basenameWithoutExtension(generatorOptions.sourceOutPath ?? 'MyLibrary').pascalCase}Proxy';
+        '${path.basenameWithoutExtension(generatorOptions.dartOut ?? 'MyLibrary').pascalCase}Proxy';
     final cb.Parameter binaryMessengerParameter = cb.Parameter(
       (cb.ParameterBuilder builder) => builder
         ..name = '${classMemberNamePrefix}binaryMessenger'
