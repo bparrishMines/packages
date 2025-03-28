@@ -1124,35 +1124,35 @@ if (wrapped == null) {
       },
     );
 
-    final StringBuffer implFileBuffer = StringBuffer();
-    final Indent implFileIndent = Indent(implFileBuffer);
-    final File implFile = File(
-      'android/src/main/java/${generatorOptions.package!.replaceAll('.', '/')}/${api.name}ProxyApi.java',
-    );
-    print('${implFile.path}: ${implFile.existsSync()}');
-    if (!implFile.existsSync()) {
-      _writeJavaProxyApiImpl(
-        implFileIndent,
-        api,
-        package: generatorOptions.package ?? '',
-      );
-      implFile.writeAsStringSync(implFileBuffer.toString());
-    }
-
-    final StringBuffer testFileBuffer = StringBuffer();
-    final Indent testFileIndent = Indent(testFileBuffer);
-    final File testFile = File(
-      'android/src/test/java/${generatorOptions.package!.replaceAll('.', '/')}/${api.name}ProxyApiTest.java',
-    );
-    print('${testFile.path}: ${testFile.existsSync()}');
-    if (!testFile.existsSync()) {
-      _writeJavaProxyApiTest(
-        testFileIndent,
-        api,
-        package: generatorOptions.package ?? '',
-      );
-      testFile.writeAsStringSync(testFileBuffer.toString());
-    }
+    // final StringBuffer implFileBuffer = StringBuffer();
+    // final Indent implFileIndent = Indent(implFileBuffer);
+    // final File implFile = File(
+    //   'android/src/main/java/${generatorOptions.package!.replaceAll('.', '/')}/${api.name}ProxyApi.java',
+    // );
+    // print('${implFile.path}: ${implFile.existsSync()}');
+    // if (!implFile.existsSync()) {
+    //   _writeJavaProxyApiImpl(
+    //     implFileIndent,
+    //     api,
+    //     package: generatorOptions.package ?? '',
+    //   );
+    //   implFile.writeAsStringSync(implFileBuffer.toString());
+    // }
+    //
+    // final StringBuffer testFileBuffer = StringBuffer();
+    // final Indent testFileIndent = Indent(testFileBuffer);
+    // final File testFile = File(
+    //   'android/src/test/java/${generatorOptions.package!.replaceAll('.', '/')}/${api.name}ProxyApiTest.java',
+    // );
+    // print('${testFile.path}: ${testFile.existsSync()}');
+    // if (!testFile.existsSync()) {
+    //   _writeJavaProxyApiTest(
+    //     testFileIndent,
+    //     api,
+    //     package: generatorOptions.package ?? '',
+    //   );
+    //   testFile.writeAsStringSync(testFileBuffer.toString());
+    // }
 
     indent.newln();
     indent.writeln('/*');
@@ -2925,7 +2925,7 @@ private fun deepEquals${generatorOptions.fileSpecificClassNameComponent}(a: Any?
     _writeLicense(indent);
     indent.newln();
 
-    indent.writeln('package $package');
+    indent.writeln('package $package;');
     indent.newln();
 
     _writeProxyApiImports(indent, api);
@@ -2935,11 +2935,11 @@ private fun deepEquals${generatorOptions.fileSpecificClassNameComponent}(a: Any?
       import static org.junit.Assert.assertEquals;
       import static org.junit.Assert.assertTrue;
       import org.mockito.Mockito;
-      import org.mockito.Mockito.any;
+      import static org.mockito.Mockito.any;
       import java.util.HashMap;
       import static org.mockito.Mockito.eq;
       import static org.mockito.Mockito.mock;
-      import org.mockito.Mockito.verify;
+      import static org.mockito.Mockito.verify;
       import static org.mockito.Mockito.when;''',
     );
     indent.newln();
