@@ -2727,6 +2727,8 @@ private fun deepEquals${generatorOptions.fileSpecificClassNameComponent}(a: Any?
     _writeProxyApiImports(indent, api, includeSemicolons: true);
     indent.writeln('import androidx.annotation.NonNull;');
     indent.writeln('import androidx.annotation.Nullable;');
+    indent.writeln('import java.util.List;');
+    indent.writeln('import java.util.Map;');
     indent.newln();
 
     addDocumentationComments(
@@ -2890,7 +2892,7 @@ private fun deepEquals${generatorOptions.fileSpecificClassNameComponent}(a: Any?
 
           final String instanceDecl = method.isStatic
               ? ''
-              : '${api.name}${maybeComma(method.parameters)} pigeon_instance';
+              : '@NonNull ${api.name} pigeon_instance${maybeComma(method.parameters)}';
 
           if (!method.returnType.isVoid) {
             indent.writeln(
@@ -2898,8 +2900,12 @@ private fun deepEquals${generatorOptions.fileSpecificClassNameComponent}(a: Any?
             );
           }
           indent.writeln('@Override');
+          final String returnType = method.returnType.isVoid
+              ? 'void'
+              : _nullSafeKotlinTypeForDartType(method.returnType)
+                  .replaceAll('?', '');
           indent.writeScoped(
-            'public ${_nullSafeKotlinTypeForDartType(method.returnType)} ${method.name}($instanceDecl$parameterDecl) {',
+            'public $returnType ${method.name}($instanceDecl$parameterDecl) {',
             '}',
             () {
               final String maybeReturn =
@@ -2928,7 +2934,7 @@ private fun deepEquals${generatorOptions.fileSpecificClassNameComponent}(a: Any?
     indent.writeln('package $package;');
     indent.newln();
 
-    _writeProxyApiImports(indent, api);
+    _writeProxyApiImports(indent, api, includeSemicolons: true);
     indent.format(
       '''
       import org.junit.Test;
@@ -2937,6 +2943,8 @@ private fun deepEquals${generatorOptions.fileSpecificClassNameComponent}(a: Any?
       import org.mockito.Mockito;
       import static org.mockito.Mockito.any;
       import java.util.HashMap;
+      import java.util.List;
+      import java.util.Map;
       import static org.mockito.Mockito.eq;
       import static org.mockito.Mockito.mock;
       import static org.mockito.Mockito.verify;
