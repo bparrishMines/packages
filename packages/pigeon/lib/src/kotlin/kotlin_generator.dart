@@ -1124,46 +1124,49 @@ if (wrapped == null) {
       },
     );
 
-    // final StringBuffer implFileBuffer = StringBuffer();
-    // final Indent implFileIndent = Indent(implFileBuffer);
-    // final File implFile = File(
-    //   'android/src/main/java/${generatorOptions.package!.replaceAll('.', '/')}/${api.name}ProxyApi.java',
-    // );
-    // print('${implFile.path}: ${implFile.existsSync()}');
-    // if (!implFile.existsSync()) {
-    //   _writeJavaProxyApiImpl(
-    //     implFileIndent,
-    //     api,
-    //     package: generatorOptions.package ?? '',
-    //   );
-    //   implFile.writeAsStringSync(implFileBuffer.toString());
-    // }
-    //
-    // final StringBuffer testFileBuffer = StringBuffer();
-    // final Indent testFileIndent = Indent(testFileBuffer);
-    // final File testFile = File(
-    //   'android/src/test/java/${generatorOptions.package!.replaceAll('.', '/')}/${api.name}ProxyApiTest.java',
-    // );
-    // print('${testFile.path}: ${testFile.existsSync()}');
-    // if (!testFile.existsSync()) {
-    //   _writeJavaProxyApiTest(
-    //     testFileIndent,
-    //     api,
-    //     package: generatorOptions.package ?? '',
-    //   );
-    //   testFile.writeAsStringSync(testFileBuffer.toString());
-    // }
+    if (api.hasMethodsRequiringImplementation() ||
+        api.flutterMethods.isNotEmpty) {
+      final StringBuffer implFileBuffer = StringBuffer();
+      final Indent implFileIndent = Indent(implFileBuffer);
+      final File implFile = File(
+        'android/src/main/java/${generatorOptions.package!.replaceAll('.', '/')}/${api.name}ProxyApi.java',
+      );
+      print('${implFile.path}: ${implFile.existsSync()}');
+      if (!implFile.existsSync()) {
+        _writeJavaProxyApiImpl(
+          implFileIndent,
+          api,
+          package: generatorOptions.package ?? '',
+        );
+        implFile.writeAsStringSync(implFileBuffer.toString());
+      }
 
-    indent.newln();
-    indent.writeln('/*');
-    _writeJavaProxyApiImpl(indent, api,
-        package: generatorOptions.package ?? '');
-    indent.writeln('*/');
-    indent.newln();
-    indent.writeln('/*');
-    _writeJavaProxyApiTest(indent, api,
-        package: generatorOptions.package ?? '');
-    indent.writeln('*/');
+      final StringBuffer testFileBuffer = StringBuffer();
+      final Indent testFileIndent = Indent(testFileBuffer);
+      final File testFile = File(
+        'android/src/test/java/${generatorOptions.package!.replaceAll('.', '/')}/${api.name}ProxyApiTest.java',
+      );
+      print('${testFile.path}: ${testFile.existsSync()}');
+      if (!testFile.existsSync()) {
+        _writeJavaProxyApiTest(
+          testFileIndent,
+          api,
+          package: generatorOptions.package ?? '',
+        );
+        testFile.writeAsStringSync(testFileBuffer.toString());
+      }
+
+      indent.newln();
+      indent.writeln('/*');
+      _writeJavaProxyApiImpl(indent, api,
+          package: generatorOptions.package ?? '');
+      indent.writeln('*/');
+      indent.newln();
+      indent.writeln('/*');
+      _writeJavaProxyApiTest(indent, api,
+          package: generatorOptions.package ?? '');
+      indent.writeln('*/');
+    }
   }
 
   @override
@@ -2534,7 +2537,6 @@ private fun deepEquals${generatorOptions.fileSpecificClassNameComponent}(a: Any?
       import org.mockito.kotlin.mock
       import org.mockito.kotlin.verify
       import org.mockito.kotlin.whenever''',
-      trimIndentation: true,
     );
     indent.newln();
 
