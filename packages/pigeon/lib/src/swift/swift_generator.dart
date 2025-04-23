@@ -1373,10 +1373,21 @@ if (wrapped == nil) {
     if (testOutputDirectory != null) {
       final StringBuffer testFileBuffer = StringBuffer();
       final Indent testFileIndent = Indent(testFileBuffer);
+
+      late final String testSuffix;
+      if (testOutputDirectory
+          .listSync(followLinks: false)
+          .whereType<File>()
+          .any((File file) => file.path.endsWith('ProxyAPITests.swift'))) {
+        testSuffix = 'ProxyAPITests.swift';
+      } else {
+        testSuffix = 'Tests.swift';
+      }
+
       final File testFile = File(
         path.join(
           testOutputDirectory.path,
-          '${apiNameWithoutPrefix(api.name)}Tests.swift',
+          '${apiNameWithoutPrefix(api.name)}$testSuffix',
         ),
       );
       if (!testFile.existsSync()) {
