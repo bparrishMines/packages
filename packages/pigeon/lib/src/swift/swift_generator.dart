@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'dart:io';
+import 'dart:math';
 
 import 'package:collection/collection.dart' as collection;
 import 'package:graphs/graphs.dart';
@@ -2872,22 +2873,29 @@ func deepHash${generatorOptions.fileSpecificClassNameComponent}(value: Any?, has
   }
 
   String apiNameWithoutPrefix(String apiName) {
-    int leadingUpperCaseCount = 0;
+    String leadingUpperCase = '';
     for (final String char in apiName.split('')) {
       if (char == char.toUpperCase()) {
-        leadingUpperCaseCount++;
+        leadingUpperCase += char;
       } else {
         break;
       }
     }
 
-    if (leadingUpperCaseCount == apiName.length && apiName.length > 2) {
-      return apiName.substring(2);
-    } else if (leadingUpperCaseCount > 1) {
-      return apiName.substring(leadingUpperCaseCount - 1);
-    } else {
-      return apiName;
+    leadingUpperCase = leadingUpperCase.replaceAll('HTTP', '');
+    leadingUpperCase = leadingUpperCase.replaceAll('URL', '');
+
+    switch (leadingUpperCase.length) {
+      case 0:
+      case 1:
+        return apiName;
+      case 5:
+        return apiName.substring(2);
+      case 6:
+        return apiName.substring(Random().nextInt(2) + 2);
     }
+
+    return apiName.substring(leadingUpperCase.length - 1);
   }
 
   Parameter _apiFieldAsParameter(ApiField field) {
