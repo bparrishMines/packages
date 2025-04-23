@@ -1138,7 +1138,12 @@ if (wrapped == null) {
                   return firstCharacter == firstCharacter.toLowerCase();
                 },
               );
-        nativeClassName = classNameParts.join().replaceAll('Impl', '');
+
+        if (classNameParts.length > 1 || classNameParts.last.endsWith('Impl')) {
+          nativeClassName = api.name;
+        } else {
+          nativeClassName = classNameParts.last;
+        }
       } else {
         nativeClassName = api.name;
       }
