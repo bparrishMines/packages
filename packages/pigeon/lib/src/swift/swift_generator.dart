@@ -1346,9 +1346,9 @@ if (wrapped == nil) {
       if (!implFile.existsSync()) {
         print('Creating file: ${implFile.path}');
         _writeProxyApiImpl(
-          generatorOptions: generatorOptions,
           implFileIndent,
           api,
+          generatorOptions: generatorOptions,
         );
         implFile.writeAsStringSync(implFileBuffer.toString());
       }
@@ -1356,25 +1356,41 @@ if (wrapped == nil) {
       print('Directory does not exist: ${implOutputDirectory.path}');
     }
 
-    // final Directory testOutputDirectory =
-    //     File(generatorOptions.swiftOut).parent;
-    //
-    //
-    // final StringBuffer testFileBuffer = StringBuffer();
-    // final Indent testFileIndent = Indent(testFileBuffer);
-    // final File testFile = File(
-    //   'example/ios/RunnerTests/${apiNameWithoutPrefix(api.name)}Tests.swift',
-    // );
-    // print('${testFile.path}: ${testFile.existsSync()}');
-    // if (!testFile.existsSync()) {
-    //   _writeProxyApiTest(
-    //     testFileIndent,
-    //     api,
-    //     dartPackageName: dartPackageName,
-    //     errorTypeName: _getErrorClassName(generatorOptions),
-    //   );
-    //   testFile.writeAsStringSync(testFileBuffer.toString());
-    // }
+    Directory? testOutputDirectory;
+    if (Directory('darwin/Tests/').existsSync()) {
+      testOutputDirectory = Directory('darwin/Tests');
+    } else if (Directory('example/ios/RunnerTests/').existsSync()) {
+      testOutputDirectory = Directory('example/ios/RunnerTests/');
+    } else {
+      final File? anyTestFile = Directory.current
+          .listSync(followLinks: false)
+          .whereType<File>()
+          .firstWhereOrNull((File file) => file.path.endsWith('Tests.swift'));
+      testOutputDirectory = anyTestFile?.parent;
+    }
+
+    if (testOutputDirectory != null) {
+      final StringBuffer testFileBuffer = StringBuffer();
+      final Indent testFileIndent = Indent(testFileBuffer);
+      final File testFile = File(
+        path.join(
+          testOutputDirectory.path,
+          '${apiNameWithoutPrefix(api.name)}Tests.swift',
+        ),
+      );
+      if (!testFile.existsSync()) {
+        print('Creating file: ${testFile.path}');
+        _writeProxyApiTest(
+          testFileIndent,
+          api,
+          dartPackageName: dartPackageName,
+          errorTypeName: _getErrorClassName(generatorOptions),
+        );
+        testFile.writeAsStringSync(testFileBuffer.toString());
+      }
+    } else {
+      print('No test output directory found');
+    }
 
     indent.newln();
     indent.writeln('/*');
