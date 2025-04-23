@@ -6,6 +6,7 @@ import 'dart:io';
 
 import 'package:graphs/graphs.dart';
 
+import '../../pigeon.dart';
 import '../ast.dart';
 import '../functional.dart';
 import '../generator.dart';
@@ -1122,14 +1123,27 @@ if (wrapped == null) {
       },
     );
 
+    String getAndroidFilePath({
+      required InternalKotlinOptions generatorOptions,
+      required AstProxyApi api,
+      required String suffix,
+    }) {
+      final String nativeClassName =
+          api.kotlinOptions?.fullClassName?.split('.').last ?? api.name;
+      return '${generatorOptions.package!.replaceAll('.', '/')}/$nativeClassName$suffix';
+    }
+
     if (api.hasMethodsRequiringImplementation() ||
         api.flutterMethods.isNotEmpty) {
       if (Directory('android/src/main/java/').existsSync()) {
         final StringBuffer implFileBuffer = StringBuffer();
         final Indent implFileIndent = Indent(implFileBuffer);
-        final File implFile = File(
-          'android/src/main/java/${generatorOptions.package!.replaceAll('.', '/')}/${api.name}ProxyApi.java',
+        final String javaFilePath = getAndroidFilePath(
+          generatorOptions: generatorOptions,
+          api: api,
+          suffix: 'ProxyApi.java',
         );
+        final File implFile = File('android/src/main/java/$javaFilePath');
         if (!implFile.existsSync()) {
           print('Creating file: ${implFile.path}');
           _writeJavaProxyApiImpl(
@@ -1142,9 +1156,12 @@ if (wrapped == null) {
       } else if (Directory('android/src/main/kotlin/').existsSync()) {
         final StringBuffer implFileBuffer = StringBuffer();
         final Indent implFileIndent = Indent(implFileBuffer);
-        final File implFile = File(
-          'android/src/main/kotlin/${generatorOptions.package!.replaceAll('.', '/')}/${api.name}ProxyApi.kt',
+        final String kotlinFilePath = getAndroidFilePath(
+          generatorOptions: generatorOptions,
+          api: api,
+          suffix: 'ProxyApi.kt',
         );
+        final File implFile = File('android/src/main/kotlin/$kotlinFilePath');
         if (!implFile.existsSync()) {
           print('Creating file: ${implFile.path}');
           _writeProxyApiImpl(
@@ -1169,9 +1186,12 @@ if (wrapped == null) {
         } else {
           testSuffix = 'Test.java';
         }
-        final File testFile = File(
-          'android/src/test/java/${generatorOptions.package!.replaceAll('.', '/')}/${api.name}$testSuffix',
+        final String javaFilePath = getAndroidFilePath(
+          generatorOptions: generatorOptions,
+          api: api,
+          suffix: testSuffix,
         );
+        final File testFile = File('android/src/test/java/$javaFilePath');
         if (!testFile.existsSync()) {
           print('Creating file: ${testFile.path}');
           _writeJavaProxyApiTest(
@@ -1195,9 +1215,12 @@ if (wrapped == null) {
           testSuffix = 'Test.kt';
         }
 
-        final File testFile = File(
-          'android/src/test/kotlin/${generatorOptions.package!.replaceAll('.', '/')}/${api.name}$testSuffix',
+        final String kotlinFilePath = getAndroidFilePath(
+          generatorOptions: generatorOptions,
+          api: api,
+          suffix: testSuffix,
         );
+        final File testFile = File('android/src/test/kotlin/$kotlinFilePath');
         if (!testFile.existsSync()) {
           print('Creating file: ${testFile.path}');
           _writeProxyApiTest(
