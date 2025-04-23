@@ -1159,8 +1159,18 @@ if (wrapped == null) {
       if (Directory('android/src/test/java/').existsSync()) {
         final StringBuffer testFileBuffer = StringBuffer();
         final Indent testFileIndent = Indent(testFileBuffer);
+
+        late final String testSuffix;
+        if (Directory('android/src/test/java/')
+            .listSync(followLinks: false)
+            .whereType<File>()
+            .any((File file) => file.path.endsWith('ProxyApiTest.java'))) {
+          testSuffix = 'ProxyApiTest.java';
+        } else {
+          testSuffix = 'Test.java';
+        }
         final File testFile = File(
-          'android/src/test/java/${generatorOptions.package!.replaceAll('.', '/')}/${api.name}ProxyApiTest.java',
+          'android/src/test/java/${generatorOptions.package!.replaceAll('.', '/')}/${api.name}$testSuffix',
         );
         if (!testFile.existsSync()) {
           print('Creating file: ${testFile.path}');
@@ -1174,8 +1184,19 @@ if (wrapped == null) {
       } else if (Directory('android/src/test/kotlin/').existsSync()) {
         final StringBuffer testFileBuffer = StringBuffer();
         final Indent testFileIndent = Indent(testFileBuffer);
+
+        late final String testSuffix;
+        if (Directory('android/src/test/kotlin/')
+            .listSync(followLinks: false)
+            .whereType<File>()
+            .any((File file) => file.path.endsWith('ProxyApiTest.kt'))) {
+          testSuffix = 'ProxyApiTest.kt';
+        } else {
+          testSuffix = 'Test.kt';
+        }
+
         final File testFile = File(
-          'android/src/test/kotlin/${generatorOptions.package!.replaceAll('.', '/')}/${api.name}ProxyApiTest.kt',
+          'android/src/test/kotlin/${generatorOptions.package!.replaceAll('.', '/')}/${api.name}$testSuffix',
         );
         if (!testFile.existsSync()) {
           print('Creating file: ${testFile.path}');
