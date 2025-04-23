@@ -2,8 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'dart:io';
+
 import 'package:collection/collection.dart' as collection;
 import 'package:graphs/graphs.dart';
+import 'package:path/path.dart' as path;
 import 'package:pub_semver/pub_semver.dart';
 
 import '../ast.dart';
@@ -1328,17 +1331,35 @@ if (wrapped == nil) {
       );
     });
 
-    // final StringBuffer implFileBuffer = StringBuffer();
-    // final Indent implFileIndent = Indent(implFileBuffer);
-    // final File implFile = File(
-    //   'ios/$dartPackageName/Sources/$dartPackageName/${apiNameWithoutPrefix(api.name)}ProxyAPIDelegate.swift',
-    // );
-    // print('${implFile.path}: ${implFile.existsSync()}');
-    // if (!implFile.existsSync()) {
-    //   _writeProxyApiImpl(implFileIndent, api);
-    //   implFile.writeAsStringSync(implFileBuffer.toString());
-    // }
+    final Directory implOutputDirectory =
+        File(generatorOptions.swiftOut).parent;
+    if (implOutputDirectory.existsSync()) {
+      final StringBuffer implFileBuffer = StringBuffer();
+      final Indent implFileIndent = Indent(implFileBuffer);
 
+      final File implFile = File(
+        path.join(
+          implOutputDirectory.path,
+          '${apiNameWithoutPrefix(api.name)}ProxyAPIDelegate.swift',
+        ),
+      );
+      if (!implFile.existsSync()) {
+        print('Creating file: ${implFile.path}');
+        _writeProxyApiImpl(
+          generatorOptions: generatorOptions,
+          implFileIndent,
+          api,
+        );
+        implFile.writeAsStringSync(implFileBuffer.toString());
+      }
+    } else {
+      print('Directory does not exist: ${implOutputDirectory.path}');
+    }
+
+    // final Directory testOutputDirectory =
+    //     File(generatorOptions.swiftOut).parent;
+    //
+    //
     // final StringBuffer testFileBuffer = StringBuffer();
     // final Indent testFileIndent = Indent(testFileBuffer);
     // final File testFile = File(
