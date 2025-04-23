@@ -30,7 +30,7 @@ const DocumentCommentSpecification _docCommentSpec =
   blockContinuationToken: _docCommentContinuation,
 );
 
-String _codecName = 'PigeonCodec';
+const String _codecName = 'PigeonCodec';
 
 /// Name of field used for host API codec.
 const String _pigeonMethodChannelCodec = 'PigeonMethodCodec';
@@ -318,15 +318,8 @@ class KotlinGenerator extends StructuredGenerator<InternalKotlinOptions> {
       indent.writeScoped('if (this === other) {', '}', () {
         indent.writeln('return true');
       });
-      indent.write('return ');
-      indent.format(
-        classDefinition.fields
-            .map((NamedType field) => isCollectionType(field.type)
-                ? 'deepEquals${generatorOptions.fileSpecificClassNameComponent}(${field.name}, other.${field.name})'
-                : '${field.name} == other.${field.name}')
-            .join('\n&& '),
-        leadingSpace: false,
-      );
+      indent.write(
+          'return ${_getUtilsClassName(generatorOptions)}.deepEquals(toList(), other.toList())');
     });
 
     indent.newln();
@@ -664,6 +657,7 @@ if (wrapped == null) {
           dartPackageName: dartPackageName,
           onWriteBody: (
             Indent indent, {
+            required InternalKotlinOptions generatorOptions,
             required List<Parameter> parameters,
             required TypeDeclaration returnType,
             required String channelName,
@@ -674,6 +668,7 @@ if (wrapped == null) {
             );
             _writeFlutterMethodMessageCall(
               indent,
+              generatorOptions: generatorOptions,
               parameters: parameters,
               returnType: returnType,
               channelName: '$channelName\$separatedMessageChannelSuffix',
@@ -750,6 +745,7 @@ if (wrapped == null) {
           for (final Method method in api.methods) {
             _writeHostMethodMessageHandler(
               indent,
+              generatorOptions: generatorOptions,
               name: method.name,
               channelName:
                   '${makeChannelName(api, method, dartPackageName)}\$separatedMessageChannelSuffix',
@@ -832,6 +828,7 @@ if (wrapped == null) {
               const String setHandlerCondition = 'instanceManager != null';
               _writeHostMethodMessageHandler(
                 indent,
+                generatorOptions: generatorOptions,
                 name: 'removeStrongReference',
                 channelName:
                     makeRemoveStrongReferenceChannelName(dartPackageName),
@@ -856,6 +853,7 @@ if (wrapped == null) {
               );
               _writeHostMethodMessageHandler(
                 indent,
+                generatorOptions: generatorOptions,
                 name: 'clear',
                 channelName: makeClearChannelName(dartPackageName),
                 taskQueueType: TaskQueueType.serial,
@@ -1241,7 +1239,7 @@ if (wrapped == null) {
 
   void _writeWrapResult(Indent indent) {
     indent.newln();
-    indent.write('private fun wrapResult(result: Any?): List<Any?> ');
+    indent.write('fun wrapResult(result: Any?): List<Any?> ');
     indent.addScoped('{', '}', () {
       indent.writeln('return listOf(result)');
     });
@@ -1249,7 +1247,7 @@ if (wrapped == null) {
 
   void _writeWrapError(InternalKotlinOptions generatorOptions, Indent indent) {
     indent.newln();
-    indent.write('private fun wrapError(exception: Throwable): List<Any?> ');
+    indent.write('fun wrapError(exception: Throwable): List<Any?> ');
     indent.addScoped('{', '}', () {
       indent.write(
           'return if (exception is ${_getErrorClassName(generatorOptions)}) ');
@@ -1295,7 +1293,7 @@ if (wrapped == null) {
     final String errorClassName = _getErrorClassName(generatorOptions);
     indent.newln();
     indent.write(
-        'private fun createConnectionError(channelName: String): $errorClassName ');
+        'fun createConnectionError(channelName: String): $errorClassName ');
     indent.addScoped('{', '}', () {
       indent.write(
           'return $errorClassName("channel-error",  "Unable to establish connection on channel: \'\$channelName\'.", "")');
@@ -1304,7 +1302,7 @@ if (wrapped == null) {
 
   void _writeDeepEquals(InternalKotlinOptions generatorOptions, Indent indent) {
     indent.format('''
-private fun deepEquals${generatorOptions.fileSpecificClassNameComponent}(a: Any?, b: Any?): Boolean {
+fun deepEquals(a: Any?, b: Any?): Boolean {
   if (a is ByteArray && b is ByteArray) {
       return a.contentEquals(b)
   }
@@ -1319,15 +1317,19 @@ private fun deepEquals${generatorOptions.fileSpecificClassNameComponent}(a: Any?
   }
   if (a is Array<*> && b is Array<*>) {
     return a.size == b.size &&
-        a.indices.all{ deepEquals${generatorOptions.fileSpecificClassNameComponent}(a[it], b[it]) }
+        a.indices.all{ deepEquals(a[it], b[it]) }
+  }
+  if (a is List<*> && b is List<*>) {
+    return a.size == b.size &&
+        a.indices.all{ deepEquals(a[it], b[it]) }
   }
   if (a is Map<*, *> && b is Map<*, *>) {
-    return a.size == b.size && a.keys.all {
-        (b as Map<Any?, Any?>).containsKey(it) &&
-        deepEquals${generatorOptions.fileSpecificClassNameComponent}(a[it], b[it])
+    return a.size == b.size && a.all {
+        (b as Map<Any?, Any?>).containsKey(it.key) &&
+        deepEquals(it.value, b[it.key])
     }
   }
-  return a == b;
+  return a == b
 }
     ''');
   }
@@ -1339,20 +1341,25 @@ private fun deepEquals${generatorOptions.fileSpecificClassNameComponent}(a: Any?
     Indent indent, {
     required String dartPackageName,
   }) {
-    if (root.containsHostApi || root.containsProxyApi) {
-      _writeWrapResult(indent);
-      _writeWrapError(generatorOptions, indent);
-    }
-    if (root.containsFlutterApi || root.containsProxyApi) {
-      _writeCreateConnectionError(generatorOptions, indent);
-    }
+    indent.writeScoped(
+      'private object ${_getUtilsClassName(generatorOptions)} {',
+      '}',
+      () {
+        if (root.containsFlutterApi || root.containsProxyApi) {
+          _writeCreateConnectionError(generatorOptions, indent);
+        }
+        if (root.containsHostApi || root.containsProxyApi) {
+          _writeWrapResult(indent);
+          _writeWrapError(generatorOptions, indent);
+        }
+        if (root.classes.isNotEmpty) {
+          _writeDeepEquals(generatorOptions, indent);
+        }
+      },
+    );
+
     if (generatorOptions.includeErrorClass) {
       _writeErrorClass(generatorOptions, indent);
-    }
-    if (root.classes.isNotEmpty &&
-        root.classes.any((Class dataClass) => dataClass.fields
-            .any((NamedType field) => isCollectionType(field.type)))) {
-      _writeDeepEquals(generatorOptions, indent);
     }
   }
 
@@ -1418,6 +1425,7 @@ private fun deepEquals${generatorOptions.fileSpecificClassNameComponent}(a: Any?
 
   void _writeHostMethodMessageHandler(
     Indent indent, {
+    required InternalKotlinOptions generatorOptions,
     required String name,
     required String channelName,
     required TaskQueueType taskQueueType,
@@ -1470,14 +1478,17 @@ private fun deepEquals${generatorOptions.fileSpecificClassNameComponent}(a: Any?
             indent.addScoped('{ result: Result<$resultType> ->', '}', () {
               indent.writeln('val error = result.exceptionOrNull()');
               indent.writeScoped('if (error != null) {', '}', () {
-                indent.writeln('reply.reply(wrapError(error))');
+                indent.writeln(
+                    'reply.reply(${_getUtilsClassName(generatorOptions)}.wrapError(error))');
               }, addTrailingNewline: false);
               indent.addScoped(' else {', '}', () {
                 if (returnType.isVoid) {
-                  indent.writeln('reply.reply(wrapResult(null))');
+                  indent.writeln(
+                      'reply.reply(${_getUtilsClassName(generatorOptions)}.wrapResult(null))');
                 } else {
                   indent.writeln('val data = result.getOrNull()');
-                  indent.writeln('reply.reply(wrapResult(data))');
+                  indent.writeln(
+                      'reply.reply(${_getUtilsClassName(generatorOptions)}.wrapResult(data))');
                 }
               });
             });
@@ -1492,7 +1503,8 @@ private fun deepEquals${generatorOptions.fileSpecificClassNameComponent}(a: Any?
             }, addTrailingNewline: false);
             indent.add(' catch (exception: Throwable) ');
             indent.addScoped('{', '}', () {
-              indent.writeln('wrapError(exception)');
+              indent.writeln(
+                  '${_getUtilsClassName(generatorOptions)}.wrapError(exception)');
             });
             indent.writeln('reply.reply(wrapped)');
           }
@@ -1516,6 +1528,7 @@ private fun deepEquals${generatorOptions.fileSpecificClassNameComponent}(a: Any?
     int? minApiRequirement,
     void Function(
       Indent indent, {
+      required InternalKotlinOptions generatorOptions,
       required List<Parameter> parameters,
       required TypeDeclaration returnType,
       required String channelName,
@@ -1537,6 +1550,7 @@ private fun deepEquals${generatorOptions.fileSpecificClassNameComponent}(a: Any?
     indent.addScoped('{', '}', () {
       onWriteBody(
         indent,
+        generatorOptions: generatorOptions,
         parameters: parameters,
         returnType: returnType,
         channelName: channelName,
@@ -1547,6 +1561,7 @@ private fun deepEquals${generatorOptions.fileSpecificClassNameComponent}(a: Any?
 
   static void _writeFlutterMethodMessageCall(
     Indent indent, {
+    required InternalKotlinOptions generatorOptions,
     required List<Parameter> parameters,
     required TypeDeclaration returnType,
     required String channelName,
@@ -1593,7 +1608,7 @@ private fun deepEquals${generatorOptions.fileSpecificClassNameComponent}(a: Any?
       }, addTrailingNewline: false);
       indent.addScoped('else {', '} ', () {
         indent.writeln(
-            'callback(Result.failure(createConnectionError(channelName)))');
+            'callback(Result.failure(${_getUtilsClassName(generatorOptions)}.createConnectionError(channelName)))');
       });
     });
   }
@@ -1890,7 +1905,7 @@ private fun deepEquals${generatorOptions.fileSpecificClassNameComponent}(a: Any?
                 )
                 if (api != null) {
                   channel.setMessageHandler { _, reply ->
-                    reply.reply(wrapError(UnsupportedOperationException(
+                    reply.reply(${_getUtilsClassName(generatorOptions)}.wrapError(UnsupportedOperationException(
                       "Call references class `$className`, which requires api version $apiRequirement."
                     )))
                   }
@@ -1923,6 +1938,7 @@ private fun deepEquals${generatorOptions.fileSpecificClassNameComponent}(a: Any?
             onWrite: () {
               _writeHostMethodMessageHandler(
                 indent,
+                generatorOptions: generatorOptions,
                 name: name,
                 channelName: channelName,
                 taskQueueType: TaskQueueType.serial,
@@ -1967,6 +1983,7 @@ private fun deepEquals${generatorOptions.fileSpecificClassNameComponent}(a: Any?
             onWrite: () {
               _writeHostMethodMessageHandler(
                 indent,
+                generatorOptions: generatorOptions,
                 name: field.name,
                 channelName: channelName,
                 taskQueueType: TaskQueueType.serial,
@@ -2012,6 +2029,7 @@ private fun deepEquals${generatorOptions.fileSpecificClassNameComponent}(a: Any?
             onWrite: () {
               _writeHostMethodMessageHandler(
                 indent,
+                generatorOptions: generatorOptions,
                 name: method.name,
                 channelName: makeChannelName(api, method, dartPackageName),
                 taskQueueType: method.taskQueueType,
@@ -2077,6 +2095,7 @@ private fun deepEquals${generatorOptions.fileSpecificClassNameComponent}(a: Any?
       ],
       onWriteBody: (
         Indent indent, {
+        required InternalKotlinOptions generatorOptions,
         required List<Parameter> parameters,
         required TypeDeclaration returnType,
         required String channelName,
@@ -2120,6 +2139,7 @@ private fun deepEquals${generatorOptions.fileSpecificClassNameComponent}(a: Any?
             indent.writeln('val codec = pigeonRegistrar.codec');
             _writeFlutterMethodMessageCall(
               indent,
+              generatorOptions: generatorOptions,
               returnType: returnType,
               channelName: channelName,
               errorClassName: errorClassName,
@@ -2187,6 +2207,7 @@ private fun deepEquals${generatorOptions.fileSpecificClassNameComponent}(a: Any?
         ],
         onWriteBody: (
           Indent indent, {
+          required InternalKotlinOptions generatorOptions,
           required List<Parameter> parameters,
           required TypeDeclaration returnType,
           required String channelName,
@@ -2210,6 +2231,7 @@ private fun deepEquals${generatorOptions.fileSpecificClassNameComponent}(a: Any?
           indent.writeln('val codec = pigeonRegistrar.codec');
           _writeFlutterMethodMessageCall(
             indent,
+            generatorOptions: generatorOptions,
             returnType: returnType,
             channelName: channelName,
             errorClassName: errorClassName,
@@ -3148,6 +3170,14 @@ private fun deepEquals${generatorOptions.fileSpecificClassNameComponent}(a: Any?
 
 String _getErrorClassName(InternalKotlinOptions generatorOptions) =>
     generatorOptions.errorClassName ?? 'FlutterError';
+
+/// Calculates the name of the private utils class that will be generated for
+/// the file.
+String _getUtilsClassName(InternalKotlinOptions options) {
+  return toUpperCamelCase(
+    '${options.fileSpecificClassNameComponent ?? ''}PigeonUtils',
+  );
+}
 
 String _getArgumentName(int count, NamedType argument) =>
     argument.name.isEmpty ? 'arg$count' : argument.name;
