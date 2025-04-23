@@ -1332,92 +1332,95 @@ if (wrapped == nil) {
       );
     });
 
-    final Directory implOutputDirectory =
-        File(generatorOptions.swiftOut).parent;
-    if (implOutputDirectory.existsSync()) {
-      final StringBuffer implFileBuffer = StringBuffer();
-      final Indent implFileIndent = Indent(implFileBuffer);
+    if (api.hasMethodsRequiringImplementation() ||
+        api.flutterMethods.isNotEmpty) {
+      final Directory implOutputDirectory =
+          File(generatorOptions.swiftOut).parent;
+      if (implOutputDirectory.existsSync()) {
+        final StringBuffer implFileBuffer = StringBuffer();
+        final Indent implFileIndent = Indent(implFileBuffer);
 
-      final File implFile = File(
-        path.join(
-          implOutputDirectory.path,
-          '${apiNameWithoutPrefix(api.name)}ProxyAPIDelegate.swift',
-        ),
-      );
-      if (!implFile.existsSync()) {
-        print('Creating file: ${implFile.path}');
-        _writeProxyApiImpl(
-          implFileIndent,
-          api,
-          generatorOptions: generatorOptions,
+        final File implFile = File(
+          path.join(
+            implOutputDirectory.path,
+            '${apiNameWithoutPrefix(api)}ProxyAPIDelegate.swift',
+          ),
         );
-        implFile.writeAsStringSync(implFileBuffer.toString());
-      }
-    } else {
-      print('Directory does not exist: ${implOutputDirectory.path}');
-    }
-
-    Directory? testOutputDirectory;
-    if (Directory('darwin/Tests/').existsSync()) {
-      testOutputDirectory = Directory('darwin/Tests');
-    } else if (Directory('example/ios/RunnerTests/').existsSync()) {
-      testOutputDirectory = Directory('example/ios/RunnerTests/');
-    } else {
-      final File? anyTestFile = Directory.current
-          .listSync(followLinks: false)
-          .whereType<File>()
-          .firstWhereOrNull((File file) => file.path.endsWith('Tests.swift'));
-      testOutputDirectory = anyTestFile?.parent;
-    }
-
-    if (testOutputDirectory != null) {
-      final StringBuffer testFileBuffer = StringBuffer();
-      final Indent testFileIndent = Indent(testFileBuffer);
-
-      late final String testSuffix;
-      if (testOutputDirectory
-          .listSync(followLinks: false)
-          .whereType<File>()
-          .any((File file) => file.path.endsWith('ProxyAPITests.swift'))) {
-        testSuffix = 'ProxyAPITests.swift';
+        if (!implFile.existsSync()) {
+          print('Creating file: ${implFile.path}');
+          _writeProxyApiImpl(
+            implFileIndent,
+            api,
+            generatorOptions: generatorOptions,
+          );
+          implFile.writeAsStringSync(implFileBuffer.toString());
+        }
       } else {
-        testSuffix = 'Tests.swift';
+        print('Directory does not exist: ${implOutputDirectory.path}');
       }
 
-      final File testFile = File(
-        path.join(
-          testOutputDirectory.path,
-          '${apiNameWithoutPrefix(api.name)}$testSuffix',
-        ),
-      );
-      if (!testFile.existsSync()) {
-        print('Creating file: ${testFile.path}');
-        _writeProxyApiTest(
-          testFileIndent,
-          api,
-          dartPackageName: dartPackageName,
-          errorTypeName: _getErrorClassName(generatorOptions),
+      Directory? testOutputDirectory;
+      if (Directory('darwin/Tests/').existsSync()) {
+        testOutputDirectory = Directory('darwin/Tests');
+      } else if (Directory('example/ios/RunnerTests/').existsSync()) {
+        testOutputDirectory = Directory('example/ios/RunnerTests/');
+      } else {
+        final File? anyTestFile = Directory.current
+            .listSync(followLinks: false)
+            .whereType<File>()
+            .firstWhereOrNull((File file) => file.path.endsWith('Tests.swift'));
+        testOutputDirectory = anyTestFile?.parent;
+      }
+
+      if (testOutputDirectory != null) {
+        final StringBuffer testFileBuffer = StringBuffer();
+        final Indent testFileIndent = Indent(testFileBuffer);
+
+        late final String testSuffix;
+        if (testOutputDirectory
+            .listSync(followLinks: false)
+            .whereType<File>()
+            .any((File file) => file.path.endsWith('ProxyAPITests.swift'))) {
+          testSuffix = 'ProxyAPITests.swift';
+        } else {
+          testSuffix = 'Tests.swift';
+        }
+
+        final File testFile = File(
+          path.join(
+            testOutputDirectory.path,
+            '${apiNameWithoutPrefix(api)}$testSuffix',
+          ),
         );
-        testFile.writeAsStringSync(testFileBuffer.toString());
+        if (!testFile.existsSync()) {
+          print('Creating file: ${testFile.path}');
+          _writeProxyApiTest(
+            testFileIndent,
+            api,
+            dartPackageName: dartPackageName,
+            errorTypeName: _getErrorClassName(generatorOptions),
+          );
+          testFile.writeAsStringSync(testFileBuffer.toString());
+        }
+      } else {
+        print('No test output directory found');
       }
-    } else {
-      print('No test output directory found');
-    }
 
-    indent.newln();
-    indent.writeln('/*');
-    _writeProxyApiImpl(indent, api, generatorOptions: generatorOptions);
-    indent.writeln('*/');
-    indent.newln();
-    indent.writeln('/*');
-    _writeProxyApiTest(
-      indent,
-      api,
-      dartPackageName: dartPackageName,
-      errorTypeName: _getErrorClassName(generatorOptions),
-    );
-    indent.writeln('*/');
-    indent.newln();
+      indent.newln();
+      indent.writeln('/*');
+      _writeProxyApiImpl(indent, api, generatorOptions: generatorOptions);
+      indent.writeln('*/');
+      indent.newln();
+      indent.writeln('/*');
+      _writeProxyApiTest(
+        indent,
+        api,
+        dartPackageName: dartPackageName,
+        errorTypeName: _getErrorClassName(generatorOptions),
+      );
+      indent.writeln('*/');
+      indent.newln();
+    }
   }
 
   String _castForceUnwrap(String value, TypeDeclaration type) {
@@ -2883,9 +2886,11 @@ func deepHash${generatorOptions.fileSpecificClassNameComponent}(value: Any?, has
     return parameters.isEmpty ? '' : ',';
   }
 
-  String apiNameWithoutPrefix(String apiName) {
+  String apiNameWithoutPrefix(AstProxyApi api) {
+    final String swiftClassName = api.swiftOptions?.name ?? api.name;
+
     String leadingUpperCase = '';
-    for (final String char in apiName.split('')) {
+    for (final String char in swiftClassName.split('')) {
       if (char == char.toUpperCase()) {
         leadingUpperCase += char;
       } else {
@@ -2899,14 +2904,14 @@ func deepHash${generatorOptions.fileSpecificClassNameComponent}(value: Any?, has
     switch (leadingUpperCase.length) {
       case 0:
       case 1:
-        return apiName;
+        return swiftClassName;
       case 5:
-        return apiName.substring(2);
+        return swiftClassName.substring(2);
       case 6:
-        return apiName.substring(Random().nextInt(2) + 2);
+        return swiftClassName.substring(Random().nextInt(2) + 2);
     }
 
-    return apiName.substring(leadingUpperCase.length - 1);
+    return swiftClassName.substring(leadingUpperCase.length - 1);
   }
 
   Parameter _apiFieldAsParameter(ApiField field) {
@@ -2936,7 +2941,7 @@ func deepHash${generatorOptions.fileSpecificClassNameComponent}(value: Any?, has
         _docCommentSpec,
       );
       indent.writeScoped(
-        'class ${apiNameWithoutPrefix(api.name)}Impl: ${api.name} {',
+        'class ${apiNameWithoutPrefix(api)}Impl: ${api.name} {',
         '}',
         () {
           indent.writeln('let api: PigeonApiProtocol${api.name}');
@@ -2974,7 +2979,7 @@ func deepHash${generatorOptions.fileSpecificClassNameComponent}(value: Any?, has
       _docCommentSpec,
     );
     indent.writeScoped(
-      'class ${apiNameWithoutPrefix(api.name)}ProxyAPIDelegate : PigeonApiDelegate${api.name} {',
+      'class ${apiNameWithoutPrefix(api)}ProxyAPIDelegate : PigeonApiDelegate${api.name} {',
       '}',
       () {
         final TypeDeclaration apiAsTypeDeclaration = TypeDeclaration(
@@ -3137,7 +3142,7 @@ func deepHash${generatorOptions.fileSpecificClassNameComponent}(value: Any?, has
 
     String getDefaultTestValue(TypeDeclaration type) {
       if (type.isProxyApi) {
-        return 'Test${apiNameWithoutPrefix(type.baseName)}';
+        return 'Test${apiNameWithoutPrefix(type.associatedProxyApi!)}';
       }
 
       if (type.isEnum) {
@@ -3172,7 +3177,7 @@ func deepHash${generatorOptions.fileSpecificClassNameComponent}(value: Any?, has
     // }
 
     indent.writeScoped(
-      'class ${apiNameWithoutPrefix(api.name)}ProxyAPITests: XCTestCase {',
+      'class ${apiNameWithoutPrefix(api)}ProxyAPITests: XCTestCase {',
       '}',
       () {
         void writeApiVar(Indent indent) {
@@ -3224,7 +3229,7 @@ func deepHash${generatorOptions.fileSpecificClassNameComponent}(value: Any?, has
               writeApiVar(indent);
 
               indent.writeln(
-                'let instance = Test${apiNameWithoutPrefix(api.name)}()',
+                'let instance = Test${apiNameWithoutPrefix(api)}()',
               );
               indent.writeln(
                 'let value = try? api.pigeonDelegate.${field.name}(pigeonApi: api, pigeonInstance: instance)',
@@ -3244,7 +3249,7 @@ func deepHash${generatorOptions.fileSpecificClassNameComponent}(value: Any?, has
             writeApiVar(indent);
 
             indent.writeln(
-              'let instance = Test${apiNameWithoutPrefix(api.name)}()',
+              'let instance = Test${apiNameWithoutPrefix(api)}()',
             );
             indent.writeln(
               'let value = try? api.pigeonDelegate.${field.name}(pigeonApi: api, pigeonInstance: instance)',
@@ -3265,7 +3270,7 @@ func deepHash${generatorOptions.fileSpecificClassNameComponent}(value: Any?, has
               writeApiVar(indent);
 
               indent.writeln(
-                'let instance = Test${apiNameWithoutPrefix(api.name)}()',
+                'let instance = Test${apiNameWithoutPrefix(api)}()',
               );
 
               final String parameterNames =
@@ -3307,10 +3312,10 @@ func deepHash${generatorOptions.fileSpecificClassNameComponent}(value: Any?, has
             '}',
             () {
               indent.writeln(
-                'let api = Test${apiNameWithoutPrefix(api.name)}Api()',
+                'let api = Test${apiNameWithoutPrefix(api)}Api()',
               );
               indent.writeln(
-                'let instance = ${apiNameWithoutPrefix(api.name)}Impl(api: api)',
+                'let instance = ${apiNameWithoutPrefix(api)}Impl(api: api)',
               );
 
               for (final Parameter parameter in method.parameters) {
@@ -3341,7 +3346,7 @@ func deepHash${generatorOptions.fileSpecificClassNameComponent}(value: Any?, has
     if (api.hostMethods.where((Method m) => !m.isStatic).isNotEmpty ||
         api.attachedFields.where((ApiField f) => !f.isStatic).isNotEmpty) {
       indent.writeScoped(
-        'class Test${apiNameWithoutPrefix(api.name)}: ${api.name} {',
+        'class Test${apiNameWithoutPrefix(api)}: ${api.name} {',
         '}',
         () {
           for (final ApiField field
@@ -3399,7 +3404,7 @@ func deepHash${generatorOptions.fileSpecificClassNameComponent}(value: Any?, has
 
     if (api.flutterMethods.isNotEmpty) {
       indent.writeScoped(
-        'class Test${apiNameWithoutPrefix(api.name)}Api: PigeonApiProtocol${api.name} {',
+        'class Test${apiNameWithoutPrefix(api)}Api: PigeonApiProtocol${api.name} {',
         '}',
         () {
           for (final Method method
