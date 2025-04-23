@@ -1128,8 +1128,20 @@ if (wrapped == null) {
       required AstProxyApi api,
       required String suffix,
     }) {
-      final String nativeClassName =
-          api.kotlinOptions?.fullClassName?.split('.').last ?? api.name;
+      late final String nativeClassName;
+      if (api.kotlinOptions?.fullClassName != null) {
+        final List<String> classNameParts =
+            api.kotlinOptions!.fullClassName!.split('.')
+              ..removeWhere(
+                (String part) {
+                  final String firstCharacter = part.split('').first;
+                  return firstCharacter == firstCharacter.toLowerCase();
+                },
+              );
+        nativeClassName = classNameParts.join().replaceAll('Impl', '');
+      } else {
+        nativeClassName = api.name;
+      }
       return '${generatorOptions.package!.replaceAll('.', '/')}/$nativeClassName$suffix';
     }
 
