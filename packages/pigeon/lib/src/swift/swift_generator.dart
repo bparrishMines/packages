@@ -1355,6 +1355,11 @@ if (wrapped == nil) {
           );
           implFile.writeAsStringSync(implFileBuffer.toString());
         }
+
+        indent.newln();
+        indent.writeln('/*');
+        _writeProxyApiImpl(indent, api, generatorOptions: generatorOptions);
+        indent.writeln('*/');
       } else {
         print('Directory does not exist: ${implOutputDirectory.path}');
       }
@@ -1403,22 +1408,21 @@ if (wrapped == nil) {
           );
           testFile.writeAsStringSync(testFileBuffer.toString());
         }
+
+        indent.newln();
+        indent.writeln('/*');
+        _writeProxyApiTest(
+          indent,
+          api,
+          dartPackageName: dartPackageName,
+          errorTypeName: _getErrorClassName(generatorOptions),
+          testClassName: path.basenameWithoutExtension(testFile.path),
+        );
+        indent.writeln('*/');
+        indent.newln();
       } else {
         print('No test output directory found');
       }
-
-      indent.newln();
-      indent.writeln('/*');
-      _writeProxyApiImpl(indent, api, generatorOptions: generatorOptions);
-      indent.writeln('*/');
-      indent.newln();
-      indent.writeln('/*');
-      _writeProxyApiTest(indent, api,
-          dartPackageName: dartPackageName,
-          errorTypeName: _getErrorClassName(generatorOptions),
-          testClassName: '__PlaceholderName__Tests');
-      indent.writeln('*/');
-      indent.newln();
     }
   }
 

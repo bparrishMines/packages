@@ -1171,6 +1171,12 @@ if (wrapped == null) {
           );
           implFile.writeAsStringSync(implFileBuffer.toString());
         }
+
+        indent.newln();
+        indent.writeln('/*');
+        _writeJavaProxyApiImpl(indent, api,
+            package: generatorOptions.package ?? '');
+        indent.writeln('*/');
       } else if (Directory('android/src/main/kotlin/').existsSync()) {
         final StringBuffer implFileBuffer = StringBuffer();
         final Indent implFileIndent = Indent(implFileBuffer);
@@ -1189,6 +1195,12 @@ if (wrapped == null) {
           );
           implFile.writeAsStringSync(implFileBuffer.toString());
         }
+
+        indent.newln();
+        indent.writeln('/*');
+        _writeProxyApiImpl(indent, api,
+            package: generatorOptions.package ?? '');
+        indent.writeln('*/');
       }
 
       if (Directory('android/src/test/java/').existsSync()) {
@@ -1220,6 +1232,16 @@ if (wrapped == null) {
           );
           testFile.writeAsStringSync(testFileBuffer.toString());
         }
+
+        indent.newln();
+        indent.writeln('/*');
+        _writeJavaProxyApiTest(
+          indent,
+          api,
+          package: generatorOptions.package ?? '',
+          testClassName: path.basenameWithoutExtension(testFile.path),
+        );
+        indent.writeln('*/');
       } else if (Directory('android/src/test/kotlin/').existsSync()) {
         final StringBuffer testFileBuffer = StringBuffer();
         final Indent testFileIndent = Indent(testFileBuffer);
@@ -1250,22 +1272,17 @@ if (wrapped == null) {
           );
           testFile.writeAsStringSync(testFileBuffer.toString());
         }
-      }
 
-      indent.newln();
-      indent.writeln('/*');
-      _writeJavaProxyApiImpl(indent, api,
-          package: generatorOptions.package ?? '');
-      indent.writeln('*/');
-      indent.newln();
-      indent.writeln('/*');
-      _writeJavaProxyApiTest(
-        indent,
-        api,
-        package: generatorOptions.package ?? '',
-        testClassName: '__PlaceholderName__Test',
-      );
-      indent.writeln('*/');
+        indent.newln();
+        indent.writeln('/*');
+        _writeProxyApiTest(
+          indent,
+          api,
+          package: generatorOptions.package ?? '',
+          testClassName: path.basenameWithoutExtension(testFile.path),
+        );
+        indent.writeln('*/');
+      }
     }
   }
 
