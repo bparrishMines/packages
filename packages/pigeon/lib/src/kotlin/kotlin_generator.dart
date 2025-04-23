@@ -1124,34 +1124,68 @@ if (wrapped == null) {
 
     if (api.hasMethodsRequiringImplementation() ||
         api.flutterMethods.isNotEmpty) {
-      final StringBuffer implFileBuffer = StringBuffer();
-      final Indent implFileIndent = Indent(implFileBuffer);
-      final File implFile = File(
-        'android/src/main/java/${generatorOptions.package!.replaceAll('.', '/')}/${api.name}ProxyApi.java',
-      );
-      print('${implFile.path}: ${implFile.existsSync()}');
-      if (!implFile.existsSync()) {
-        _writeJavaProxyApiImpl(
-          implFileIndent,
-          api,
-          package: generatorOptions.package ?? '',
+      if (Directory('android/src/main/java/').existsSync()) {
+        final StringBuffer implFileBuffer = StringBuffer();
+        final Indent implFileIndent = Indent(implFileBuffer);
+        final File implFile = File(
+          'android/src/main/java/${generatorOptions.package!.replaceAll('.', '/')}/${api.name}ProxyApi.java',
         );
-        implFile.writeAsStringSync(implFileBuffer.toString());
+        if (!implFile.existsSync()) {
+          print('Creating file: ${implFile.path}');
+          _writeJavaProxyApiImpl(
+            implFileIndent,
+            api,
+            package: generatorOptions.package ?? '',
+          );
+          implFile.writeAsStringSync(implFileBuffer.toString());
+        }
+      } else if (Directory('android/src/main/kotlin/').existsSync()) {
+        final StringBuffer implFileBuffer = StringBuffer();
+        final Indent implFileIndent = Indent(implFileBuffer);
+        final File implFile = File(
+          'android/src/main/kotlin/${generatorOptions.package!.replaceAll('.', '/')}/${api.name}ProxyApi.kt',
+        );
+        if (!implFile.existsSync()) {
+          print('Creating file: ${implFile.path}');
+          _writeProxyApiImpl(
+            implFileIndent,
+            api,
+            package: generatorOptions.package ?? '',
+          );
+          implFile.writeAsStringSync(implFileBuffer.toString());
+        }
       }
 
-      final StringBuffer testFileBuffer = StringBuffer();
-      final Indent testFileIndent = Indent(testFileBuffer);
-      final File testFile = File(
-        'android/src/test/java/${generatorOptions.package!.replaceAll('.', '/')}/${api.name}ProxyApiTest.java',
-      );
-      print('${testFile.path}: ${testFile.existsSync()}');
-      if (!testFile.existsSync()) {
-        _writeJavaProxyApiTest(
-          testFileIndent,
-          api,
-          package: generatorOptions.package ?? '',
+      if (Directory('android/src/test/java/').existsSync()) {
+        final StringBuffer testFileBuffer = StringBuffer();
+        final Indent testFileIndent = Indent(testFileBuffer);
+        final File testFile = File(
+          'android/src/test/java/${generatorOptions.package!.replaceAll('.', '/')}/${api.name}ProxyApiTest.java',
         );
-        testFile.writeAsStringSync(testFileBuffer.toString());
+        if (!testFile.existsSync()) {
+          print('Creating file: ${testFile.path}');
+          _writeJavaProxyApiTest(
+            testFileIndent,
+            api,
+            package: generatorOptions.package ?? '',
+          );
+          testFile.writeAsStringSync(testFileBuffer.toString());
+        }
+      } else if (Directory('android/src/test/kotlin/').existsSync()) {
+        final StringBuffer testFileBuffer = StringBuffer();
+        final Indent testFileIndent = Indent(testFileBuffer);
+        final File testFile = File(
+          'android/src/test/kotlin/${generatorOptions.package!.replaceAll('.', '/')}/${api.name}ProxyApiTest.kt',
+        );
+        if (!testFile.existsSync()) {
+          print('Creating file: ${testFile.path}');
+          _writeProxyApiTest(
+            testFileIndent,
+            api,
+            package: generatorOptions.package ?? '',
+          );
+          testFile.writeAsStringSync(testFileBuffer.toString());
+        }
       }
 
       indent.newln();
