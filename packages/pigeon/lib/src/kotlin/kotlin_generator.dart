@@ -5,6 +5,7 @@
 import 'dart:io';
 
 import 'package:graphs/graphs.dart';
+import 'package:path/path.dart' as path;
 
 import '../../pigeon.dart';
 import '../ast.dart';
@@ -1215,6 +1216,7 @@ if (wrapped == null) {
             testFileIndent,
             api,
             package: generatorOptions.package ?? '',
+            testClassName: path.basenameWithoutExtension(testFile.path),
           );
           testFile.writeAsStringSync(testFileBuffer.toString());
         }
@@ -1244,6 +1246,7 @@ if (wrapped == null) {
             testFileIndent,
             api,
             package: generatorOptions.package ?? '',
+            testClassName: path.basenameWithoutExtension(testFile.path),
           );
           testFile.writeAsStringSync(testFileBuffer.toString());
         }
@@ -1256,8 +1259,12 @@ if (wrapped == null) {
       indent.writeln('*/');
       indent.newln();
       indent.writeln('/*');
-      _writeJavaProxyApiTest(indent, api,
-          package: generatorOptions.package ?? '');
+      _writeJavaProxyApiTest(
+        indent,
+        api,
+        package: generatorOptions.package ?? '',
+        testClassName: '__PlaceholderName__Test',
+      );
       indent.writeln('*/');
     }
   }
@@ -2635,6 +2642,7 @@ fun deepEquals(a: Any?, b: Any?): Boolean {
     Indent indent,
     AstProxyApi api, {
     required String package,
+    required String testClassName,
   }) {
     _writeLicense(indent);
     indent.newln();
@@ -2692,7 +2700,7 @@ fun deepEquals(a: Any?, b: Any?): Boolean {
           api.hostMethods.where((Method method) => !method.isStatic).isEmpty;
     }
 
-    indent.writeScoped('class ${api.name}ProxyApiTest {', '}', () {
+    indent.writeScoped('class $testClassName {', '}', () {
       void writeApiVar(Indent indent) {
         indent.writeln(
           'val api = TestProxyApiRegistrar().getPigeonApi${api.name}()',
@@ -3046,6 +3054,7 @@ fun deepEquals(a: Any?, b: Any?): Boolean {
     Indent indent,
     AstProxyApi api, {
     required String package,
+    required String testClassName,
   }) {
     _writeLicense(indent);
     indent.newln();
@@ -3107,7 +3116,7 @@ fun deepEquals(a: Any?, b: Any?): Boolean {
           api.hostMethods.where((Method method) => !method.isStatic).isEmpty;
     }
 
-    indent.writeScoped('public class ${api.name}ProxyApiTest {', '}', () {
+    indent.writeScoped('public class $testClassName {', '}', () {
       void writeApiVar(Indent indent) {
         indent.writeln(
           'final $hostProxyApiPrefix${api.name} api = new TestProxyApiRegistrar().getPigeonApi${api.name}();',

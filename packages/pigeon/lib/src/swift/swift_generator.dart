@@ -1399,6 +1399,7 @@ if (wrapped == nil) {
             api,
             dartPackageName: dartPackageName,
             errorTypeName: _getErrorClassName(generatorOptions),
+            testClassName: path.basenameWithoutExtension(testFile.path),
           );
           testFile.writeAsStringSync(testFileBuffer.toString());
         }
@@ -1412,12 +1413,10 @@ if (wrapped == nil) {
       indent.writeln('*/');
       indent.newln();
       indent.writeln('/*');
-      _writeProxyApiTest(
-        indent,
-        api,
-        dartPackageName: dartPackageName,
-        errorTypeName: _getErrorClassName(generatorOptions),
-      );
+      _writeProxyApiTest(indent, api,
+          dartPackageName: dartPackageName,
+          errorTypeName: _getErrorClassName(generatorOptions),
+          testClassName: '__PlaceholderName__Tests');
       indent.writeln('*/');
       indent.newln();
     }
@@ -3125,6 +3124,7 @@ func deepHash${generatorOptions.fileSpecificClassNameComponent}(value: Any?, has
     AstProxyApi api, {
     required String dartPackageName,
     required String errorTypeName,
+    required String testClassName,
   }) {
     _writeLicense(indent);
     indent.newln();
@@ -3177,7 +3177,7 @@ func deepHash${generatorOptions.fileSpecificClassNameComponent}(value: Any?, has
     // }
 
     indent.writeScoped(
-      'class ${apiNameWithoutPrefix(api)}ProxyAPITests: XCTestCase {',
+      'class $testClassName: XCTestCase {',
       '}',
       () {
         void writeApiVar(Indent indent) {
