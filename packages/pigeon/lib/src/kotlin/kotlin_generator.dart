@@ -3111,7 +3111,7 @@ fun deepEquals(a: Any?, b: Any?): Boolean {
         'String' => '"myString"',
         'int' => '0',
         'double' => '1.0',
-        'Uint8List' => '{0xA1}',
+        'Uint8List' => 'new byte[] {(byte) 0xA1}',
         'List' =>
           'Arrays.asList(${getDefaultTestValue(type.typeArguments[0])})',
         'Map' =>
