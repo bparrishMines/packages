@@ -3107,10 +3107,9 @@ func deepHash${generatorOptions.fileSpecificClassNameComponent}(value: Any?, has
             } else if (method.name.length > 3 &&
                 method.parameters.length == 1 &&
                 method.name.startsWith('set')) {
-              print(method.name);
               final String nameWithoutSet = method.name.substring(3);
               methodSig =
-                  '${nameWithoutSet.replaceFirst(nameWithoutSet[0], nameWithoutSet[0].toLowerCase())} = ${_getParameterNames(method.parameters)}';
+                  '${nameWithoutSet.replaceFirst(nameWithoutSet[0], nameWithoutSet[0].toLowerCase())} = ${_getParameterNames(method.parameters).split(':').single}';
             } else {
               methodSig =
                   '${method.name}(${_getParameterNames(method.parameters)})';
@@ -3172,13 +3171,6 @@ func deepHash${generatorOptions.fileSpecificClassNameComponent}(value: Any?, has
               '${parameter.name}: ${getDefaultTestValue(parameter.type)}')
           .join(', ');
     }
-
-    // bool hasInterfaceImpl(AstProxyApi api) {
-    //   return api.constructors.length == 1 &&
-    //       api.constructors[0].parameters.isEmpty &&
-    //       api.fields.where((ApiField field) => !field.isStatic).isEmpty &&
-    //       api.hostMethods.where((Method method) => !method.isStatic).isEmpty;
-    // }
 
     indent.writeScoped(
       'class $testClassName: XCTestCase {',
@@ -3287,7 +3279,7 @@ func deepHash${generatorOptions.fileSpecificClassNameComponent}(value: Any?, has
               }
 
               indent.writeln(
-                '${!method.returnType.isVoid ? 'let value = ' : ''}api.pigeonDelegate.${method.name}(pigeonApi: api, pigeonInstance: instance${maybeComma(method.parameters)} $parameterNames)',
+                '${!method.returnType.isVoid ? 'let value = ' : ''}try? api.pigeonDelegate.${method.name}(pigeonApi: api, pigeonInstance: instance${maybeComma(method.parameters)} $parameterNames)',
               );
               indent.newln();
 
