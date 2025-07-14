@@ -221,6 +221,19 @@ enum UiElement {
   unknown,
 }
 
+/// A list of purposes for which an obstruction would be registered as friendly.
+///
+/// See https://developers.google.com/interactive-media-ads/docs/sdks/android/client-side/api/reference/kotlin/com/google/ads/interactivemedia/v3/api/FriendlyObstructionPurpose.
+enum FriendlyObstructionPurpose {
+  closeAd,
+  notVisible,
+  other,
+  videoControls,
+
+  /// The purpose is not recognized by this wrapper.
+  unknown,
+}
+
 /// A base class for more specialized container interfaces.
 ///
 /// See https://developers.google.com/interactive-media-ads/docs/sdks/android/client-side/api/reference/com/google/ads/interactivemedia/v3/api/BaseDisplayContainer.html.
@@ -235,6 +248,22 @@ abstract class BaseDisplayContainer {
   ///
   /// Passing null will reset the container to having no companion slots.
   void setCompanionSlots(List<CompanionAdSlot>? companionSlots);
+
+  /// The previously set container, or null if none has been set.
+  ViewGroup? getAdContainer();
+
+  /// Gets the companion slots that have been set.
+  List<CompanionAdSlot> getCompanionAdSlots();
+
+  /// Registers a view that overlays or obstructs this container as "friendly"
+  /// for viewability measurement purposes.
+  ///
+  /// See [Open Measurement in the IMA SDK](https://developers.google.com/interactive-media-ads/docs/sdks/android/client-side/omsdk)
+  /// for guidance on what is and what is not allowed to be registered.
+  void registerFriendlyObstruction(FriendlyObstruction friendlyObstruction);
+
+  /// Unregisters all previously registered friendly obstructions.
+  void unregisterAllFriendlyObstructions();
 }
 
 /// A container in which to display the ads.
@@ -245,7 +274,10 @@ abstract class BaseDisplayContainer {
     fullClassName: 'com.google.ads.interactivemedia.v3.api.AdDisplayContainer',
   ),
 )
-abstract class AdDisplayContainer extends BaseDisplayContainer {}
+abstract class AdDisplayContainer extends BaseDisplayContainer {
+  /// The previously set player, or null if none has been set.
+  VideoAdPlayer? getPlayer();
+}
 
 /// An object which allows publishers to request ads from ad servers or a
 /// dynamic ad insertion stream.
@@ -1145,4 +1177,25 @@ abstract class CompanionAdSlot {
   /// This is a convenience method that sets both parameters of [setSize] to
   /// [CompanionAdSlot.FLUID_SIZE](https://developers.google.com/interactive-media-ads/docs/sdks/android/client-side/api/reference/com/google/ads/interactivemedia/v3/api/CompanionAdSlot#FLUID_SIZE()).
   void setFluidSize();
+}
+
+/// An obstruction that is marked as "friendly" for viewability measurement
+/// purposes.
+///
+/// See https://developers.google.com/interactive-media-ads/docs/sdks/android/client-side/api/reference/kotlin/com/google/ads/interactivemedia/v3/api/FriendlyObstruction.
+@ProxyApi(
+  kotlinOptions: KotlinProxyApiOptions(
+    fullClassName: 'com.google.ads.interactivemedia.v3.api.FriendlyObstruction',
+  ),
+)
+abstract class FriendlyObstruction {
+  /// The optional, detailed reasoning for registering this obstruction as
+  /// friendly.
+  late final String? detailedReason;
+
+  /// the purpose for registering the obstruction as friendly.
+  late final FriendlyObstructionPurpose purpose;
+
+  /// The view causing the obstruction.
+  late final View view;
 }
