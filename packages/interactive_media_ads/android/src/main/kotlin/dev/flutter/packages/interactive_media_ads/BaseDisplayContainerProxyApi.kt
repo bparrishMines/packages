@@ -4,8 +4,10 @@
 
 package dev.flutter.packages.interactive_media_ads
 
+import android.view.ViewGroup
 import com.google.ads.interactivemedia.v3.api.BaseDisplayContainer
 import com.google.ads.interactivemedia.v3.api.CompanionAdSlot
+import com.google.ads.interactivemedia.v3.api.FriendlyObstruction
 
 /**
  * ProxyApi implementation for [com.google.ads.interactivemedia.v3.api.BaseDisplayContainer].
@@ -20,5 +22,24 @@ class BaseDisplayContainerProxyApi(override val pigeonRegistrar: ProxyApiRegistr
       companionSlots: List<CompanionAdSlot>?
   ) {
     return pigeon_instance.setCompanionSlots(companionSlots)
+  }
+
+  override fun getAdContainer(pigeon_instance: BaseDisplayContainer): ViewGroup? {
+    return pigeon_instance.adContainer
+  }
+
+  override fun getCompanionSlots(pigeon_instance: BaseDisplayContainer): List<CompanionAdSlot> {
+    return pigeon_instance.companionSlots.toList()
+  }
+
+  override fun registerFriendlyObstruction(
+      pigeon_instance: BaseDisplayContainer,
+      friendlyObstruction: FriendlyObstruction
+  ) {
+    pigeon_instance.registerFriendlyObstruction(friendlyObstruction)
+  }
+
+  override fun unregisterAllFriendlyObstructions(pigeon_instance: BaseDisplayContainer) {
+    pigeon_instance.unregisterAllFriendlyObstructions()
   }
 }

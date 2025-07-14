@@ -253,7 +253,7 @@ abstract class BaseDisplayContainer {
   ViewGroup? getAdContainer();
 
   /// Gets the companion slots that have been set.
-  List<CompanionAdSlot> getCompanionAdSlots();
+  List<CompanionAdSlot> getCompanionSlots();
 
   /// Registers a view that overlays or obstructs this container as "friendly"
   /// for viewability measurement purposes.

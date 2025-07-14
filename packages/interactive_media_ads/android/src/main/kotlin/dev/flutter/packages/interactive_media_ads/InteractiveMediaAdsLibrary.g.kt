@@ -393,9 +393,7 @@ abstract class InteractiveMediaAdsLibraryPigeonProxyApiRegistrar(
    * An implementation of [PigeonApiAdDisplayContainer] used to add a new Dart instance of
    * `AdDisplayContainer` to the Dart `InstanceManager`.
    */
-  open fun getPigeonApiAdDisplayContainer(): PigeonApiAdDisplayContainer {
-    return PigeonApiAdDisplayContainer(this)
-  }
+  abstract fun getPigeonApiAdDisplayContainer(): PigeonApiAdDisplayContainer
 
   /**
    * An implementation of [PigeonApiAdsLoader] used to add a new Dart instance of `AdsLoader` to the
@@ -585,11 +583,19 @@ abstract class InteractiveMediaAdsLibraryPigeonProxyApiRegistrar(
    */
   abstract fun getPigeonApiCompanionAdSlot(): PigeonApiCompanionAdSlot
 
+  /**
+   * An implementation of [PigeonApiFriendlyObstruction] used to add a new Dart instance of
+   * `FriendlyObstruction` to the Dart `InstanceManager`.
+   */
+  abstract fun getPigeonApiFriendlyObstruction(): PigeonApiFriendlyObstruction
+
   fun setUp() {
     InteractiveMediaAdsLibraryPigeonInstanceManagerApi.setUpMessageHandlers(
         binaryMessenger, instanceManager)
     PigeonApiBaseDisplayContainer.setUpMessageHandlers(
         binaryMessenger, getPigeonApiBaseDisplayContainer())
+    PigeonApiAdDisplayContainer.setUpMessageHandlers(
+        binaryMessenger, getPigeonApiAdDisplayContainer())
     PigeonApiAdsLoader.setUpMessageHandlers(binaryMessenger, getPigeonApiAdsLoader())
     PigeonApiAdsRequest.setUpMessageHandlers(binaryMessenger, getPigeonApiAdsRequest())
     PigeonApiContentProgressProvider.setUpMessageHandlers(
@@ -621,6 +627,7 @@ abstract class InteractiveMediaAdsLibraryPigeonProxyApiRegistrar(
   fun tearDown() {
     InteractiveMediaAdsLibraryPigeonInstanceManagerApi.setUpMessageHandlers(binaryMessenger, null)
     PigeonApiBaseDisplayContainer.setUpMessageHandlers(binaryMessenger, null)
+    PigeonApiAdDisplayContainer.setUpMessageHandlers(binaryMessenger, null)
     PigeonApiAdsLoader.setUpMessageHandlers(binaryMessenger, null)
     PigeonApiAdsRequest.setUpMessageHandlers(binaryMessenger, null)
     PigeonApiContentProgressProvider.setUpMessageHandlers(binaryMessenger, null)
@@ -678,6 +685,7 @@ private class InteractiveMediaAdsLibraryPigeonProxyApiBaseCodec(
         value is AdErrorType ||
         value is AdEventType ||
         value is UiElement ||
+        value is FriendlyObstructionPurpose ||
         value == null) {
       super.writeValue(stream, value)
       return
@@ -750,6 +758,8 @@ private class InteractiveMediaAdsLibraryPigeonProxyApiBaseCodec(
       registrar.getPigeonApiCompanionAdSlotClickListener().pigeon_newInstance(value) {}
     } else if (value is com.google.ads.interactivemedia.v3.api.CompanionAdSlot) {
       registrar.getPigeonApiCompanionAdSlot().pigeon_newInstance(value) {}
+    } else if (value is com.google.ads.interactivemedia.v3.api.FriendlyObstruction) {
+      registrar.getPigeonApiFriendlyObstruction().pigeon_newInstance(value) {}
     }
 
     when {
@@ -956,6 +966,27 @@ enum class UiElement(val raw: Int) {
   }
 }
 
+/**
+ * A list of purposes for which an obstruction would be registered as friendly.
+ *
+ * See
+ * https://developers.google.com/interactive-media-ads/docs/sdks/android/client-side/api/reference/kotlin/com/google/ads/interactivemedia/v3/api/FriendlyObstructionPurpose.
+ */
+enum class FriendlyObstructionPurpose(val raw: Int) {
+  CLOSE_AD(0),
+  NOT_VISIBLE(1),
+  OTHER(2),
+  VIDEO_CONTROLS(3),
+  /** The purpose is not recognized by this wrapper. */
+  UNKNOWN(4);
+
+  companion object {
+    fun ofRaw(raw: Int): FriendlyObstructionPurpose? {
+      return values().firstOrNull { it.raw == raw }
+    }
+  }
+}
+
 private open class InteractiveMediaAdsLibraryPigeonCodec : StandardMessageCodec() {
   override fun readValueOfType(type: Byte, buffer: ByteBuffer): Any? {
     return when (type) {
@@ -970,6 +1001,9 @@ private open class InteractiveMediaAdsLibraryPigeonCodec : StandardMessageCodec(
       }
       132.toByte() -> {
         return (readValue(buffer) as Long?)?.let { UiElement.ofRaw(it.toInt()) }
+      }
+      133.toByte() -> {
+        return (readValue(buffer) as Long?)?.let { FriendlyObstructionPurpose.ofRaw(it.toInt()) }
       }
       else -> super.readValueOfType(type, buffer)
     }
@@ -991,6 +1025,10 @@ private open class InteractiveMediaAdsLibraryPigeonCodec : StandardMessageCodec(
       }
       is UiElement -> {
         stream.write(132)
+        writeValue(stream, value.raw)
+      }
+      is FriendlyObstructionPurpose -> {
+        stream.write(133)
         writeValue(stream, value.raw)
       }
       else -> super.writeValue(stream, value)
@@ -1018,6 +1056,34 @@ abstract class PigeonApiBaseDisplayContainer(
       companionSlots: List<com.google.ads.interactivemedia.v3.api.CompanionAdSlot>?
   )
 
+  /** The previously set container, or null if none has been set. */
+  abstract fun getAdContainer(
+      pigeon_instance: com.google.ads.interactivemedia.v3.api.BaseDisplayContainer
+  ): android.view.ViewGroup?
+
+  /** Gets the companion slots that have been set. */
+  abstract fun getCompanionSlots(
+      pigeon_instance: com.google.ads.interactivemedia.v3.api.BaseDisplayContainer
+  ): List<com.google.ads.interactivemedia.v3.api.CompanionAdSlot>
+
+  /**
+   * Registers a view that overlays or obstructs this container as "friendly" for viewability
+   * measurement purposes.
+   *
+   * See
+   * [Open Measurement in the IMA SDK](https://developers.google.com/interactive-media-ads/docs/sdks/android/client-side/omsdk)
+   * for guidance on what is and what is not allowed to be registered.
+   */
+  abstract fun registerFriendlyObstruction(
+      pigeon_instance: com.google.ads.interactivemedia.v3.api.BaseDisplayContainer,
+      friendlyObstruction: com.google.ads.interactivemedia.v3.api.FriendlyObstruction
+  )
+
+  /** Unregisters all previously registered friendly obstructions. */
+  abstract fun unregisterAllFriendlyObstructions(
+      pigeon_instance: com.google.ads.interactivemedia.v3.api.BaseDisplayContainer
+  )
+
   companion object {
     @Suppress("LocalVariableName")
     fun setUpMessageHandlers(
@@ -1041,6 +1107,102 @@ abstract class PigeonApiBaseDisplayContainer(
             val wrapped: List<Any?> =
                 try {
                   api.setCompanionSlots(pigeon_instanceArg, companionSlotsArg)
+                  listOf(null)
+                } catch (exception: Throwable) {
+                  InteractiveMediaAdsLibraryPigeonUtils.wrapError(exception)
+                }
+            reply.reply(wrapped)
+          }
+        } else {
+          channel.setMessageHandler(null)
+        }
+      }
+      run {
+        val channel =
+            BasicMessageChannel<Any?>(
+                binaryMessenger,
+                "dev.flutter.pigeon.interactive_media_ads.BaseDisplayContainer.getAdContainer",
+                codec)
+        if (api != null) {
+          channel.setMessageHandler { message, reply ->
+            val args = message as List<Any?>
+            val pigeon_instanceArg =
+                args[0] as com.google.ads.interactivemedia.v3.api.BaseDisplayContainer
+            val wrapped: List<Any?> =
+                try {
+                  listOf(api.getAdContainer(pigeon_instanceArg))
+                } catch (exception: Throwable) {
+                  InteractiveMediaAdsLibraryPigeonUtils.wrapError(exception)
+                }
+            reply.reply(wrapped)
+          }
+        } else {
+          channel.setMessageHandler(null)
+        }
+      }
+      run {
+        val channel =
+            BasicMessageChannel<Any?>(
+                binaryMessenger,
+                "dev.flutter.pigeon.interactive_media_ads.BaseDisplayContainer.getCompanionSlots",
+                codec)
+        if (api != null) {
+          channel.setMessageHandler { message, reply ->
+            val args = message as List<Any?>
+            val pigeon_instanceArg =
+                args[0] as com.google.ads.interactivemedia.v3.api.BaseDisplayContainer
+            val wrapped: List<Any?> =
+                try {
+                  listOf(api.getCompanionSlots(pigeon_instanceArg))
+                } catch (exception: Throwable) {
+                  InteractiveMediaAdsLibraryPigeonUtils.wrapError(exception)
+                }
+            reply.reply(wrapped)
+          }
+        } else {
+          channel.setMessageHandler(null)
+        }
+      }
+      run {
+        val channel =
+            BasicMessageChannel<Any?>(
+                binaryMessenger,
+                "dev.flutter.pigeon.interactive_media_ads.BaseDisplayContainer.registerFriendlyObstruction",
+                codec)
+        if (api != null) {
+          channel.setMessageHandler { message, reply ->
+            val args = message as List<Any?>
+            val pigeon_instanceArg =
+                args[0] as com.google.ads.interactivemedia.v3.api.BaseDisplayContainer
+            val friendlyObstructionArg =
+                args[1] as com.google.ads.interactivemedia.v3.api.FriendlyObstruction
+            val wrapped: List<Any?> =
+                try {
+                  api.registerFriendlyObstruction(pigeon_instanceArg, friendlyObstructionArg)
+                  listOf(null)
+                } catch (exception: Throwable) {
+                  InteractiveMediaAdsLibraryPigeonUtils.wrapError(exception)
+                }
+            reply.reply(wrapped)
+          }
+        } else {
+          channel.setMessageHandler(null)
+        }
+      }
+      run {
+        val channel =
+            BasicMessageChannel<Any?>(
+                binaryMessenger,
+                "dev.flutter.pigeon.interactive_media_ads.BaseDisplayContainer.unregisterAllFriendlyObstructions",
+                codec)
+        if (api != null) {
+          channel.setMessageHandler { message, reply ->
+            val args = message as List<Any?>
+            val pigeon_instanceArg =
+                args[0] as com.google.ads.interactivemedia.v3.api.BaseDisplayContainer
+            val wrapped: List<Any?> =
+                try {
+                  api.unregisterAllFriendlyObstructions(pigeon_instanceArg)
                   listOf(null)
                 } catch (exception: Throwable) {
                   InteractiveMediaAdsLibraryPigeonUtils.wrapError(exception)
@@ -1098,9 +1260,44 @@ abstract class PigeonApiBaseDisplayContainer(
  * https://developers.google.com/interactive-media-ads/docs/sdks/android/client-side/api/reference/com/google/ads/interactivemedia/v3/api/AdDisplayContainer.
  */
 @Suppress("UNCHECKED_CAST")
-open class PigeonApiAdDisplayContainer(
+abstract class PigeonApiAdDisplayContainer(
     open val pigeonRegistrar: InteractiveMediaAdsLibraryPigeonProxyApiRegistrar
 ) {
+  /** The previously set player, or null if none has been set. */
+  abstract fun getPlayer(
+      pigeon_instance: com.google.ads.interactivemedia.v3.api.AdDisplayContainer
+  ): com.google.ads.interactivemedia.v3.api.player.VideoAdPlayer?
+
+  companion object {
+    @Suppress("LocalVariableName")
+    fun setUpMessageHandlers(binaryMessenger: BinaryMessenger, api: PigeonApiAdDisplayContainer?) {
+      val codec = api?.pigeonRegistrar?.codec ?: InteractiveMediaAdsLibraryPigeonCodec()
+      run {
+        val channel =
+            BasicMessageChannel<Any?>(
+                binaryMessenger,
+                "dev.flutter.pigeon.interactive_media_ads.AdDisplayContainer.getPlayer",
+                codec)
+        if (api != null) {
+          channel.setMessageHandler { message, reply ->
+            val args = message as List<Any?>
+            val pigeon_instanceArg =
+                args[0] as com.google.ads.interactivemedia.v3.api.AdDisplayContainer
+            val wrapped: List<Any?> =
+                try {
+                  listOf(api.getPlayer(pigeon_instanceArg))
+                } catch (exception: Throwable) {
+                  InteractiveMediaAdsLibraryPigeonUtils.wrapError(exception)
+                }
+            reply.reply(wrapped)
+          }
+        } else {
+          channel.setMessageHandler(null)
+        }
+      }
+    }
+  }
+
   @Suppress("LocalVariableName", "FunctionName")
   /** Creates a Dart instance of AdDisplayContainer and attaches it to [pigeon_instanceArg]. */
   fun pigeon_newInstance(
@@ -6207,6 +6404,71 @@ abstract class PigeonApiCompanionAdSlot(
           "dev.flutter.pigeon.interactive_media_ads.CompanionAdSlot.pigeon_newInstance"
       val channel = BasicMessageChannel<Any?>(binaryMessenger, channelName, codec)
       channel.send(listOf(pigeon_identifierArg)) {
+        if (it is List<*>) {
+          if (it.size > 1) {
+            callback(
+                Result.failure(FlutterError(it[0] as String, it[1] as String, it[2] as String?)))
+          } else {
+            callback(Result.success(Unit))
+          }
+        } else {
+          callback(
+              Result.failure(
+                  InteractiveMediaAdsLibraryPigeonUtils.createConnectionError(channelName)))
+        }
+      }
+    }
+  }
+}
+/**
+ * An obstruction that is marked as "friendly" for viewability measurement purposes.
+ *
+ * See
+ * https://developers.google.com/interactive-media-ads/docs/sdks/android/client-side/api/reference/kotlin/com/google/ads/interactivemedia/v3/api/FriendlyObstruction.
+ */
+@Suppress("UNCHECKED_CAST")
+abstract class PigeonApiFriendlyObstruction(
+    open val pigeonRegistrar: InteractiveMediaAdsLibraryPigeonProxyApiRegistrar
+) {
+  /** The optional, detailed reasoning for registering this obstruction as friendly. */
+  abstract fun detailedReason(
+      pigeon_instance: com.google.ads.interactivemedia.v3.api.FriendlyObstruction
+  ): String?
+
+  /** the purpose for registering the obstruction as friendly. */
+  abstract fun purpose(
+      pigeon_instance: com.google.ads.interactivemedia.v3.api.FriendlyObstruction
+  ): FriendlyObstructionPurpose
+
+  /** The view causing the obstruction. */
+  abstract fun view(
+      pigeon_instance: com.google.ads.interactivemedia.v3.api.FriendlyObstruction
+  ): android.view.View
+
+  @Suppress("LocalVariableName", "FunctionName")
+  /** Creates a Dart instance of FriendlyObstruction and attaches it to [pigeon_instanceArg]. */
+  fun pigeon_newInstance(
+      pigeon_instanceArg: com.google.ads.interactivemedia.v3.api.FriendlyObstruction,
+      callback: (Result<Unit>) -> Unit
+  ) {
+    if (pigeonRegistrar.ignoreCallsToDart) {
+      callback(
+          Result.failure(
+              FlutterError("ignore-calls-error", "Calls to Dart are being ignored.", "")))
+    } else if (pigeonRegistrar.instanceManager.containsInstance(pigeon_instanceArg)) {
+      callback(Result.success(Unit))
+    } else {
+      val pigeon_identifierArg =
+          pigeonRegistrar.instanceManager.addHostCreatedInstance(pigeon_instanceArg)
+      val detailedReasonArg = detailedReason(pigeon_instanceArg)
+      val purposeArg = purpose(pigeon_instanceArg)
+      val viewArg = view(pigeon_instanceArg)
+      val binaryMessenger = pigeonRegistrar.binaryMessenger
+      val codec = pigeonRegistrar.codec
+      val channelName =
+          "dev.flutter.pigeon.interactive_media_ads.FriendlyObstruction.pigeon_newInstance"
+      val channel = BasicMessageChannel<Any?>(binaryMessenger, channelName, codec)
+      channel.send(listOf(pigeon_identifierArg, detailedReasonArg, purposeArg, viewArg)) {
         if (it is List<*>) {
           if (it.size > 1) {
             callback(

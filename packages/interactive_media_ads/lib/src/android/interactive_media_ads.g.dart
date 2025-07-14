@@ -205,6 +205,8 @@ class PigeonInstanceManager {
         pigeon_instanceManager: instanceManager);
     CompanionAdSlot.pigeon_setUpMessageHandlers(
         pigeon_instanceManager: instanceManager);
+    FriendlyObstruction.pigeon_setUpMessageHandlers(
+        pigeon_instanceManager: instanceManager);
     return instanceManager;
   }
 
@@ -674,6 +676,19 @@ enum UiElement {
   unknown,
 }
 
+/// A list of purposes for which an obstruction would be registered as friendly.
+///
+/// See https://developers.google.com/interactive-media-ads/docs/sdks/android/client-side/api/reference/kotlin/com/google/ads/interactivemedia/v3/api/FriendlyObstructionPurpose.
+enum FriendlyObstructionPurpose {
+  closeAd,
+  notVisible,
+  other,
+  videoControls,
+
+  /// The purpose is not recognized by this wrapper.
+  unknown,
+}
+
 class _PigeonCodec extends StandardMessageCodec {
   const _PigeonCodec();
   @override
@@ -692,6 +707,9 @@ class _PigeonCodec extends StandardMessageCodec {
       writeValue(buffer, value.index);
     } else if (value is UiElement) {
       buffer.putUint8(132);
+      writeValue(buffer, value.index);
+    } else if (value is FriendlyObstructionPurpose) {
+      buffer.putUint8(133);
       writeValue(buffer, value.index);
     } else {
       super.writeValue(buffer, value);
@@ -713,6 +731,9 @@ class _PigeonCodec extends StandardMessageCodec {
       case 132:
         final int? value = readValue(buffer) as int?;
         return value == null ? null : UiElement.values[value];
+      case 133:
+        final int? value = readValue(buffer) as int?;
+        return value == null ? null : FriendlyObstructionPurpose.values[value];
       default:
         return super.readValueOfType(type, buffer);
     }
@@ -818,6 +839,137 @@ class BaseDisplayContainer extends PigeonInternalProxyApiBaseClass {
     }
   }
 
+  /// The previously set container, or null if none has been set.
+  Future<ViewGroup?> getAdContainer() async {
+    final _PigeonInternalProxyApiBaseCodec pigeonChannelCodec =
+        _pigeonVar_codecBaseDisplayContainer;
+    final BinaryMessenger? pigeonVar_binaryMessenger = pigeon_binaryMessenger;
+    const String pigeonVar_channelName =
+        'dev.flutter.pigeon.interactive_media_ads.BaseDisplayContainer.getAdContainer';
+    final BasicMessageChannel<Object?> pigeonVar_channel =
+        BasicMessageChannel<Object?>(
+      pigeonVar_channelName,
+      pigeonChannelCodec,
+      binaryMessenger: pigeonVar_binaryMessenger,
+    );
+    final Future<Object?> pigeonVar_sendFuture =
+        pigeonVar_channel.send(<Object?>[this]);
+    final List<Object?>? pigeonVar_replyList =
+        await pigeonVar_sendFuture as List<Object?>?;
+    if (pigeonVar_replyList == null) {
+      throw _createConnectionError(pigeonVar_channelName);
+    } else if (pigeonVar_replyList.length > 1) {
+      throw PlatformException(
+        code: pigeonVar_replyList[0]! as String,
+        message: pigeonVar_replyList[1] as String?,
+        details: pigeonVar_replyList[2],
+      );
+    } else {
+      return (pigeonVar_replyList[0] as ViewGroup?);
+    }
+  }
+
+  /// Gets the companion slots that have been set.
+  Future<List<CompanionAdSlot>> getCompanionSlots() async {
+    final _PigeonInternalProxyApiBaseCodec pigeonChannelCodec =
+        _pigeonVar_codecBaseDisplayContainer;
+    final BinaryMessenger? pigeonVar_binaryMessenger = pigeon_binaryMessenger;
+    const String pigeonVar_channelName =
+        'dev.flutter.pigeon.interactive_media_ads.BaseDisplayContainer.getCompanionSlots';
+    final BasicMessageChannel<Object?> pigeonVar_channel =
+        BasicMessageChannel<Object?>(
+      pigeonVar_channelName,
+      pigeonChannelCodec,
+      binaryMessenger: pigeonVar_binaryMessenger,
+    );
+    final Future<Object?> pigeonVar_sendFuture =
+        pigeonVar_channel.send(<Object?>[this]);
+    final List<Object?>? pigeonVar_replyList =
+        await pigeonVar_sendFuture as List<Object?>?;
+    if (pigeonVar_replyList == null) {
+      throw _createConnectionError(pigeonVar_channelName);
+    } else if (pigeonVar_replyList.length > 1) {
+      throw PlatformException(
+        code: pigeonVar_replyList[0]! as String,
+        message: pigeonVar_replyList[1] as String?,
+        details: pigeonVar_replyList[2],
+      );
+    } else if (pigeonVar_replyList[0] == null) {
+      throw PlatformException(
+        code: 'null-error',
+        message: 'Host platform returned null value for non-null return value.',
+      );
+    } else {
+      return (pigeonVar_replyList[0] as List<Object?>?)!
+          .cast<CompanionAdSlot>();
+    }
+  }
+
+  /// Registers a view that overlays or obstructs this container as "friendly"
+  /// for viewability measurement purposes.
+  ///
+  /// See [Open Measurement in the IMA SDK](https://developers.google.com/interactive-media-ads/docs/sdks/android/client-side/omsdk)
+  /// for guidance on what is and what is not allowed to be registered.
+  Future<void> registerFriendlyObstruction(
+      FriendlyObstruction friendlyObstruction) async {
+    final _PigeonInternalProxyApiBaseCodec pigeonChannelCodec =
+        _pigeonVar_codecBaseDisplayContainer;
+    final BinaryMessenger? pigeonVar_binaryMessenger = pigeon_binaryMessenger;
+    const String pigeonVar_channelName =
+        'dev.flutter.pigeon.interactive_media_ads.BaseDisplayContainer.registerFriendlyObstruction';
+    final BasicMessageChannel<Object?> pigeonVar_channel =
+        BasicMessageChannel<Object?>(
+      pigeonVar_channelName,
+      pigeonChannelCodec,
+      binaryMessenger: pigeonVar_binaryMessenger,
+    );
+    final Future<Object?> pigeonVar_sendFuture =
+        pigeonVar_channel.send(<Object?>[this, friendlyObstruction]);
+    final List<Object?>? pigeonVar_replyList =
+        await pigeonVar_sendFuture as List<Object?>?;
+    if (pigeonVar_replyList == null) {
+      throw _createConnectionError(pigeonVar_channelName);
+    } else if (pigeonVar_replyList.length > 1) {
+      throw PlatformException(
+        code: pigeonVar_replyList[0]! as String,
+        message: pigeonVar_replyList[1] as String?,
+        details: pigeonVar_replyList[2],
+      );
+    } else {
+      return;
+    }
+  }
+
+  /// Unregisters all previously registered friendly obstructions.
+  Future<void> unregisterAllFriendlyObstructions() async {
+    final _PigeonInternalProxyApiBaseCodec pigeonChannelCodec =
+        _pigeonVar_codecBaseDisplayContainer;
+    final BinaryMessenger? pigeonVar_binaryMessenger = pigeon_binaryMessenger;
+    const String pigeonVar_channelName =
+        'dev.flutter.pigeon.interactive_media_ads.BaseDisplayContainer.unregisterAllFriendlyObstructions';
+    final BasicMessageChannel<Object?> pigeonVar_channel =
+        BasicMessageChannel<Object?>(
+      pigeonVar_channelName,
+      pigeonChannelCodec,
+      binaryMessenger: pigeonVar_binaryMessenger,
+    );
+    final Future<Object?> pigeonVar_sendFuture =
+        pigeonVar_channel.send(<Object?>[this]);
+    final List<Object?>? pigeonVar_replyList =
+        await pigeonVar_sendFuture as List<Object?>?;
+    if (pigeonVar_replyList == null) {
+      throw _createConnectionError(pigeonVar_channelName);
+    } else if (pigeonVar_replyList.length > 1) {
+      throw PlatformException(
+        code: pigeonVar_replyList[0]! as String,
+        message: pigeonVar_replyList[1] as String?,
+        details: pigeonVar_replyList[2],
+      );
+    } else {
+      return;
+    }
+  }
+
   @override
   BaseDisplayContainer pigeon_copy() {
     return BaseDisplayContainer.pigeon_detached(
@@ -840,6 +992,10 @@ class AdDisplayContainer extends BaseDisplayContainer {
     super.pigeon_binaryMessenger,
     super.pigeon_instanceManager,
   }) : super.pigeon_detached();
+
+  late final _PigeonInternalProxyApiBaseCodec
+      _pigeonVar_codecAdDisplayContainer =
+      _PigeonInternalProxyApiBaseCodec(pigeon_instanceManager);
 
   static void pigeon_setUpMessageHandlers({
     bool pigeon_clearHandlers = false,
@@ -887,6 +1043,36 @@ class AdDisplayContainer extends BaseDisplayContainer {
           }
         });
       }
+    }
+  }
+
+  /// The previously set player, or null if none has been set.
+  Future<VideoAdPlayer?> getPlayer() async {
+    final _PigeonInternalProxyApiBaseCodec pigeonChannelCodec =
+        _pigeonVar_codecAdDisplayContainer;
+    final BinaryMessenger? pigeonVar_binaryMessenger = pigeon_binaryMessenger;
+    const String pigeonVar_channelName =
+        'dev.flutter.pigeon.interactive_media_ads.AdDisplayContainer.getPlayer';
+    final BasicMessageChannel<Object?> pigeonVar_channel =
+        BasicMessageChannel<Object?>(
+      pigeonVar_channelName,
+      pigeonChannelCodec,
+      binaryMessenger: pigeonVar_binaryMessenger,
+    );
+    final Future<Object?> pigeonVar_sendFuture =
+        pigeonVar_channel.send(<Object?>[this]);
+    final List<Object?>? pigeonVar_replyList =
+        await pigeonVar_sendFuture as List<Object?>?;
+    if (pigeonVar_replyList == null) {
+      throw _createConnectionError(pigeonVar_channelName);
+    } else if (pigeonVar_replyList.length > 1) {
+      throw PlatformException(
+        code: pigeonVar_replyList[0]! as String,
+        message: pigeonVar_replyList[1] as String?,
+        details: pigeonVar_replyList[2],
+      );
+    } else {
+      return (pigeonVar_replyList[0] as VideoAdPlayer?);
     }
   }
 
@@ -7444,6 +7630,111 @@ class CompanionAdSlot extends PigeonInternalProxyApiBaseClass {
     return CompanionAdSlot.pigeon_detached(
       pigeon_binaryMessenger: pigeon_binaryMessenger,
       pigeon_instanceManager: pigeon_instanceManager,
+    );
+  }
+}
+
+/// An obstruction that is marked as "friendly" for viewability measurement
+/// purposes.
+///
+/// See https://developers.google.com/interactive-media-ads/docs/sdks/android/client-side/api/reference/kotlin/com/google/ads/interactivemedia/v3/api/FriendlyObstruction.
+class FriendlyObstruction extends PigeonInternalProxyApiBaseClass {
+  /// Constructs [FriendlyObstruction] without creating the associated native object.
+  ///
+  /// This should only be used by subclasses created by this library or to
+  /// create copies for an [PigeonInstanceManager].
+  @protected
+  FriendlyObstruction.pigeon_detached({
+    super.pigeon_binaryMessenger,
+    super.pigeon_instanceManager,
+    this.detailedReason,
+    required this.purpose,
+    required this.view,
+  });
+
+  /// The optional, detailed reasoning for registering this obstruction as
+  /// friendly.
+  final String? detailedReason;
+
+  /// the purpose for registering the obstruction as friendly.
+  final FriendlyObstructionPurpose purpose;
+
+  /// The view causing the obstruction.
+  final View view;
+
+  static void pigeon_setUpMessageHandlers({
+    bool pigeon_clearHandlers = false,
+    BinaryMessenger? pigeon_binaryMessenger,
+    PigeonInstanceManager? pigeon_instanceManager,
+    FriendlyObstruction Function(
+      String? detailedReason,
+      FriendlyObstructionPurpose purpose,
+      View view,
+    )? pigeon_newInstance,
+  }) {
+    final _PigeonInternalProxyApiBaseCodec pigeonChannelCodec =
+        _PigeonInternalProxyApiBaseCodec(
+            pigeon_instanceManager ?? PigeonInstanceManager.instance);
+    final BinaryMessenger? binaryMessenger = pigeon_binaryMessenger;
+    {
+      final BasicMessageChannel<
+          Object?> pigeonVar_channel = BasicMessageChannel<
+              Object?>(
+          'dev.flutter.pigeon.interactive_media_ads.FriendlyObstruction.pigeon_newInstance',
+          pigeonChannelCodec,
+          binaryMessenger: binaryMessenger);
+      if (pigeon_clearHandlers) {
+        pigeonVar_channel.setMessageHandler(null);
+      } else {
+        pigeonVar_channel.setMessageHandler((Object? message) async {
+          assert(message != null,
+              'Argument for dev.flutter.pigeon.interactive_media_ads.FriendlyObstruction.pigeon_newInstance was null.');
+          final List<Object?> args = (message as List<Object?>?)!;
+          final int? arg_pigeon_instanceIdentifier = (args[0] as int?);
+          assert(arg_pigeon_instanceIdentifier != null,
+              'Argument for dev.flutter.pigeon.interactive_media_ads.FriendlyObstruction.pigeon_newInstance was null, expected non-null int.');
+          final String? arg_detailedReason = (args[1] as String?);
+          final FriendlyObstructionPurpose? arg_purpose =
+              (args[2] as FriendlyObstructionPurpose?);
+          assert(arg_purpose != null,
+              'Argument for dev.flutter.pigeon.interactive_media_ads.FriendlyObstruction.pigeon_newInstance was null, expected non-null FriendlyObstructionPurpose.');
+          final View? arg_view = (args[3] as View?);
+          assert(arg_view != null,
+              'Argument for dev.flutter.pigeon.interactive_media_ads.FriendlyObstruction.pigeon_newInstance was null, expected non-null View.');
+          try {
+            (pigeon_instanceManager ?? PigeonInstanceManager.instance)
+                .addHostCreatedInstance(
+              pigeon_newInstance?.call(
+                      arg_detailedReason, arg_purpose!, arg_view!) ??
+                  FriendlyObstruction.pigeon_detached(
+                    pigeon_binaryMessenger: pigeon_binaryMessenger,
+                    pigeon_instanceManager: pigeon_instanceManager,
+                    detailedReason: arg_detailedReason,
+                    purpose: arg_purpose!,
+                    view: arg_view!,
+                  ),
+              arg_pigeon_instanceIdentifier!,
+            );
+            return wrapResponse(empty: true);
+          } on PlatformException catch (e) {
+            return wrapResponse(error: e);
+          } catch (e) {
+            return wrapResponse(
+                error: PlatformException(code: 'error', message: e.toString()));
+          }
+        });
+      }
+    }
+  }
+
+  @override
+  FriendlyObstruction pigeon_copy() {
+    return FriendlyObstruction.pigeon_detached(
+      pigeon_binaryMessenger: pigeon_binaryMessenger,
+      pigeon_instanceManager: pigeon_instanceManager,
+      detailedReason: detailedReason,
+      purpose: purpose,
+      view: view,
     );
   }
 }
