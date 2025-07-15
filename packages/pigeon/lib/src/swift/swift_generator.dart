@@ -1381,23 +1381,49 @@ if (wrapped == nil) {
         final StringBuffer testFileBuffer = StringBuffer();
         final Indent testFileIndent = Indent(testFileBuffer);
 
-        late final String testSuffix;
-        if (testOutputDirectory
-            .listSync(followLinks: false)
-            .whereType<File>()
-            .any((File file) => file.path.endsWith('ProxyAPITests.swift'))) {
-          testSuffix = 'ProxyAPITests.swift';
-        } else {
-          testSuffix = 'Tests.swift';
-        }
+        const List<String> possibleSuffixes = <String>[
+          'ProxyAPITests.swift',
+          'ProxyApiTests.swift',
+          'Tests.swift',
+        ];
 
-        final File testFile = File(
-          path.join(
-            testOutputDirectory.path,
-            '${apiNameWithoutPrefix(api)}$testSuffix',
-          ),
+        File? testFile = testOutputDirectory
+            .listSync(recursive: true, followLinks: false)
+            .whereType<File>()
+            .firstWhereOrNull(
+          (File file) {
+            return possibleSuffixes.any(
+              (String suffix) {
+                return file.path ==
+                    path.join(
+                      testOutputDirectory!.path,
+                      '${apiNameWithoutPrefix(api)}$suffix',
+                    );
+              },
+            );
+          },
         );
-        if (!testFile.existsSync()) {
+
+        if (testFile == null) {
+          late final String testSuffix;
+          if (testOutputDirectory
+              .listSync(recursive: true, followLinks: false)
+              .whereType<File>()
+              .any((File file) {
+            return file.path.endsWith('ProxyAPITests.swift');
+          })) {
+            testSuffix = 'ProxyAPITests.swift';
+          } else {
+            testSuffix = 'Tests.swift';
+          }
+
+          testFile = File(
+            path.join(
+              testOutputDirectory.path,
+              '${apiNameWithoutPrefix(api)}$testSuffix',
+            ),
+          );
+
           print('Creating file: ${testFile.path}');
           _writeProxyApiTest(
             testFileIndent,
