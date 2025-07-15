@@ -1209,7 +1209,7 @@ if (wrapped == null) {
 
         late final String testSuffix;
         if (Directory('android/src/test/java/')
-            .listSync(followLinks: false)
+            .listSync(recursive: true, followLinks: false)
             .whereType<File>()
             .any((File file) => file.path.endsWith('ProxyApiTest.java'))) {
           testSuffix = 'ProxyApiTest.java';
@@ -1248,7 +1248,7 @@ if (wrapped == null) {
 
         late final String testSuffix;
         if (Directory('android/src/test/kotlin/')
-            .listSync(followLinks: false)
+            .listSync(recursive: true, followLinks: false)
             .whereType<File>()
             .any((File file) => file.path.endsWith('ProxyApiTest.kt'))) {
           testSuffix = 'ProxyApiTest.kt';
