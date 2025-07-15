@@ -3109,7 +3109,7 @@ func deepHash${generatorOptions.fileSpecificClassNameComponent}(value: Any?, has
                 method.name.startsWith('set')) {
               final String nameWithoutSet = method.name.substring(3);
               methodSig =
-                  '${nameWithoutSet.replaceFirst(nameWithoutSet[0], nameWithoutSet[0].toLowerCase())} = ${_getParameterNames(method.parameters).split(':').single}';
+                  '${nameWithoutSet.replaceFirst(nameWithoutSet[0], nameWithoutSet[0].toLowerCase())} = ${_getParameterNames(method.parameters).split(':').first}';
             } else {
               methodSig =
                   '${method.name}(${_getParameterNames(method.parameters)})';
