@@ -1,3 +1,15 @@
+## 2.8.14
+
+* Restructures internal logic for player creation and tracking.
+
+## 2.8.13
+
+* Bumps com.android.tools.build:gradle to 8.12.1.
+
+## 2.8.12
+
+* Moves buffer position update event generation to Dart.
+
 ## 2.8.11
 
 * Updates kotlin version to 2.2.0 to enable gradle 8.11 support.

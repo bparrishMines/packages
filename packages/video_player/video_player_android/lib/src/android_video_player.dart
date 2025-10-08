@@ -1,4 +1,4 @@
-// Copyright 2013 The Flutter Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,12 @@ import 'package:video_player_platform_interface/video_player_platform_interface.
 
 import 'messages.g.dart';
 import 'platform_view_player.dart';
+
+/// The string to append a player ID to in order to construct the event channel
+/// name for the event channel used to receive player state updates.
+///
+/// Must match the string used to create the EventChannel on the Java side.
+const String _videoEventChannelNameBase = 'flutter.io/videoPlayer/videoEvents';
 
 /// The non-test implementation of `_apiProvider`.
 VideoPlayerInstanceApi _productionApiProvider(int playerId) {
@@ -23,22 +29,16 @@ class AndroidVideoPlayer extends VideoPlayerPlatform {
   AndroidVideoPlayer({
     @visibleForTesting AndroidVideoPlayerApi? pluginApi,
     @visibleForTesting
-    VideoPlayerInstanceApi Function(int playerId)? playerProvider,
+    VideoPlayerInstanceApi Function(int playerId)? playerApiProvider,
   }) : _api = pluginApi ?? AndroidVideoPlayerApi(),
-       _playerProvider = playerProvider ?? _productionApiProvider;
+       _playerApiProvider = playerApiProvider ?? _productionApiProvider;
 
   final AndroidVideoPlayerApi _api;
   // A method to create VideoPlayerInstanceApi instances, which can be
   //overridden for testing.
-  final VideoPlayerInstanceApi Function(int playerId) _playerProvider;
+  final VideoPlayerInstanceApi Function(int playerId) _playerApiProvider;
 
-  /// A map that associates player ID with a view state.
-  /// This is used to determine which view type to use when building a view.
-  final Map<int, _VideoPlayerViewState> _playerViewStates =
-      <int, _VideoPlayerViewState>{};
-
-  final Map<int, VideoPlayerInstanceApi> _players =
-      <int, VideoPlayerInstanceApi>{};
+  final Map<int, _PlayerInstance> _players = <int, _PlayerInstance>{};
 
   /// Registers this class as the default instance of [PathProviderPlatform].
   static void registerWith() {
@@ -52,9 +52,9 @@ class AndroidVideoPlayer extends VideoPlayerPlatform {
 
   @override
   Future<void> dispose(int playerId) async {
+    final _PlayerInstance? player = _players.remove(playerId);
     await _api.dispose(playerId);
-    _playerViewStates.remove(playerId);
-    _players.remove(playerId);
+    await player?.dispose();
   }
 
   @override
@@ -100,23 +100,27 @@ class AndroidVideoPlayer extends VideoPlayerPlatform {
     if (uri == null) {
       throw ArgumentError('Unable to construct a video asset from $options');
     }
-    final CreateMessage message = CreateMessage(
+    final CreationOptions pigeonCreationOptions = CreationOptions(
       uri: uri,
       httpHeaders: httpHeaders,
       userAgent: userAgent,
       formatHint: formatHint,
-      viewType: _platformVideoViewTypeFromVideoViewType(options.viewType),
     );
 
-    final int playerId = await _api.create(message);
-    _playerViewStates[playerId] = switch (options.viewType) {
-      // playerId is also the textureId when using texture view.
-      VideoViewType.textureView => _VideoPlayerTextureViewState(
-        textureId: playerId,
-      ),
-      VideoViewType.platformView => const _VideoPlayerPlatformViewState(),
-    };
-    ensureApiInitialized(playerId);
+    final int playerId;
+    final VideoPlayerViewState state;
+    switch (options.viewType) {
+      case VideoViewType.textureView:
+        final TexturePlayerIds ids = await _api.createForTextureView(
+          pigeonCreationOptions,
+        );
+        playerId = ids.playerId;
+        state = VideoPlayerTextureViewState(textureId: ids.textureId);
+      case VideoViewType.platformView:
+        playerId = await _api.createForPlatformView(pigeonCreationOptions);
+        state = const VideoPlayerPlatformViewState();
+    }
+    ensurePlayerInitialized(playerId, state);
 
     return playerId;
   }
@@ -134,12 +138,17 @@ class AndroidVideoPlayer extends VideoPlayerPlatform {
     return httpHeaders[userAgentKey] ?? defaultUserAgent;
   }
 
-  /// Returns the API instance for [playerId], creating it if it doesn't already
-  /// exist.
+  /// Returns the player instance for [playerId], creating it if it doesn't
+  /// already exist.
   @visibleForTesting
-  VideoPlayerInstanceApi ensureApiInitialized(int playerId) {
-    return _players.putIfAbsent(playerId, () {
-      return _playerProvider(playerId);
+  void ensurePlayerInitialized(int playerId, VideoPlayerViewState viewState) {
+    _players.putIfAbsent(playerId, () {
+      final String eventChannelName = '$_videoEventChannelNameBase$playerId';
+      return _PlayerInstance(
+        _playerApiProvider(playerId),
+        viewState,
+        eventChannelName: eventChannelName,
+      );
     });
   }
 
@@ -172,52 +181,17 @@ class AndroidVideoPlayer extends VideoPlayerPlatform {
 
   @override
   Future<void> seekTo(int playerId, Duration position) {
-    return _playerWith(id: playerId).seekTo(position.inMilliseconds);
+    return _playerWith(id: playerId).seekTo(position);
   }
 
   @override
   Future<Duration> getPosition(int playerId) async {
-    final int position = await _playerWith(id: playerId).getPosition();
-    return Duration(milliseconds: position);
+    return _playerWith(id: playerId).getPosition();
   }
 
   @override
   Stream<VideoEvent> videoEventsFor(int playerId) {
-    return _eventChannelFor(playerId).receiveBroadcastStream().map((
-      dynamic event,
-    ) {
-      final Map<dynamic, dynamic> map = event as Map<dynamic, dynamic>;
-      return switch (map['event']) {
-        'initialized' => VideoEvent(
-          eventType: VideoEventType.initialized,
-          duration: Duration(milliseconds: map['duration'] as int),
-          size: Size(
-            (map['width'] as num?)?.toDouble() ?? 0.0,
-            (map['height'] as num?)?.toDouble() ?? 0.0,
-          ),
-          rotationCorrection: map['rotationCorrection'] as int? ?? 0,
-        ),
-        'completed' => VideoEvent(eventType: VideoEventType.completed),
-        'bufferingUpdate' => VideoEvent(
-          eventType: VideoEventType.bufferingUpdate,
-          buffered: <DurationRange>[
-            DurationRange(
-              Duration.zero,
-              Duration(milliseconds: map['position'] as int),
-            ),
-          ],
-        ),
-        'bufferingStart' => VideoEvent(
-          eventType: VideoEventType.bufferingStart,
-        ),
-        'bufferingEnd' => VideoEvent(eventType: VideoEventType.bufferingEnd),
-        'isPlayingStateUpdate' => VideoEvent(
-          eventType: VideoEventType.isPlayingStateUpdate,
-          isPlaying: map['isPlaying'] as bool,
-        ),
-        _ => VideoEvent(eventType: VideoEventType.unknown),
-      };
-    });
+    return _playerWith(id: playerId).videoEvents();
   }
 
   @override
@@ -228,17 +202,13 @@ class AndroidVideoPlayer extends VideoPlayerPlatform {
   @override
   Widget buildViewWithOptions(VideoViewOptions options) {
     final int playerId = options.playerId;
-    final _VideoPlayerViewState? viewState = _playerViewStates[playerId];
+    final VideoPlayerViewState viewState = _playerWith(id: playerId).viewState;
 
     return switch (viewState) {
-      _VideoPlayerTextureViewState(:final int textureId) => Texture(
+      VideoPlayerTextureViewState(:final int textureId) => Texture(
         textureId: textureId,
       ),
-      _VideoPlayerPlatformViewState() => PlatformViewPlayer(playerId: playerId),
-      null =>
-        throw Exception(
-          'Could not find corresponding view type for playerId: $playerId',
-        ),
+      VideoPlayerPlatformViewState() => PlatformViewPlayer(playerId: playerId),
     };
   }
 
@@ -247,12 +217,8 @@ class AndroidVideoPlayer extends VideoPlayerPlatform {
     return _api.setMixWithOthers(mixWithOthers);
   }
 
-  EventChannel _eventChannelFor(int playerId) {
-    return EventChannel('flutter.io/videoPlayer/videoEvents$playerId');
-  }
-
-  VideoPlayerInstanceApi _playerWith({required int id}) {
-    final VideoPlayerInstanceApi? player = _players[id];
+  _PlayerInstance _playerWith({required int id}) {
+    final _PlayerInstance? player = _players[id];
     return player ?? (throw StateError('No active player with ID $id.'));
   }
 
@@ -271,32 +237,150 @@ class AndroidVideoPlayer extends VideoPlayerPlatform {
   }
 }
 
-PlatformVideoViewType _platformVideoViewTypeFromVideoViewType(
-  VideoViewType viewType,
-) {
-  return switch (viewType) {
-    VideoViewType.textureView => PlatformVideoViewType.textureView,
-    VideoViewType.platformView => PlatformVideoViewType.platformView,
-  };
+/// An instance of a video player, corresponding to a single player ID in
+/// [AndroidVideoPlayer].
+class _PlayerInstance {
+  /// Creates a new instance of [_PlayerInstance] corresponding to the given
+  /// API instance.
+  _PlayerInstance(
+    this._api,
+    this.viewState, {
+    required String eventChannelName,
+  }) {
+    _eventChannel = EventChannel(eventChannelName);
+    _eventSubscription = _eventChannel.receiveBroadcastStream().listen(
+      _onStreamEvent,
+      onError: (Object e) {
+        _eventStreamController.addError(e);
+      },
+    );
+  }
+
+  final VideoPlayerInstanceApi _api;
+  late final EventChannel _eventChannel;
+  final StreamController<VideoEvent> _eventStreamController =
+      StreamController<VideoEvent>();
+  late final StreamSubscription<dynamic> _eventSubscription;
+  int _lastBufferPosition = -1;
+
+  final VideoPlayerViewState viewState;
+
+  Future<void> setLooping(bool looping) {
+    return _api.setLooping(looping);
+  }
+
+  Future<void> play() {
+    return _api.play();
+  }
+
+  Future<void> pause() {
+    return _api.pause();
+  }
+
+  Future<void> setVolume(double volume) {
+    return _api.setVolume(volume);
+  }
+
+  Future<void> setPlaybackSpeed(double speed) {
+    return _api.setPlaybackSpeed(speed);
+  }
+
+  Future<void> seekTo(Duration position) {
+    return _api.seekTo(position.inMilliseconds);
+  }
+
+  Future<Duration> getPosition() async {
+    final PlaybackState state = await _api.getPlaybackState();
+    // TODO(stuartmorgan): Move this logic. This is a workaround for the fact
+    //  that ExoPlayer doesn't have any way to observe buffer position
+    //  changes, so polling is required. To minimize platform channel overhead,
+    //  that's combined with getting the position, but this relies on the fact
+    //  that the app-facing package polls getPosition frequently, which makes
+    //  this fragile (for instance, as of writing, this won't be called while
+    //  the video is paused). It should instead be called on its own timer,
+    //  independent of higher-level package logic.
+    _updateBufferingState(state.bufferPosition);
+    return Duration(milliseconds: state.playPosition);
+  }
+
+  Stream<VideoEvent> videoEvents() {
+    return _eventStreamController.stream;
+  }
+
+  Future<void> dispose() async {
+    await _eventSubscription.cancel();
+  }
+
+  /// Sends a buffering update if the buffer position has changed since the
+  /// last check.
+  void _updateBufferingState(int bufferPosition) {
+    if (bufferPosition != _lastBufferPosition) {
+      _lastBufferPosition = bufferPosition;
+      _eventStreamController.add(
+        VideoEvent(
+          eventType: VideoEventType.bufferingUpdate,
+          buffered: _bufferRangeForPosition(bufferPosition),
+        ),
+      );
+    }
+  }
+
+  void _onStreamEvent(dynamic event) {
+    final Map<dynamic, dynamic> map = event as Map<dynamic, dynamic>;
+    _eventStreamController.add(switch (map['event']) {
+      'initialized' => VideoEvent(
+        eventType: VideoEventType.initialized,
+        duration: Duration(milliseconds: map['duration'] as int),
+        size: Size(
+          (map['width'] as num?)?.toDouble() ?? 0.0,
+          (map['height'] as num?)?.toDouble() ?? 0.0,
+        ),
+        rotationCorrection: map['rotationCorrection'] as int? ?? 0,
+      ),
+      'completed' => VideoEvent(eventType: VideoEventType.completed),
+      'bufferingUpdate' => VideoEvent(
+        eventType: VideoEventType.bufferingUpdate,
+        buffered: _bufferRangeForPosition(map['position'] as int),
+      ),
+      'bufferingStart' => VideoEvent(eventType: VideoEventType.bufferingStart),
+      'bufferingEnd' => VideoEvent(eventType: VideoEventType.bufferingEnd),
+      'isPlayingStateUpdate' => VideoEvent(
+        eventType: VideoEventType.isPlayingStateUpdate,
+        isPlaying: map['isPlaying'] as bool,
+      ),
+      _ => VideoEvent(eventType: VideoEventType.unknown),
+    });
+  }
+
+  // Turns a single buffer position, which is what ExoPlayer reports, into the
+  // DurationRange array expected by [VideoEventType.bufferingUpdate].
+  List<DurationRange> _bufferRangeForPosition(int milliseconds) {
+    return <DurationRange>[
+      DurationRange(Duration.zero, Duration(milliseconds: milliseconds)),
+    ];
+  }
 }
 
 /// Base class representing the state of a video player view.
+@visibleForTesting
 @immutable
-sealed class _VideoPlayerViewState {
-  const _VideoPlayerViewState();
+sealed class VideoPlayerViewState {
+  const VideoPlayerViewState();
 }
 
 /// Represents the state of a video player view that uses a texture.
-final class _VideoPlayerTextureViewState extends _VideoPlayerViewState {
-  /// Creates a new instance of [_VideoPlayerTextureViewState].
-  const _VideoPlayerTextureViewState({required this.textureId});
+@visibleForTesting
+final class VideoPlayerTextureViewState extends VideoPlayerViewState {
+  /// Creates a new instance of [VideoPlayerTextureViewState].
+  const VideoPlayerTextureViewState({required this.textureId});
 
   /// The ID of the texture used by the video player.
   final int textureId;
 }
 
 /// Represents the state of a video player view that uses a platform view.
-final class _VideoPlayerPlatformViewState extends _VideoPlayerViewState {
-  /// Creates a new instance of [_VideoPlayerPlatformViewState].
-  const _VideoPlayerPlatformViewState();
+@visibleForTesting
+final class VideoPlayerPlatformViewState extends VideoPlayerViewState {
+  /// Creates a new instance of [VideoPlayerPlatformViewState].
+  const VideoPlayerPlatformViewState();
 }
