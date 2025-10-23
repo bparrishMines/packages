@@ -1,8 +1,4 @@
-
-import 'dofp_camera_example_platform_interface.dart';
-
-class DofpCameraExample {
-  Future<String?> getPlatformVersion() {
-    return DofpCameraExamplePlatform.instance.getPlatformVersion();
-  }
-}
+export 'src/camera.dart';
+export 'src/camera_device.dart';
+export 'src/camera_session.dart';
+export 'src/platform_interace/camera_facing.dart';
