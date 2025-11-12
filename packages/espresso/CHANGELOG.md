@@ -1,3 +1,15 @@
+## NEXT
+
+* Updates minimum supported SDK version to Flutter 3.32/Dart 3.8.
+
+## 0.4.0+18
+
+*  Bumps `com.squareup.okhttp3:okhttp` from 5.1.0 to 5.3.0.
+
+## 0.4.0+17
+
+* Resolves Gradle 9 deprecations.
+
 ## 0.4.0+16
 
 * Bumps `com.google.guava:guava` from `33.4.8-android` to `33.5.0-android`.

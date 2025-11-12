@@ -268,8 +268,10 @@ class SwiftGenerator extends StructuredGenerator<InternalSwiftOptions> {
     final String readerName = '${codecName}Reader';
     final String writerName = '${codecName}Writer';
 
-    final List<EnumeratedType> enumeratedTypes =
-        getEnumeratedTypes(root, excludeSealedClasses: true).toList();
+    final List<EnumeratedType> enumeratedTypes = getEnumeratedTypes(
+      root,
+      excludeSealedClasses: true,
+    ).toList();
 
     void writeDecodeLogic(EnumeratedType customType) {
       indent.writeln('case ${customType.enumeration}:');
@@ -352,16 +354,16 @@ class SwiftGenerator extends StructuredGenerator<InternalSwiftOptions> {
             indent.addScoped('{', '} else ', () {
               final String encodeString =
                   customType.type == CustomTypes.customClass
-                      ? 'toList()'
-                      : 'rawValue';
+                  ? 'toList()'
+                  : 'rawValue';
               final String valueString =
                   customType.enumeration < maximumCodecFieldKey
-                      ? 'value.$encodeString'
-                      : 'wrap.toList()';
+                  ? 'value.$encodeString'
+                  : 'wrap.toList()';
               final int enumeration =
                   customType.enumeration < maximumCodecFieldKey
-                      ? customType.enumeration
-                      : maximumCodecFieldKey;
+                  ? customType.enumeration
+                  : maximumCodecFieldKey;
               if (customType.enumeration >= maximumCodecFieldKey) {
                 indent.writeln(
                   'let wrap = $_overflowClassName(type: ${customType.enumeration - maximumCodecFieldKey}, wrapped: value.$encodeString)',
@@ -425,12 +427,11 @@ class SwiftGenerator extends StructuredGenerator<InternalSwiftOptions> {
     bool hashable = true,
   }) {
     final String privateString = private ? 'private ' : '';
-    final String extendsString =
-        classDefinition.superClass != null
-            ? ': ${classDefinition.superClass!.name}'
-            : hashable
-            ? ': Hashable'
-            : '';
+    final String extendsString = classDefinition.superClass != null
+        ? ': ${classDefinition.superClass!.name}'
+        : hashable
+        ? ': Hashable'
+        : '';
     if (classDefinition.isSwiftClass) {
       indent.write(
         '${privateString}class ${classDefinition.name}$extendsString ',
@@ -726,18 +727,18 @@ if (wrapped == nil) {
         )) {
           final String comma =
               getFieldsInSerializationOrder(classDefinition).last == field
-                  ? ''
-                  : ',';
+              ? ''
+              : ',';
           // Force-casting nullable enums in maps doesn't work the same as other types.
           // It needs soft-casting followed by force unwrapping.
           final String forceUnwrapMapWithNullableEnums =
               (field.type.baseName == 'Map' &&
-                      !field.type.isNullable &&
-                      field.type.typeArguments.any(
-                        (TypeDeclaration type) => type.isEnum,
-                      ))
-                  ? '!'
-                  : '';
+                  !field.type.isNullable &&
+                  field.type.typeArguments.any(
+                    (TypeDeclaration type) => type.isEnum,
+                  ))
+              ? '!'
+              : '';
           indent.writeln(
             '${field.name}: ${field.name}$forceUnwrapMapWithNullableEnums$comma',
           );
@@ -947,8 +948,8 @@ if (wrapped == nil) {
             documentationComments: method.documentationComments,
             serialBackgroundQueue:
                 method.taskQueueType == TaskQueueType.serialBackgroundThread
-                    ? serialBackgroundQueue
-                    : null,
+                ? serialBackgroundQueue
+                : null,
           );
         }
       });
@@ -1030,12 +1031,10 @@ if (wrapped == nil) {
             swiftFunction: 'method(withIdentifier:)',
             setHandlerCondition: setHandlerCondition,
             isAsynchronous: false,
-            onCreateCall: (
-              List<String> safeArgNames, {
-              required String apiVarName,
-            }) {
-              return 'let _: AnyObject? = try instanceManager.removeInstance(${safeArgNames.single})';
-            },
+            onCreateCall:
+                (List<String> safeArgNames, {required String apiVarName}) {
+                  return 'let _: AnyObject? = try instanceManager.removeInstance(${safeArgNames.single})';
+                },
           );
           _writeHostMethodMessageHandler(
             indent,
@@ -1046,12 +1045,10 @@ if (wrapped == nil) {
             setHandlerCondition: setHandlerCondition,
             swiftFunction: null,
             isAsynchronous: false,
-            onCreateCall: (
-              List<String> safeArgNames, {
-              required String apiVarName,
-            }) {
-              return 'try instanceManager.removeAllObjects()';
-            },
+            onCreateCall:
+                (List<String> safeArgNames, {required String apiVarName}) {
+                  return 'try instanceManager.removeAllObjects()';
+                },
           );
         },
       );
@@ -1083,8 +1080,8 @@ if (wrapped == nil) {
     Root root,
     Indent indent,
   ) {
-    final Iterable<AstProxyApi> allProxyApis =
-        root.apis.whereType<AstProxyApi>();
+    final Iterable<AstProxyApi> allProxyApis = root.apis
+        .whereType<AstProxyApi>();
 
     _writeProxyApiRegistrar(
       indent,
@@ -1294,8 +1291,9 @@ if (wrapped == nil) {
 
     final String swiftApiDelegateName =
         '${hostProxyApiPrefix}Delegate${api.name}';
-    final String type =
-        api.hasMethodsRequiringImplementation() ? 'protocol' : 'open class';
+    final String type = api.hasMethodsRequiringImplementation()
+        ? 'protocol'
+        : 'open class';
     indent.writeScoped('$type $swiftApiDelegateName {', '}', () {
       _writeProxyApiConstructorDelegateMethods(
         indent,
@@ -1836,10 +1834,9 @@ func deepHash${generatorOptions.fileSpecificClassNameComponent}(value: Any?, has
       (MapEntry<int, NamedType> e) =>
           getEnumSafeArgumentExpression(e.key, e.value),
     );
-    final String sendArgument =
-        parameters.isEmpty
-            ? 'nil'
-            : '[${enumSafeArgNames.join(', ')}] as [Any?]';
+    final String sendArgument = parameters.isEmpty
+        ? 'nil'
+        : '[${enumSafeArgNames.join(', ')}] as [Any?]';
     const String channel = 'channel';
     indent.writeln('let channelName: String = "$channelName"');
     indent.writeln(
@@ -1888,11 +1885,11 @@ func deepHash${generatorOptions.fileSpecificClassNameComponent}(value: Any?, has
           // There is a swift bug with unwrapping maps of nullable Enums;
           final String enumMapForceUnwrap =
               returnType.baseName == 'Map' &&
-                      returnType.typeArguments.any(
-                        (TypeDeclaration type) => type.isEnum,
-                      )
-                  ? '!'
-                  : '';
+                  returnType.typeArguments.any(
+                    (TypeDeclaration type) => type.isEnum,
+                  )
+              ? '!'
+              : '';
           indent.writeln('completion(.success(result$enumMapForceUnwrap))');
         }
       });
@@ -1965,11 +1962,11 @@ func deepHash${generatorOptions.fileSpecificClassNameComponent}(value: Any?, has
             // There is a swift bug with unwrapping maps of nullable Enums;
             final String enumMapForceUnwrap =
                 arg.type.baseName == 'Map' &&
-                        arg.type.typeArguments.any(
-                          (TypeDeclaration type) => type.isEnum,
-                        )
-                    ? '!'
-                    : '';
+                    arg.type.typeArguments.any(
+                      (TypeDeclaration type) => type.isEnum,
+                    )
+                ? '!'
+                : '';
 
             _writeGenericCasting(
               indent: indent,
@@ -1993,18 +1990,18 @@ func deepHash${generatorOptions.fileSpecificClassNameComponent}(value: Any?, has
         if (onCreateCall == null) {
           // Empty parens are not required when calling a method whose only
           // argument is a trailing closure.
-          final String argumentString =
-              methodArgument.isEmpty && isAsynchronous
-                  ? ''
-                  : '(${methodArgument.join(', ')})';
+          final String argumentString = methodArgument.isEmpty && isAsynchronous
+              ? ''
+              : '(${methodArgument.join(', ')})';
           call = '${tryStatement}api.${components.name}$argumentString';
         } else {
           call = onCreateCall(methodArgument, apiVarName: 'api');
         }
         if (isAsynchronous) {
           final String resultName = returnType.isVoid ? 'nil' : 'res';
-          final String successVariableInit =
-              returnType.isVoid ? '' : '(let res)';
+          final String successVariableInit = returnType.isVoid
+              ? ''
+              : '(let res)';
           indent.write('$call ');
 
           indent.addScoped('{ result in', '}', () {
@@ -2202,10 +2199,9 @@ func deepHash${generatorOptions.fileSpecificClassNameComponent}(value: Any?, has
       }
 
       final String methodSignature = _getMethodSignature(
-        name:
-            constructor.name.isNotEmpty
-                ? constructor.name
-                : 'pigeonDefaultConstructor',
+        name: constructor.name.isNotEmpty
+            ? constructor.name
+            : 'pigeonDefaultConstructor',
         parameters: <Parameter>[
           Parameter(
             name: 'pigeonApi',
@@ -2495,16 +2491,14 @@ func deepHash${generatorOptions.fileSpecificClassNameComponent}(value: Any?, has
         }
 
         for (final Constructor constructor in api.constructors) {
-          final String name =
-              constructor.name.isNotEmpty
-                  ? constructor.name
-                  : 'pigeonDefaultConstructor';
+          final String name = constructor.name.isNotEmpty
+              ? constructor.name
+              : 'pigeonDefaultConstructor';
           final String channelName = makeChannelNameWithStrings(
             apiName: api.name,
-            methodName:
-                constructor.name.isNotEmpty
-                    ? constructor.name
-                    : '${classMemberNamePrefix}defaultConstructor',
+            methodName: constructor.name.isNotEmpty
+                ? constructor.name
+                : '${classMemberNamePrefix}defaultConstructor',
             dartPackageName: dartPackageName,
           );
           writeWithApiCheckIfNecessary(
@@ -2523,19 +2517,20 @@ func deepHash${generatorOptions.fileSpecificClassNameComponent}(value: Any?, has
                 returnType: const TypeDeclaration.voidDeclaration(),
                 swiftFunction: null,
                 isAsynchronous: false,
-                onCreateCall: (
-                  List<String> methodParameters, {
-                  required String apiVarName,
-                }) {
-                  final List<String> parameters = <String>[
-                    'pigeonApi: $apiVarName',
-                    // Skip the identifier used by the InstanceManager.
-                    ...methodParameters.skip(1),
-                  ];
-                  return '$apiVarName.pigeonRegistrar.instanceManager.addDartCreatedInstance(\n'
-                      'try $apiVarName.pigeonDelegate.$name(${parameters.join(', ')}),\n'
-                      'withIdentifier: pigeonIdentifierArg)';
-                },
+                onCreateCall:
+                    (
+                      List<String> methodParameters, {
+                      required String apiVarName,
+                    }) {
+                      final List<String> parameters = <String>[
+                        'pigeonApi: $apiVarName',
+                        // Skip the identifier used by the InstanceManager.
+                        ...methodParameters.skip(1),
+                      ];
+                      return '$apiVarName.pigeonRegistrar.instanceManager.addDartCreatedInstance(\n'
+                          'try $apiVarName.pigeonDelegate.$name(${parameters.join(', ')}),\n'
+                          'withIdentifier: pigeonIdentifierArg)';
+                    },
                 parameters: <Parameter>[
                   Parameter(
                     name: 'pigeonIdentifier',
@@ -2572,18 +2567,18 @@ func deepHash${generatorOptions.fileSpecificClassNameComponent}(value: Any?, has
                 swiftFunction: null,
                 isAsynchronous: false,
                 returnType: const TypeDeclaration.voidDeclaration(),
-                onCreateCall: (
-                  List<String> methodParameters, {
-                  required String apiVarName,
-                }) {
-                  final String instanceArg =
-                      field.isStatic
+                onCreateCall:
+                    (
+                      List<String> methodParameters, {
+                      required String apiVarName,
+                    }) {
+                      final String instanceArg = field.isStatic
                           ? ''
                           : ', pigeonInstance: pigeonInstanceArg';
-                  return '$apiVarName.pigeonRegistrar.instanceManager.addDartCreatedInstance('
-                      'try $apiVarName.pigeonDelegate.${field.name}(pigeonApi: api$instanceArg), '
-                      'withIdentifier: pigeonIdentifierArg)';
-                },
+                      return '$apiVarName.pigeonRegistrar.instanceManager.addDartCreatedInstance('
+                          'try $apiVarName.pigeonDelegate.${field.name}(pigeonApi: api$instanceArg), '
+                          'withIdentifier: pigeonIdentifierArg)';
+                    },
                 parameters: <Parameter>[
                   if (!field.isStatic)
                     Parameter(
@@ -2625,20 +2620,22 @@ func deepHash${generatorOptions.fileSpecificClassNameComponent}(value: Any?, has
                 returnType: method.returnType,
                 isAsynchronous: method.isAsynchronous,
                 swiftFunction: null,
-                onCreateCall: (
-                  List<String> methodParameters, {
-                  required String apiVarName,
-                }) {
-                  final String tryStatement =
-                      method.isAsynchronous ? '' : 'try ';
-                  final List<String> parameters = <String>[
-                    'pigeonApi: $apiVarName',
-                    // Skip the identifier used by the InstanceManager.
-                    ...methodParameters,
-                  ];
+                onCreateCall:
+                    (
+                      List<String> methodParameters, {
+                      required String apiVarName,
+                    }) {
+                      final String tryStatement = method.isAsynchronous
+                          ? ''
+                          : 'try ';
+                      final List<String> parameters = <String>[
+                        'pigeonApi: $apiVarName',
+                        // Skip the identifier used by the InstanceManager.
+                        ...methodParameters,
+                      ];
 
-                  return '$tryStatement$apiVarName.pigeonDelegate.${method.name}(${parameters.join(', ')})';
-                },
+                      return '$tryStatement$apiVarName.pigeonDelegate.${method.name}(${parameters.join(', ')})';
+                    },
                 parameters: <Parameter>[
                   if (!method.isStatic)
                     Parameter(
@@ -3652,10 +3649,9 @@ String _getSafeArgumentName(int count, NamedType argument) {
 }
 
 String _camelCase(String text) {
-  final String pascal =
-      text.split('_').map((String part) {
-        return part.isEmpty ? '' : part[0].toUpperCase() + part.substring(1);
-      }).join();
+  final String pascal = text.split('_').map((String part) {
+    return part.isEmpty ? '' : part[0].toUpperCase() + part.substring(1);
+  }).join();
   return pascal[0].toLowerCase() + pascal.substring(1);
 }
 
@@ -3752,8 +3748,9 @@ String _getMethodSignature({
     returnType: returnType,
     swiftFunction: swiftFunction,
   );
-  final String returnTypeString =
-      returnType.isVoid ? 'Void' : _nullSafeSwiftTypeForDartType(returnType);
+  final String returnTypeString = returnType.isVoid
+      ? 'Void'
+      : _nullSafeSwiftTypeForDartType(returnType);
 
   final Iterable<String> types = parameters.map(
     (NamedType e) => _nullSafeSwiftTypeForDartType(e.type),
@@ -3826,16 +3823,15 @@ class _SwiftFunctionComponents {
       return _SwiftFunctionComponents._(
         name: name,
         returnType: returnType,
-        arguments:
-            parameters
-                .map(
-                  (NamedType field) => _SwiftFunctionArgument(
-                    name: field.name,
-                    type: field.type,
-                    namedType: field,
-                  ),
-                )
-                .toList(),
+        arguments: parameters
+            .map(
+              (NamedType field) => _SwiftFunctionArgument(
+                name: field.name,
+                type: field.type,
+                namedType: field,
+              ),
+            )
+            .toList(),
       );
     }
 
@@ -3843,27 +3839,23 @@ class _SwiftFunctionComponents {
     final RegExp signatureRegex = RegExp(r'(\w+) *\(' + argsExtractor + r'\)');
     final RegExpMatch match = signatureRegex.firstMatch(swiftFunction)!;
 
-    final Iterable<String> labels =
-        match
-            .groups(
-              List<int>.generate(parameters.length, (int index) => index + 2),
-            )
-            .whereType();
+    final Iterable<String> labels = match
+        .groups(List<int>.generate(parameters.length, (int index) => index + 2))
+        .whereType();
 
     return _SwiftFunctionComponents._(
       name: match.group(1)!,
       returnType: returnType,
-      arguments:
-          map2(
-            parameters,
-            labels,
-            (NamedType field, String label) => _SwiftFunctionArgument(
-              name: field.name,
-              label: label == field.name ? null : label,
-              type: field.type,
-              namedType: field,
-            ),
-          ).toList(),
+      arguments: map2(
+        parameters,
+        labels,
+        (NamedType field, String label) => _SwiftFunctionArgument(
+          name: field.name,
+          label: label == field.name ? null : label,
+          type: field.type,
+          namedType: field,
+        ),
+      ).toList(),
     );
   }
 
