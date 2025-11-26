@@ -1380,8 +1380,9 @@ if (wrapped == nil) {
 
     if (api.hasMethodsRequiringImplementation() ||
         api.flutterMethods.isNotEmpty) {
-      final Directory implOutputDirectory =
-          File(generatorOptions.swiftOut).parent;
+      final Directory implOutputDirectory = File(
+        generatorOptions.swiftOut,
+      ).parent;
       if (implOutputDirectory.existsSync()) {
         final StringBuffer implFileBuffer = StringBuffer();
         final Indent implFileIndent = Indent(implFileBuffer);
@@ -3047,10 +3048,9 @@ func deepHash${generatorOptions.fileSpecificClassNameComponent}(value: Any?, has
         );
 
         for (final Constructor constructor in api.constructors) {
-          final String constructorName =
-              constructor.name.isEmpty
-                  ? 'pigeonDefaultConstructor'
-                  : constructor.name;
+          final String constructorName = constructor.name.isEmpty
+              ? 'pigeonDefaultConstructor'
+              : constructor.name;
 
           final String methodSig = _getMethodSignature(
             name: constructorName,
@@ -3110,14 +3110,16 @@ func deepHash${generatorOptions.fileSpecificClassNameComponent}(value: Any?, has
         }
 
         for (final ApiField field in api.attachedFields) {
-          final String instanceVar =
-              field.isStatic ? '' : ', pigeonInstance: ${api.name}';
+          final String instanceVar = field.isStatic
+              ? ''
+              : ', pigeonInstance: ${api.name}';
           indent.writeScoped(
             'func ${field.name}(pigeonApi: PigeonApi${api.name}$instanceVar): ${_nullSafeSwiftTypeForDartType(field.type)} {',
             '}',
             () {
-              final String fromVar =
-                  field.isStatic ? api.name : 'pigeonInstance';
+              final String fromVar = field.isStatic
+                  ? api.name
+                  : 'pigeonInstance';
               indent.writeln('return $fromVar.${field.name}');
             },
           );
@@ -3144,10 +3146,12 @@ func deepHash${generatorOptions.fileSpecificClassNameComponent}(value: Any?, has
             errorTypeName: _getErrorClassName(generatorOptions),
           );
           indent.writeScoped('$methodSignature {', '}', () {
-            final String maybeReturn =
-                method.returnType.isVoid ? '' : 'return ';
-            final String fromVar =
-                method.isStatic ? api.name : 'pigeonInstance';
+            final String maybeReturn = method.returnType.isVoid
+                ? ''
+                : 'return ';
+            final String fromVar = method.isStatic
+                ? api.name
+                : 'pigeonInstance';
             late final String methodSig;
             if (method.name.length > 3 &&
                 method.parameters.isEmpty &&
@@ -3242,10 +3246,9 @@ func deepHash${generatorOptions.fileSpecificClassNameComponent}(value: Any?, has
       }
 
       for (final Constructor constructor in api.constructors) {
-        final String constructorName =
-            constructor.name.isEmpty
-                ? 'pigeonDefaultConstructor'
-                : constructor.name;
+        final String constructorName = constructor.name.isEmpty
+            ? 'pigeonDefaultConstructor'
+            : constructor.name;
         indent.writeScoped(
           'func test${toUpperCamelCase(constructorName)}() {',
           '}',

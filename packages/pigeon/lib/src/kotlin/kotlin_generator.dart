@@ -1176,11 +1176,12 @@ if (wrapped == null) {
     }) {
       late final String nativeClassName;
       if (api.kotlinOptions?.fullClassName != null) {
-        final List<String> classNameParts = api.kotlinOptions!.fullClassName!
-          .split('.')..removeWhere((String part) {
-          final String firstCharacter = part.split('').first;
-          return firstCharacter == firstCharacter.toLowerCase();
-        });
+        final List<String> classNameParts =
+            api.kotlinOptions!.fullClassName!.split('.')
+              ..removeWhere((String part) {
+                final String firstCharacter = part.split('').first;
+                return firstCharacter == firstCharacter.toLowerCase();
+              });
 
         if (classNameParts.length > 1 || classNameParts.last.endsWith('Impl')) {
           nativeClassName = api.name;
@@ -2595,10 +2596,9 @@ fun deepEquals(a: Any?, b: Any?): Boolean {
         indent.newln();
 
         for (final Constructor constructor in api.constructors) {
-          final String constructorName =
-              constructor.name.isEmpty
-                  ? 'pigeon_defaultConstructor'
-                  : constructor.name;
+          final String constructorName = constructor.name.isEmpty
+              ? 'pigeon_defaultConstructor'
+              : constructor.name;
           final String parameterDecl = getMethodParameterNames(
             constructor.parameters,
           );
@@ -2629,13 +2629,12 @@ fun deepEquals(a: Any?, b: Any?): Boolean {
                       if (member.name == 'unknown') {
                         continue;
                       }
-                      final String memberName =
-                          member.name
-                              .replaceAllMapped(
-                                RegExp(r'(?<=[a-z])[A-Z]'),
-                                (Match m) => '_${m.group(0)}',
-                              )
-                              .toUpperCase();
+                      final String memberName = member.name
+                          .replaceAllMapped(
+                            RegExp(r'(?<=[a-z])[A-Z]'),
+                            (Match m) => '_${m.group(0)}',
+                          )
+                          .toUpperCase();
                       indent.writeln(
                         '${field.type.baseName}.$memberName -> $package.${field.type.baseName}.$memberName',
                       );
@@ -2654,14 +2653,16 @@ fun deepEquals(a: Any?, b: Any?): Boolean {
         }
 
         for (final ApiField field in api.attachedFields) {
-          final String instanceVar =
-              field.isStatic ? '' : 'pigeon_instance: ${api.name}';
+          final String instanceVar = field.isStatic
+              ? ''
+              : 'pigeon_instance: ${api.name}';
           indent.writeScoped(
             'override fun ${field.name}($instanceVar): ${_nullSafeKotlinTypeForDartType(field.type)} {',
             '}',
             () {
-              final String fromVar =
-                  field.isStatic ? api.name : 'pigeon_instance';
+              final String fromVar = field.isStatic
+                  ? api.name
+                  : 'pigeon_instance';
               if (field.type.isEnum) {
                 indent.writeScoped(
                   'return when ($fromVar.${field.name}) {',
@@ -2672,13 +2673,12 @@ fun deepEquals(a: Any?, b: Any?): Boolean {
                       if (member.name == 'unknown') {
                         continue;
                       }
-                      final String memberName =
-                          member.name
-                              .replaceAllMapped(
-                                RegExp(r'(?<=[a-z])[A-Z]'),
-                                (Match m) => '_${m.group(0)}',
-                              )
-                              .toUpperCase();
+                      final String memberName = member.name
+                          .replaceAllMapped(
+                            RegExp(r'(?<=[a-z])[A-Z]'),
+                            (Match m) => '_${m.group(0)}',
+                          )
+                          .toUpperCase();
                       indent.writeln(
                         '${field.type.baseName}.$memberName -> $package.${field.type.baseName}.$memberName',
                       );
@@ -2701,22 +2701,22 @@ fun deepEquals(a: Any?, b: Any?): Boolean {
             method.parameters,
           );
 
-          final String instanceDecl =
-              method.isStatic
-                  ? ''
-                  : 'pigeon_instance: ${api.name}${maybeComma(method.parameters)}';
-          final String returnValue =
-              method.returnType.isVoid
-                  ? ''
-                  : ': ${_nullSafeKotlinTypeForDartType(method.returnType)}';
+          final String instanceDecl = method.isStatic
+              ? ''
+              : 'pigeon_instance: ${api.name}${maybeComma(method.parameters)}';
+          final String returnValue = method.returnType.isVoid
+              ? ''
+              : ': ${_nullSafeKotlinTypeForDartType(method.returnType)}';
           indent.writeScoped(
             'override fun ${method.name}($instanceDecl$parameterDecl)$returnValue {',
             '}',
             () {
-              final String maybeReturn =
-                  method.returnType.isVoid ? '' : 'return ';
-              final String fromVar =
-                  method.isStatic ? api.name : 'pigeon_instance';
+              final String maybeReturn = method.returnType.isVoid
+                  ? ''
+                  : 'return ';
+              final String fromVar = method.isStatic
+                  ? api.name
+                  : 'pigeon_instance';
               indent.writeln(
                 '$maybeReturn$fromVar.${method.name}(${_getParameterNames(method.parameters)})',
               );
@@ -2798,10 +2798,9 @@ fun deepEquals(a: Any?, b: Any?): Boolean {
 
       for (final Constructor constructor in api.constructors) {
         indent.writeln('@Test');
-        final String constructorName =
-            constructor.name.isEmpty
-                ? 'pigeon_defaultConstructor'
-                : constructor.name;
+        final String constructorName = constructor.name.isEmpty
+            ? 'pigeon_defaultConstructor'
+            : constructor.name;
         indent.writeScoped('fun $constructorName() {', '}', () {
           writeApiVar(indent);
 
@@ -3011,10 +3010,9 @@ fun deepEquals(a: Any?, b: Any?): Boolean {
       indent.newln();
 
       for (final Constructor constructor in api.constructors) {
-        final String constructorName =
-            constructor.name.isEmpty
-                ? 'pigeon_defaultConstructor'
-                : constructor.name;
+        final String constructorName = constructor.name.isEmpty
+            ? 'pigeon_defaultConstructor'
+            : constructor.name;
         final String parameterDecl = getMethodParameterNames(<Parameter>[
           ...api.unattachedFields.map((ApiField field) {
             return Parameter(name: field.name, type: field.type);
@@ -3052,13 +3050,12 @@ fun deepEquals(a: Any?, b: Any?): Boolean {
                     if (member.name == 'unknown') {
                       continue;
                     }
-                    final String memberName =
-                        member.name
-                            .replaceAllMapped(
-                              RegExp(r'(?<=[a-z])[A-Z]'),
-                              (Match m) => '_${m.group(0)}',
-                            )
-                            .toUpperCase();
+                    final String memberName = member.name
+                        .replaceAllMapped(
+                          RegExp(r'(?<=[a-z])[A-Z]'),
+                          (Match m) => '_${m.group(0)}',
+                        )
+                        .toUpperCase();
                     indent.writeln(
                       'case ${field.type.baseName}.$memberName: return $package.${field.type.baseName}.$memberName;',
                     );
@@ -3079,16 +3076,18 @@ fun deepEquals(a: Any?, b: Any?): Boolean {
       }
 
       for (final ApiField field in api.attachedFields) {
-        final String instanceVar =
-            field.isStatic ? '' : '${api.name} pigeon_instance';
+        final String instanceVar = field.isStatic
+            ? ''
+            : '${api.name} pigeon_instance';
         indent.writeln('@NonNull');
         indent.writeln('@Override');
         indent.writeScoped(
           'public ${_nullSafeKotlinTypeForDartType(field.type)} ${field.name}($instanceVar) {',
           '}',
           () {
-            final String fromVar =
-                field.isStatic ? api.name : 'pigeon_instance';
+            final String fromVar = field.isStatic
+                ? api.name
+                : 'pigeon_instance';
             indent.writeln(
               'return $fromVar.get${capitalizeName(field.name)}();',
             );
@@ -3100,10 +3099,9 @@ fun deepEquals(a: Any?, b: Any?): Boolean {
       for (final Method method in api.hostMethods) {
         final String parameterDecl = getMethodParameterNames(method.parameters);
 
-        final String instanceDecl =
-            method.isStatic
-                ? ''
-                : '@NonNull ${api.name} pigeon_instance${maybeComma(method.parameters)}';
+        final String instanceDecl = method.isStatic
+            ? ''
+            : '@NonNull ${api.name} pigeon_instance${maybeComma(method.parameters)}';
 
         if (!method.returnType.isVoid) {
           indent.writeln(
@@ -3111,20 +3109,21 @@ fun deepEquals(a: Any?, b: Any?): Boolean {
           );
         }
         indent.writeln('@Override');
-        final String returnType =
-            method.returnType.isVoid
-                ? 'void'
-                : _nullSafeKotlinTypeForDartType(
-                  method.returnType,
-                ).replaceAll('?', '');
+        final String returnType = method.returnType.isVoid
+            ? 'void'
+            : _nullSafeKotlinTypeForDartType(
+                method.returnType,
+              ).replaceAll('?', '');
         indent.writeScoped(
           'public $returnType ${method.name}($instanceDecl$parameterDecl) {',
           '}',
           () {
-            final String maybeReturn =
-                method.returnType.isVoid ? '' : 'return ';
-            final String fromVar =
-                method.isStatic ? api.name : 'pigeon_instance';
+            final String maybeReturn = method.returnType.isVoid
+                ? ''
+                : 'return ';
+            final String fromVar = method.isStatic
+                ? api.name
+                : 'pigeon_instance';
             indent.writeln(
               '$maybeReturn$fromVar.${method.name}(${_getParameterNames(method.parameters)});',
             );
@@ -3209,10 +3208,9 @@ fun deepEquals(a: Any?, b: Any?): Boolean {
 
       for (final Constructor constructor in api.constructors) {
         indent.writeln('@Test');
-        final String constructorName =
-            constructor.name.isEmpty
-                ? 'pigeon_defaultConstructor'
-                : constructor.name;
+        final String constructorName = constructor.name.isEmpty
+            ? 'pigeon_defaultConstructor'
+            : constructor.name;
         indent.writeScoped('public void $constructorName() {', '}', () {
           writeApiVar(indent);
 
