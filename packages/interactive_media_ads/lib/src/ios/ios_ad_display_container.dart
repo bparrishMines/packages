@@ -51,7 +51,7 @@ base class IOSAdDisplayContainer extends PlatformAdDisplayContainer {
   ///
   /// Created with the `UIView` that handles playing an ad.
   @internal
-  late final IMAAdDisplayContainer? adDisplayContainer;
+  IMAAdDisplayContainer? adDisplayContainer;
 
   late final IOSAdDisplayContainerCreationParams _iosParams =
       params is IOSAdDisplayContainerCreationParams
@@ -66,16 +66,18 @@ base class IOSAdDisplayContainer extends PlatformAdDisplayContainer {
       key: _iosParams.key,
       viewType: 'interactive_media_ads.packages.flutter.dev/view',
       onPlatformViewCreated: (_) async {
-        adDisplayContainer = IMAAdDisplayContainer(
-          adContainer: _controller.view,
-          adContainerViewController: _controller,
-          companionSlots: _iosParams.companionSlots
-              .cast<IOSCompanionAdSlot>()
-              .map((IOSCompanionAdSlot slot) => slot.nativeCompanionAdSlot)
-              .toList(),
-        );
-        await _viewDidAppearCompleter.future;
-        params.onContainerAdded(this);
+        if (adDisplayContainer == null) {
+          adDisplayContainer = IMAAdDisplayContainer(
+            adContainer: _controller.view,
+            adContainerViewController: _controller,
+            companionSlots: _iosParams.companionSlots
+                .cast<IOSCompanionAdSlot>()
+                .map((IOSCompanionAdSlot slot) => slot.nativeCompanionAdSlot)
+                .toList(),
+          );
+          await _viewDidAppearCompleter.future;
+          params.onContainerAdded(this);
+        }
       },
       layoutDirection: params.layoutDirection,
       creationParams: PigeonInstanceManager.instance.getIdentifier(
