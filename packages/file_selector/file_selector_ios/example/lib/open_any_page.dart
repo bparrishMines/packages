@@ -18,10 +18,12 @@ class OpenAnyPage extends StatelessWidget {
       return;
     }
 
+    final String fileName = (await file.name())!;
+
     if (context.mounted) {
       await showDialog<void>(
         context: context,
-        builder: (BuildContext context) => PathDisplay(file.name, file.path),
+        builder: (BuildContext context) => PathDisplay(fileName, file.uri),
       );
     }
   }

@@ -5,7 +5,6 @@
 import 'dart:io';
 
 import 'package:file_selector_platform_interface/file_selector_platform_interface.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 /// Screen that allows the user to select multiple image files using
@@ -82,9 +81,7 @@ class MultipleImagesDisplay extends StatelessWidget {
           children: <Widget>[
             ...files.map(
               (XFile file) => Flexible(
-                child: kIsWeb
-                    ? Image.network(file.path)
-                    : Image.file(File(file.path)),
+                child: Image.file(File(file.uri)),
               ),
             ),
           ],

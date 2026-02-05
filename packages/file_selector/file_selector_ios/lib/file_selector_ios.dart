@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'package:cross_file_ios/cross_file_ios.dart';
 import 'package:file_selector_platform_interface/file_selector_platform_interface.dart';
 import 'package:flutter/foundation.dart' show visibleForTesting;
 
@@ -27,27 +26,12 @@ class FileSelectorIOS extends FileSelectorPlatform {
     String? initialDirectory,
     String? confirmButtonText,
   }) async {
-    final List<String> path = await _hostApi.openFile(
+    final List<String> paths = await _hostApi.openFile(
       FileSelectorConfig(
         utis: _allowedUtiListFromTypeGroups(acceptedTypeGroups),
       ),
     );
-    return path.isEmpty ? null : XFile(path.first);
-  }
-
-  Future<IOSXFile?> openFile2({
-    List<XTypeGroup>? acceptedTypeGroups,
-    String? initialDirectory,
-    String? confirmButtonText,
-  }) async {
-    final List<String> paths = await _hostApi.openFile2(
-      FileSelectorConfig(
-        utis: _allowedUtiListFromTypeGroups(acceptedTypeGroups),
-      ),
-    );
-    return paths.isEmpty
-        ? null
-        : IOSXFile(PlatformSharedStorageXFileCreationParams(path: paths.first));
+    return paths.isEmpty ? null : ScopedStorageXFile(paths.first);
   }
 
   @override
@@ -62,7 +46,7 @@ class FileSelectorIOS extends FileSelectorPlatform {
         allowMultiSelection: true,
       ),
     );
-    return pathList.map((String path) => XFile(path)).toList();
+    return pathList.map((String path) => ScopedStorageXFile(path)).toList();
   }
 
   // Converts the type group list into a list of all allowed UTIs, since

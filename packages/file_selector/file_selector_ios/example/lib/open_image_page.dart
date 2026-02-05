@@ -27,8 +27,8 @@ class OpenImagePage extends StatelessWidget {
       // Operation was canceled by the user.
       return;
     }
-    final String fileName = file.name;
-    final String filePath = file.path;
+    final String fileName = (await file.name())!;
+    final String filePath = file.uri;
 
     if (context.mounted) {
       await showDialog<void>(
