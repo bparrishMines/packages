@@ -4,12 +4,10 @@
 
 // ignore_for_file: public_member_api_docs
 
-import 'package:cross_file_android/cross_file_android.dart';
 import 'package:file_selector_platform_interface/file_selector_platform_interface.dart';
 import 'package:flutter/cupertino.dart';
 
 import 'file_selector_api.g.dart';
-import 'types/native_illegal_argument_exception.dart';
 
 /// An implementation of [FileSelectorPlatform] for Android.
 class FileSelectorAndroid extends FileSelectorPlatform {
@@ -29,25 +27,13 @@ class FileSelectorAndroid extends FileSelectorPlatform {
     String? initialDirectory,
     String? confirmButtonText,
   }) async {
-    final FileResponse? file = await _api.openFile(
-      initialDirectory,
-      _fileTypesFromTypeGroups(acceptedTypeGroups),
-    );
-    return file == null ? null : _xFileFromFileResponse(file);
-  }
-
-  Future<AndroidXFile?> openFile2({
-    List<XTypeGroup>? acceptedTypeGroups,
-    String? initialDirectory,
-    String? confirmButtonText,
-  }) async {
-    final String? path = await _api.openFile2(
+    final String? path = await _api.openFile(
       initialDirectory,
       _fileTypesFromTypeGroups(acceptedTypeGroups),
     );
 
     if (path case final String path) {
-      return AndroidXFile(PlatformXFileCreationParams(path: path));
+      return ScopedStorageXFile(path);
     }
 
     return null;
@@ -59,11 +45,11 @@ class FileSelectorAndroid extends FileSelectorPlatform {
     String? initialDirectory,
     String? confirmButtonText,
   }) async {
-    final List<FileResponse> files = await _api.openFiles(
+    final List<String> files = await _api.openFiles(
       initialDirectory,
       _fileTypesFromTypeGroups(acceptedTypeGroups),
     );
-    return files.map<XFile>(_xFileFromFileResponse).toList();
+    return files.map<XFile>(ScopedStorageXFile.new).toList();
   }
 
   @override
@@ -72,21 +58,6 @@ class FileSelectorAndroid extends FileSelectorPlatform {
     String? confirmButtonText,
   }) async {
     return _api.getDirectoryPath(initialDirectory);
-  }
-
-  XFile _xFileFromFileResponse(FileResponse file) {
-    if (file.fileSelectorNativeException != null) {
-      _resolveErrorCodeAndMaybeThrow(file.fileSelectorNativeException!);
-    }
-    return XFile.fromData(
-      file.bytes,
-      // Note: The name parameter is not used by XFile. The XFile.name returns
-      // the extracted file name from XFile.path.
-      name: file.name,
-      length: file.size,
-      mimeType: file.mimeType,
-      path: file.path,
-    );
   }
 
   FileTypes _fileTypesFromTypeGroups(List<XTypeGroup>? typeGroups) {
@@ -116,22 +87,5 @@ class FileSelectorAndroid extends FileSelectorPlatform {
       mimeTypes: mimeTypes.toList(),
       extensions: extensions.toList(),
     );
-  }
-
-  /// Translates a [FileSelectorExceptionCode] to its corresponding error and
-  /// handles throwing.
-  void _resolveErrorCodeAndMaybeThrow(
-    FileSelectorNativeException fileSelectorNativeException,
-  ) {
-    switch (fileSelectorNativeException.fileSelectorExceptionCode) {
-      case FileSelectorExceptionCode.illegalArgumentException:
-        throw NativeIllegalArgumentException(
-          fileSelectorNativeException.message,
-        );
-      case (FileSelectorExceptionCode.illegalStateException ||
-          FileSelectorExceptionCode.ioException ||
-          FileSelectorExceptionCode.securityException):
-      // unused for now
-    }
   }
 }

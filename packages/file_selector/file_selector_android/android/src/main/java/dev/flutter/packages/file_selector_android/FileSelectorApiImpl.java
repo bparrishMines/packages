@@ -93,46 +93,7 @@ public class FileSelectorApiImpl implements GeneratedFileSelectorApi.FileSelecto
       @Nullable String initialDirectory,
       @NonNull GeneratedFileSelectorApi.FileTypes allowedTypes,
       @NonNull
-          GeneratedFileSelectorApi.NullableResult<GeneratedFileSelectorApi.FileResponse> result) {
-    final Intent intent = objectFactory.newIntent(Intent.ACTION_OPEN_DOCUMENT);
-    intent.addCategory(Intent.CATEGORY_OPENABLE);
-
-    setMimeTypes(intent, allowedTypes);
-    trySetInitialDirectory(intent, initialDirectory);
-
-    try {
-      startActivityForResult(
-          intent,
-          OPEN_FILE,
-          new OnResultListener() {
-            @Override
-            public void onResult(int resultCode, @Nullable Intent data) {
-              if (resultCode == Activity.RESULT_OK && data != null) {
-                final Uri uri = data.getData();
-                if (uri == null) {
-                  // No data retrieved from opening file.
-                  result.error(new Exception("Failed to retrieve data from opening file."));
-                  return;
-                }
-
-                final GeneratedFileSelectorApi.FileResponse file = toFileResponse(uri);
-                if (file != null) {
-                  result.success(file);
-                } else {
-                  result.error(new Exception("Failed to read file: " + uri));
-                }
-              } else {
-                result.success(null);
-              }
-            }
-          });
-    } catch (Exception exception) {
-      result.error(exception);
-    }
-  }
-
-  @Override
-  public void openFile2(@Nullable String initialDirectory, @NonNull GeneratedFileSelectorApi.FileTypes allowedTypes, @NonNull GeneratedFileSelectorApi.NullableResult<String> result) {
+          GeneratedFileSelectorApi.NullableResult<String> result) {
     final Intent intent = objectFactory.newIntent(Intent.ACTION_OPEN_DOCUMENT);
     intent.addCategory(Intent.CATEGORY_OPENABLE);
 
@@ -155,7 +116,6 @@ public class FileSelectorApiImpl implements GeneratedFileSelectorApi.FileSelecto
                 }
 
                 result.success(uri.toString());
-                Log.d(TAG, "File path: " + uri);
               } else {
                 result.success(null);
               }
@@ -166,13 +126,12 @@ public class FileSelectorApiImpl implements GeneratedFileSelectorApi.FileSelecto
     }
   }
 
-
   @Override
   public void openFiles(
       @Nullable String initialDirectory,
       @NonNull GeneratedFileSelectorApi.FileTypes allowedTypes,
       @NonNull
-          GeneratedFileSelectorApi.Result<List<GeneratedFileSelectorApi.FileResponse>> result) {
+          GeneratedFileSelectorApi.Result<List<String>> result) {
     final Intent intent = objectFactory.newIntent(Intent.ACTION_OPEN_DOCUMENT);
     intent.addCategory(Intent.CATEGORY_OPENABLE);
     intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
@@ -191,29 +150,17 @@ public class FileSelectorApiImpl implements GeneratedFileSelectorApi.FileSelecto
                 // Only one file was returned.
                 final Uri uri = data.getData();
                 if (uri != null) {
-                  final GeneratedFileSelectorApi.FileResponse file = toFileResponse(uri);
-                  if (file != null) {
-                    result.success(Collections.singletonList(file));
-                  } else {
-                    result.error(new Exception("Failed to read file: " + uri));
-                  }
+                  result.success(Collections.singletonList(uri.toString()));
                 }
 
                 // Multiple files were returned.
                 final ClipData clipData = data.getClipData();
                 if (clipData != null) {
-                  final List<GeneratedFileSelectorApi.FileResponse> files =
+                  final List<String> files =
                       new ArrayList<>(clipData.getItemCount());
                   for (int i = 0; i < clipData.getItemCount(); i++) {
                     final ClipData.Item clipItem = clipData.getItemAt(i);
-                    final GeneratedFileSelectorApi.FileResponse file =
-                        toFileResponse(clipItem.getUri());
-                    if (file != null) {
-                      files.add(file);
-                    } else {
-                      result.error(new Exception("Failed to read file: " + uri));
-                      return;
-                    }
+                    files.add(clipItem.getUri().toString());
                   }
                   result.success(files);
                 }

@@ -31,7 +31,7 @@ class OpenImagePage extends StatelessWidget {
     if (context.mounted) {
       await showDialog<void>(
         context: context,
-        builder: (BuildContext context) => ImageDisplay(file.path, bytes),
+        builder: (BuildContext context) => ImageDisplay(file.uri, bytes),
       );
     }
   }

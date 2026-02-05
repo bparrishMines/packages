@@ -49,15 +49,12 @@ abstract class FileSelectorApi {
   ///
   /// Returns `null` if user cancels the operation.
   @async
-  FileResponse? openFile(String? initialDirectory, FileTypes allowedTypes);
-
-  @async
-  String? openFile2(String? initialDirectory, FileTypes allowedTypes);
+  String? openFile(String? initialDirectory, FileTypes allowedTypes);
 
   /// Opens a file dialog for loading files and returns a list of file responses
   /// chosen by the user.
   @async
-  List<FileResponse> openFiles(
+  List<String> openFiles(
     String? initialDirectory,
     FileTypes allowedTypes,
   );
