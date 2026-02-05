@@ -46,3 +46,10 @@ topics:
   - files
   - file-selection
   - file-selector
+
+dependency_overrides:
+  cross_file:
+    git:
+      url: https://github.com/bparrishMines/packages
+      ref: new_crossfile
+      path: packages/cross_file/cross_file
