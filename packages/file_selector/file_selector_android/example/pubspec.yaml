@@ -14,7 +14,6 @@ dependencies:
     # The example app is bundled with the plugin so we use a path dependency on
     # the parent directory to use the current plugin's version.
     path: ../
-  file_selector_platform_interface: ^2.5.0
   flutter:
     sdk: flutter
   flutter_driver:
@@ -29,10 +28,3 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
-
-dependency_overrides:
-  cross_file:
-    git:
-      url: https://github.com/bparrishMines/packages
-      ref: new_crossfile
-      path: packages/cross_file/cross_file
