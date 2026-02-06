@@ -84,8 +84,8 @@ class MultipleImagesDisplay extends StatelessWidget {
             ...files.map(
               (XFile file) => Flexible(
                 child: kIsWeb
-                    ? Image.network(file.path)
-                    : Image.file(File(file.path)),
+                    ? Image.network(file.uri)
+                    : Image.file(File(file.uri)),
               ),
             ),
           ],

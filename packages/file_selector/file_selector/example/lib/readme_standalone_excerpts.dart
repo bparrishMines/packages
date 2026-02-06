@@ -47,12 +47,8 @@ class _MyAppState extends State<MyApp> {
 
     final fileData = Uint8List.fromList('Hello World!'.codeUnits);
     const mimeType = 'text/plain';
-    final textFile = XFile.fromData(
-      fileData,
-      mimeType: mimeType,
-      name: fileName,
-    );
-    await textFile.saveTo(result.path);
+    final textFile = XFile('myPath');
+    // await textFile.saveTo(result.path);
     // #enddocregion Save
   }
 

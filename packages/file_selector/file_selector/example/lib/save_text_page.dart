@@ -38,13 +38,9 @@ class SaveTextPage extends StatelessWidget {
     final String text = _contentController.text;
     final fileData = Uint8List.fromList(text.codeUnits);
     const fileMimeType = 'text/plain';
-    final textFile = XFile.fromData(
-      fileData,
-      mimeType: fileMimeType,
-      name: fileName,
-    );
+    final textFile = XFile('weofij');
 
-    await textFile.saveTo(result.path);
+    // await textFile.saveTo(result.path);
   }
 
   @override
