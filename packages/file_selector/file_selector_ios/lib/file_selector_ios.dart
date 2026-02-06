@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'package:cross_file_darwin/cross_file_darwin.dart';
 import 'package:file_selector_platform_interface/file_selector_platform_interface.dart';
 import 'package:flutter/foundation.dart' show visibleForTesting;
 
@@ -31,7 +32,16 @@ class FileSelectorIOS extends FileSelectorPlatform {
         utis: _allowedUtiListFromTypeGroups(acceptedTypeGroups),
       ),
     );
-    return paths.isEmpty ? null : ScopedStorageXFile(paths.first);
+
+    if (paths.isEmpty) {
+      return null;
+    }
+
+    return XFile.fromPlatform(
+      (await ScopedStorageXFile(
+        '',
+      ).getExtension<DarwinScopedStorageXFileExtension>().toBookmarkedFile())!,
+    );
   }
 
   @override
