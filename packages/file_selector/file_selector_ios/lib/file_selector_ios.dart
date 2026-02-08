@@ -37,9 +37,9 @@ class FileSelectorIOS extends FileSelectorPlatform {
       return null;
     }
 
-    return XFile.fromPlatform(
+    return ScopedStorageXFile.fromPlatform(
       (await ScopedStorageXFile(
-        '',
+        paths.single,
       ).getExtension<DarwinScopedStorageXFileExtension>().toBookmarkedFile())!,
     );
   }
@@ -56,7 +56,18 @@ class FileSelectorIOS extends FileSelectorPlatform {
         allowMultiSelection: true,
       ),
     );
-    return pathList.map((String path) => ScopedStorageXFile(path)).toList();
+
+    final files = <XFile>[];
+    for (final path in pathList) {
+      files.add(
+        ScopedStorageXFile.fromPlatform(
+          (await ScopedStorageXFile(path)
+              .getExtension<DarwinScopedStorageXFileExtension>()
+              .toBookmarkedFile())!,
+        ),
+      );
+    }
+    return files;
   }
 
   // Converts the type group list into a list of all allowed UTIs, since
