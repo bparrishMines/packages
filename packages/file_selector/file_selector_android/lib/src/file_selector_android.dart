@@ -53,11 +53,16 @@ class FileSelectorAndroid extends FileSelectorPlatform {
   }
 
   @override
-  Future<String?> getDirectoryPath({
+  Future<XDirectory?> getDirectoryPath({
     String? initialDirectory,
     String? confirmButtonText,
   }) async {
-    return _api.getDirectoryPath(initialDirectory);
+    final String? uri = await _api.getDirectoryPath(initialDirectory);
+    if (uri != null) {
+      return ScopedStorageXDirectory(uri);
+    } else {
+      return null;
+    }
   }
 
   FileTypes _fileTypesFromTypeGroups(List<XTypeGroup>? typeGroups) {

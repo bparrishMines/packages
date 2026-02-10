@@ -194,18 +194,20 @@ public class FileSelectorApiImpl implements GeneratedFileSelectorApi.FileSelecto
                   // No data retrieved from opening directory.
                   result.error(new Exception("Failed to retrieve data from opening directory."));
                   return;
+                } else {
+                  result.success(uri.toString());
                 }
 
-                final Uri docUri =
-                    DocumentsContract.buildDocumentUriUsingTree(
-                        uri, DocumentsContract.getTreeDocumentId(uri));
-                try {
-                  final String path =
-                      FileUtils.getPathFromUri(activityPluginBinding.getActivity(), docUri);
-                  result.success(path);
-                } catch (UnsupportedOperationException exception) {
-                  result.error(exception);
-                }
+//                final Uri docUri =
+//                    DocumentsContract.buildDocumentUriUsingTree(
+//                        uri, DocumentsContract.getTreeDocumentId(uri));
+//                try {
+//                  final String path =
+//                      FileUtils.getPathFromUri(activityPluginBinding.getActivity(), docUri);
+//                  result.success(path);
+//                } catch (UnsupportedOperationException exception) {
+//                  result.error(exception);
+//                }
               } else {
                 result.success(null);
               }
