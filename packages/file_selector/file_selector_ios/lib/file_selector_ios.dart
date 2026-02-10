@@ -96,4 +96,24 @@ class FileSelectorIOS extends FileSelectorPlatform {
     }
     return allowedUTIs;
   }
+
+  @override
+  Future<XDirectory?> getDirectoryPath({
+    String? initialDirectory,
+    String? confirmButtonText,
+  }) async {
+    final List<String> paths = await _hostApi.openFile(
+      FileSelectorConfig(utis: <String>['public.folder']),
+    );
+
+    if (paths.isEmpty) {
+      return null;
+    }
+
+    return ScopedStorageXDirectory.fromPlatform(
+      (await ScopedStorageXDirectory(paths.single)
+          .getExtension<DarwinScopedStorageXDirectoryExtension>()
+          .toBookmarkedDirectory())!,
+    );
+  }
 }
