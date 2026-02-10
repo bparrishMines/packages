@@ -71,14 +71,17 @@ class MethodChannelFileSelector extends FileSelectorPlatform {
   }
 
   @override
-  Future<String?> getDirectoryPath({
+  Future<XDirectory?> getDirectoryPath({
     String? initialDirectory,
     String? confirmButtonText,
   }) async {
-    return _channel.invokeMethod<String>('getDirectoryPath', <String, dynamic>{
-      'initialDirectory': initialDirectory,
-      'confirmButtonText': confirmButtonText,
-    });
+    return XDirectory(
+      (await _channel
+          .invokeMethod<String>('getDirectoryPath', <String, dynamic>{
+            'initialDirectory': initialDirectory,
+            'confirmButtonText': confirmButtonText,
+          }))!,
+    );
   }
 
   @override

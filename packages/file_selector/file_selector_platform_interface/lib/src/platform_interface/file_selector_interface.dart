@@ -97,7 +97,7 @@ abstract class FileSelectorPlatform extends PlatformInterface {
   ///
   /// Returns `null` if the user cancels the operation.
   @Deprecated('Use getDirectoryPathWithOptions instead')
-  Future<String?> getDirectoryPath({
+  Future<XDirectory?> getDirectoryPath({
     String? initialDirectory,
     String? confirmButtonText,
   }) {
@@ -110,7 +110,7 @@ abstract class FileSelectorPlatform extends PlatformInterface {
   /// file dialog. See [FileDialogOptions] for more details.
   ///
   /// Returns `null` if the user cancels the operation.
-  Future<String?> getDirectoryPathWithOptions(FileDialogOptions options) {
+  Future<XDirectory?> getDirectoryPathWithOptions(FileDialogOptions options) {
     return getDirectoryPath(
       initialDirectory: options.initialDirectory,
       confirmButtonText: options.confirmButtonText,
