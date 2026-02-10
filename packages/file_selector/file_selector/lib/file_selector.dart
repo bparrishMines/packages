@@ -7,7 +7,7 @@ import 'dart:async';
 import 'package:file_selector_platform_interface/file_selector_platform_interface.dart';
 
 export 'package:file_selector_platform_interface/file_selector_platform_interface.dart'
-    show FileSaveLocation, XDirectory, XFile, XTypeGroup;
+    show FileSaveLocation, XDirectory, XFile, XFileEntity, XTypeGroup;
 
 /// Opens a file selection dialog and returns the path chosen by the user.
 ///
