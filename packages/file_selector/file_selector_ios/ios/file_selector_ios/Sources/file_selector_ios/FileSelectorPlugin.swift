@@ -23,7 +23,10 @@ class PickerCompletionBridge: NSObject, UIDocumentPickerDelegate {
     _ controller: UIDocumentPickerViewController,
     didPickDocumentsAt urls: [URL]
   ) {
-    sendResult(urls.map({ $0.path }))
+    sendResult(urls.map({
+      $0.startAccessingSecurityScopedResource()
+      return $0.path
+    }))
   }
 
   func documentPickerWasCancelled(_ controller: UIDocumentPickerViewController) {
