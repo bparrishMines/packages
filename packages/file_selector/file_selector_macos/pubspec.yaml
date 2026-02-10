@@ -17,8 +17,16 @@ flutter:
         pluginClass: FileSelectorPlugin
 
 dependencies:
-  cross_file: ^0.3.1
-  file_selector_platform_interface: ^2.7.0
+  cross_file_darwin:
+    git:
+      url: https://github.com/bparrishMines/packages
+      ref: new_crossfile
+      path: packages/cross_file/cross_file_darwin
+  file_selector_platform_interface:
+    git:
+      url: https://github.com/bparrishMines/packages
+      ref: new_file_selector
+      path: packages/file_selector/file_selector_platform_interface
   flutter:
     sdk: flutter
 

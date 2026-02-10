@@ -18,8 +18,8 @@ flutter:
         default_package: file_selector_ios
 #      linux:
 #        default_package: file_selector_linux
-#      macos:
-#        default_package: file_selector_macos
+      macos:
+        default_package: file_selector_macos
 #      web:
 #        default_package: file_selector_web
 #      windows:
@@ -37,7 +37,7 @@ dependencies:
       ref: new_file_selector
       path: packages/file_selector/file_selector_ios
 #  file_selector_linux: ^0.9.4
-#  file_selector_macos: ^0.9.5
+  file_selector_macos: ^0.9.5
   file_selector_platform_interface:
     git:
       url: https://github.com/bparrishMines/packages

@@ -14,8 +14,7 @@ dependencies:
     # See https://dart.dev/tools/pub/dependencies#version-constraints
     # The example app is bundled with the plugin so we use a path dependency on
     # the parent directory to use the current plugin's version.
-    path: ..
-  file_selector_platform_interface: ^2.7.0
+    path: ../
   flutter:
     sdk: flutter
 

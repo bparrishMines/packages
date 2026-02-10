@@ -98,7 +98,7 @@ class FileSelectorMacOS extends FileSelectorPlatform {
   }
 
   @override
-  Future<String?> getDirectoryPath({
+  Future<XDirectory?> getDirectoryPath({
     String? initialDirectory,
     String? confirmButtonText,
   }) async {
@@ -111,7 +111,9 @@ class FileSelectorMacOS extends FileSelectorPlatform {
   }
 
   @override
-  Future<String?> getDirectoryPathWithOptions(FileDialogOptions options) async {
+  Future<XDirectory?> getDirectoryPathWithOptions(
+    FileDialogOptions options,
+  ) async {
     final List<String?> paths = await _hostApi.displayOpenPanel(
       OpenPanelOptions(
         allowsMultipleSelection: false,
@@ -124,7 +126,8 @@ class FileSelectorMacOS extends FileSelectorPlatform {
         ),
       ),
     );
-    return paths.isEmpty ? null : paths.first;
+
+    return paths.isEmpty ? null : XDirectory(paths.single!);
   }
 
   @override
