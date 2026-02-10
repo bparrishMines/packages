@@ -54,7 +54,7 @@ class _MyAppState extends State<MyApp> {
 
   Future<void> directoryPath() async {
     // #docregion GetDirectory
-    final String? directoryPath = await getDirectoryPath();
+    final XDirectory? directoryPath = await getDirectoryPath();
     if (directoryPath == null) {
       // Operation was canceled by the user.
       return;
