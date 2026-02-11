@@ -37,18 +37,11 @@ class FileSelectorIOS extends FileSelectorPlatform {
       return null;
     }
 
-    final ScopedStorageXFile file = ScopedStorageXFile(paths.single);
-    final ScopedStorageXFile a = ScopedStorageXFile.fromPlatform(
-      (await file
-          .getExtension<DarwinScopedStorageXFileExtension>()
-          .toBookmarkedFile())!,
-    );
-    return XFile(a.uri);
-    // final file = XFile(paths.single);
-    // await file
-    //     .getExtension<DarwinXFileExtension>()
-    //     .startAccessingSecurityScopedResource();
-    // return file;
+    final file = XFile(paths.single);
+    await file
+        .getExtension<DarwinXFileExtension>()
+        .startAccessingSecurityScopedResource();
+    return file;
   }
 
   @override
