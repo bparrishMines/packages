@@ -20,8 +20,8 @@ flutter:
 #        default_package: file_selector_linux
       macos:
         default_package: file_selector_macos
-#      web:
-#        default_package: file_selector_web
+      web:
+        default_package: file_selector_web
 #      windows:
 #        default_package: file_selector_windows
 
@@ -47,7 +47,11 @@ dependencies:
       url: https://github.com/bparrishMines/packages
       ref: new_file_selector
       path: packages/file_selector/file_selector_platform_interface
-#  file_selector_web: ^0.9.1
+  file_selector_web:
+    git:
+      url: https://github.com/bparrishMines/packages
+      ref: new_file_selector
+      path: packages/file_selector/file_selector_web
 #  file_selector_windows: ^0.9.3
   flutter:
     sdk: flutter
