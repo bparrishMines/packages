@@ -72,5 +72,5 @@ class DomHelper {
   }
 
   XFile _convertFileToXFile(File file) =>
-      XFile.fromCreationParams(BlobWebXFileCreationParams(file));
+      XFile.fromCreationParams(WebXFileCreationParams.fromBlob(file));
 }
