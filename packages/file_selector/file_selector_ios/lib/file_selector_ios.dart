@@ -37,7 +37,7 @@ class FileSelectorIOS extends FileSelectorPlatform {
       return null;
     }
 
-    final file = XFile(Uri.file(paths.single).toString());
+    final file = XFile.fromUri(Uri.file(paths.single));
     await file
         .getExtension<DarwinXFileExtension>()
         .startAccessingSecurityScopedResource();
@@ -59,7 +59,7 @@ class FileSelectorIOS extends FileSelectorPlatform {
 
     final files = <XFile>[];
     for (final path in pathList) {
-      final file = XFile(Uri.file(path).toString());
+      final file = XFile.fromUri(Uri.file(path));
       await file
           .getExtension<DarwinXFileExtension>()
           .startAccessingSecurityScopedResource();
@@ -108,7 +108,7 @@ class FileSelectorIOS extends FileSelectorPlatform {
       return null;
     }
 
-    final directory = XDirectory(Uri.directory(paths.single).toString());
+    final directory = XDirectory.fromUri(Uri.directory(paths.single));
     await directory
         .getExtension<DarwinXDirectoryExtension>()
         .startAccessingSecurityScopedResource();

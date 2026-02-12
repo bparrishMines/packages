@@ -27,13 +27,13 @@ class FileSelectorAndroid extends FileSelectorPlatform {
     String? initialDirectory,
     String? confirmButtonText,
   }) async {
-    final String? path = await _api.openFile(
+    final String? uri = await _api.openFile(
       initialDirectory,
       _fileTypesFromTypeGroups(acceptedTypeGroups),
     );
 
-    if (path case final String path) {
-      return ScopedStorageXFile(path);
+    if (uri != null) {
+      return ScopedStorageXFile(uri: uri);
     }
 
     return null;
@@ -45,11 +45,13 @@ class FileSelectorAndroid extends FileSelectorPlatform {
     String? initialDirectory,
     String? confirmButtonText,
   }) async {
-    final List<String> files = await _api.openFiles(
+    final List<String> uris = await _api.openFiles(
       initialDirectory,
       _fileTypesFromTypeGroups(acceptedTypeGroups),
     );
-    return files.map<XFile>(ScopedStorageXFile.new).toList();
+    return uris.map<XFile>((String uri) {
+      return ScopedStorageXFile(uri: uri);
+    }).toList();
   }
 
   @override
@@ -59,7 +61,7 @@ class FileSelectorAndroid extends FileSelectorPlatform {
   }) async {
     final String? uri = await _api.getDirectoryPath(initialDirectory);
     if (uri != null) {
-      return ScopedStorageXDirectory(uri);
+      return ScopedStorageXDirectory(uri: uri);
     } else {
       return null;
     }
