@@ -71,7 +71,7 @@ class FileSelectorWeb extends FileSelectorPlatform {
   }
 
   @override
-  Future<String?> getDirectoryPath({
+  Future<XDirectory?> getDirectoryPath({
     String? initialDirectory,
     String? confirmButtonText,
   }) async => null;
