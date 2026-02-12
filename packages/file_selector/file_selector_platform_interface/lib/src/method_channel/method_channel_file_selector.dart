@@ -32,7 +32,7 @@ class MethodChannelFileSelector extends FileSelectorPlatform {
           'confirmButtonText': confirmButtonText,
           'multiple': false,
         });
-    return path == null ? null : XFile(path.first);
+    return path == null ? null : XFile.fromUri(Uri.file(path.first));
   }
 
   @override
@@ -50,7 +50,10 @@ class MethodChannelFileSelector extends FileSelectorPlatform {
           'confirmButtonText': confirmButtonText,
           'multiple': true,
         });
-    return pathList?.map((String path) => XFile(path)).toList() ?? <XFile>[];
+    return pathList
+            ?.map((String path) => XFile.fromUri(Uri.file(path)))
+            .toList() ??
+        <XFile>[];
   }
 
   @override
@@ -75,13 +78,15 @@ class MethodChannelFileSelector extends FileSelectorPlatform {
     String? initialDirectory,
     String? confirmButtonText,
   }) async {
-    return XDirectory(
-      (await _channel
-          .invokeMethod<String>('getDirectoryPath', <String, dynamic>{
-            'initialDirectory': initialDirectory,
-            'confirmButtonText': confirmButtonText,
-          }))!,
+    final String? path = await _channel.invokeMethod<String>(
+      'getDirectoryPath',
+      <String, dynamic>{
+        'initialDirectory': initialDirectory,
+        'confirmButtonText': confirmButtonText,
+      },
     );
+
+    return path == null ? null : XDirectory.fromUri(Uri.directory(path));
   }
 
   @override
