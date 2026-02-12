@@ -26,7 +26,7 @@ class FileSelectorMacOS extends FileSelectorPlatform {
     String? initialDirectory,
     String? confirmButtonText,
   }) async {
-    final List<String?> paths = await _hostApi.displayOpenPanel(
+    final List<String> paths = await _hostApi.displayOpenPanel(
       OpenPanelOptions(
         allowsMultipleSelection: false,
         canChooseDirectories: false,
@@ -38,7 +38,7 @@ class FileSelectorMacOS extends FileSelectorPlatform {
         ),
       ),
     );
-    return paths.isEmpty ? null : XFile(paths.first!);
+    return paths.isEmpty ? null : XFile.fromUri(Uri.file(paths.single));
   }
 
   @override
@@ -47,7 +47,7 @@ class FileSelectorMacOS extends FileSelectorPlatform {
     String? initialDirectory,
     String? confirmButtonText,
   }) async {
-    final List<String?> paths = await _hostApi.displayOpenPanel(
+    final List<String> paths = await _hostApi.displayOpenPanel(
       OpenPanelOptions(
         allowsMultipleSelection: true,
         canChooseDirectories: false,
@@ -59,7 +59,7 @@ class FileSelectorMacOS extends FileSelectorPlatform {
         ),
       ),
     );
-    return paths.map((String? path) => XFile(path!)).toList();
+    return paths.map((String path) => XFile.fromUri(Uri.file(path))).toList();
   }
 
   @override
@@ -114,7 +114,7 @@ class FileSelectorMacOS extends FileSelectorPlatform {
   Future<XDirectory?> getDirectoryPathWithOptions(
     FileDialogOptions options,
   ) async {
-    final List<String?> paths = await _hostApi.displayOpenPanel(
+    final List<String> paths = await _hostApi.displayOpenPanel(
       OpenPanelOptions(
         allowsMultipleSelection: false,
         canChooseDirectories: true,
@@ -127,7 +127,9 @@ class FileSelectorMacOS extends FileSelectorPlatform {
       ),
     );
 
-    return paths.isEmpty ? null : XDirectory(paths.single!);
+    return paths.isEmpty
+        ? null
+        : XDirectory.fromUri(Uri.directory(paths.single));
   }
 
   @override
