@@ -38,7 +38,9 @@ class FileSelectorMacOS extends FileSelectorPlatform {
         ),
       ),
     );
-    return paths.isEmpty ? null : XFile.fromUri(Uri.file(paths.single));
+    return paths.isEmpty
+        ? null
+        : ScopedStorageXFile(uri: Uri.file(paths.single).toString());
   }
 
   @override
@@ -59,7 +61,11 @@ class FileSelectorMacOS extends FileSelectorPlatform {
         ),
       ),
     );
-    return paths.map((String path) => XFile.fromUri(Uri.file(path))).toList();
+    return paths
+        .map(
+          (String path) => ScopedStorageXFile(uri: Uri.file(path).toString()),
+        )
+        .toList();
   }
 
   @override
@@ -129,7 +135,7 @@ class FileSelectorMacOS extends FileSelectorPlatform {
 
     return paths.isEmpty
         ? null
-        : XDirectory.fromUri(Uri.directory(paths.single));
+        : ScopedStorageXDirectory(uri: Uri.directory(paths.single).toString());
   }
 
   @override
