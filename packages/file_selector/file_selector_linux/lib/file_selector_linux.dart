@@ -37,7 +37,7 @@ class FileSelectorLinux extends FileSelectorPlatform {
         selectMultiple: false,
       ),
     );
-    return paths.isEmpty ? null : XFile(paths.first);
+    return paths.isEmpty ? null : XFile.fromUri(Uri.file(paths.first));
   }
 
   @override
@@ -57,7 +57,7 @@ class FileSelectorLinux extends FileSelectorPlatform {
         selectMultiple: true,
       ),
     );
-    return paths.map((String path) => XFile(path)).toList();
+    return paths.map((String path) => XFile.fromUri(Uri.file(path))).toList();
   }
 
   @override
@@ -101,7 +101,7 @@ class FileSelectorLinux extends FileSelectorPlatform {
   }
 
   @override
-  Future<String?> getDirectoryPath({
+  Future<XDirectory?> getDirectoryPath({
     String? initialDirectory,
     String? confirmButtonText,
   }) async {
@@ -114,7 +114,7 @@ class FileSelectorLinux extends FileSelectorPlatform {
   }
 
   @override
-  Future<String?> getDirectoryPathWithOptions(FileDialogOptions options) async {
+  Future<XDirectory?> getDirectoryPathWithOptions(FileDialogOptions options) async {
     final List<String> paths = await _hostApi.showFileChooser(
       PlatformFileChooserActionType.chooseDirectory,
       PlatformFileChooserOptions(
@@ -124,7 +124,7 @@ class FileSelectorLinux extends FileSelectorPlatform {
         selectMultiple: false,
       ),
     );
-    return paths.isEmpty ? null : paths.first;
+    return paths.isEmpty ? null : XDirectory.fromUri(Uri.directory(paths.first));
   }
 
   @override

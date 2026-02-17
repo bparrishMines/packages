@@ -17,8 +17,11 @@ flutter:
         dartPluginClass: FileSelectorLinux
 
 dependencies:
-  cross_file: ^0.3.1
-  file_selector_platform_interface: ^2.7.0
+  file_selector_platform_interface:
+    git:
+      url: https://github.com/bparrishMines/packages
+      ref: new_file_selector
+      path: packages/file_selector/file_selector_platform_interface
   flutter:
     sdk: flutter
 

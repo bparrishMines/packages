@@ -33,7 +33,9 @@ class FileSelectorWindows extends FileSelectorPlatform {
       initialDirectory,
       confirmButtonText,
     );
-    return result.paths.isEmpty ? null : XFile(result.paths.first);
+    return result.paths.isEmpty
+        ? null
+        : XFile.fromUri(Uri.file(result.paths.first));
   }
 
   @override
@@ -50,7 +52,9 @@ class FileSelectorWindows extends FileSelectorPlatform {
       initialDirectory,
       confirmButtonText,
     );
-    return result.paths.map((String? path) => XFile(path!)).toList();
+    return result.paths
+        .map((String? path) => XFile.fromUri(Uri.file(path!)))
+        .toList();
   }
 
   @override
@@ -96,7 +100,7 @@ class FileSelectorWindows extends FileSelectorPlatform {
   }
 
   @override
-  Future<String?> getDirectoryPath({
+  Future<XDirectory?> getDirectoryPath({
     String? initialDirectory,
     String? confirmButtonText,
   }) async {
@@ -105,7 +109,9 @@ class FileSelectorWindows extends FileSelectorPlatform {
       initialDirectory,
       confirmButtonText,
     );
-    return result.paths.isEmpty ? null : result.paths.first;
+    return result.paths.isEmpty
+        ? null
+        : XDirectory.fromUri(Uri.directory(result.paths.first));
   }
 
   @override
