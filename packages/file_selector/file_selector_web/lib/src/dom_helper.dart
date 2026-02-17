@@ -5,10 +5,10 @@
 import 'dart:async';
 import 'dart:js_interop';
 
+import 'package:cross_file_web/cross_file_web.dart';
 import 'package:file_selector_platform_interface/file_selector_platform_interface.dart';
 import 'package:flutter/foundation.dart' show visibleForTesting;
 import 'package:flutter/services.dart';
-import 'package:cross_file_web/cross_file_web.dart';
 import 'package:web/web.dart';
 
 /// Class to manipulate the DOM with the intention of reading files from it.
@@ -71,6 +71,7 @@ class DomHelper {
     return completer.future;
   }
 
-  XFile _convertFileToXFile(File file) =>
-      XFile.fromCreationParams(WebXFileCreationParams.fromBlob(file));
+  XFile _convertFileToXFile(File file) => ScopedStorageXFile.fromCreationParams(
+    WebScopedStorageXFileCreationParams.fromBlob(file),
+  );
 }
