@@ -92,8 +92,7 @@ public class FileSelectorApiImpl implements GeneratedFileSelectorApi.FileSelecto
   public void openFile(
       @Nullable String initialDirectory,
       @NonNull GeneratedFileSelectorApi.FileTypes allowedTypes,
-      @NonNull
-          GeneratedFileSelectorApi.NullableResult<String> result) {
+      @NonNull GeneratedFileSelectorApi.NullableResult<String> result) {
     final Intent intent = objectFactory.newIntent(Intent.ACTION_OPEN_DOCUMENT);
     intent.addCategory(Intent.CATEGORY_OPENABLE);
 
@@ -130,8 +129,7 @@ public class FileSelectorApiImpl implements GeneratedFileSelectorApi.FileSelecto
   public void openFiles(
       @Nullable String initialDirectory,
       @NonNull GeneratedFileSelectorApi.FileTypes allowedTypes,
-      @NonNull
-          GeneratedFileSelectorApi.Result<List<String>> result) {
+      @NonNull GeneratedFileSelectorApi.Result<List<String>> result) {
     final Intent intent = objectFactory.newIntent(Intent.ACTION_OPEN_DOCUMENT);
     intent.addCategory(Intent.CATEGORY_OPENABLE);
     intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
@@ -156,8 +154,7 @@ public class FileSelectorApiImpl implements GeneratedFileSelectorApi.FileSelecto
                 // Multiple files were returned.
                 final ClipData clipData = data.getClipData();
                 if (clipData != null) {
-                  final List<String> files =
-                      new ArrayList<>(clipData.getItemCount());
+                  final List<String> files = new ArrayList<>(clipData.getItemCount());
                   for (int i = 0; i < clipData.getItemCount(); i++) {
                     final ClipData.Item clipItem = clipData.getItemAt(i);
                     files.add(clipItem.getUri().toString());
@@ -198,16 +195,17 @@ public class FileSelectorApiImpl implements GeneratedFileSelectorApi.FileSelecto
                   result.success(uri.toString());
                 }
 
-//                final Uri docUri =
-//                    DocumentsContract.buildDocumentUriUsingTree(
-//                        uri, DocumentsContract.getTreeDocumentId(uri));
-//                try {
-//                  final String path =
-//                      FileUtils.getPathFromUri(activityPluginBinding.getActivity(), docUri);
-//                  result.success(path);
-//                } catch (UnsupportedOperationException exception) {
-//                  result.error(exception);
-//                }
+                //                final Uri docUri =
+                //                    DocumentsContract.buildDocumentUriUsingTree(
+                //                        uri, DocumentsContract.getTreeDocumentId(uri));
+                //                try {
+                //                  final String path =
+                //
+                // FileUtils.getPathFromUri(activityPluginBinding.getActivity(), docUri);
+                //                  result.success(path);
+                //                } catch (UnsupportedOperationException exception) {
+                //                  result.error(exception);
+                //                }
               } else {
                 result.success(null);
               }
