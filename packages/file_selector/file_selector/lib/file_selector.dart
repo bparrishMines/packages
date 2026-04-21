@@ -12,8 +12,8 @@ export 'package:file_selector_platform_interface/file_selector_platform_interfac
         ScopedStorageXDirectory,
         ScopedStorageXFile,
         XDirectory,
+        XEntity,
         XFile,
-        XFileEntity,
         XTypeGroup;
 
 /// Opens a file selection dialog and returns the path chosen by the user.
