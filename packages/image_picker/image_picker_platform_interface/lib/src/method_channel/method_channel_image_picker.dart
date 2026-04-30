@@ -199,7 +199,7 @@ class MethodChannelImagePicker extends ImagePickerPlatform {
       imageQuality: imageQuality,
       preferredCameraDevice: preferredCameraDevice,
     );
-    return path != null ? XFile(path) : null;
+    return path != null ? XFile.fromPath(path) : null;
   }
 
   @override
@@ -215,7 +215,7 @@ class MethodChannelImagePicker extends ImagePickerPlatform {
       preferredCameraDevice: options.preferredCameraDevice,
       requestFullMetadata: options.requestFullMetadata,
     );
-    return path != null ? XFile(path) : null;
+    return path != null ? XFile.fromPath(path) : null;
   }
 
   @override
@@ -233,7 +233,7 @@ class MethodChannelImagePicker extends ImagePickerPlatform {
       return null;
     }
 
-    return paths.map((dynamic path) => XFile(path as String)).toList();
+    return paths.map((dynamic path) => XFile.fromPath(path as String)).toList();
   }
 
   @override
@@ -251,7 +251,7 @@ class MethodChannelImagePicker extends ImagePickerPlatform {
       return <XFile>[];
     }
 
-    return paths.map((dynamic path) => XFile(path as String)).toList();
+    return paths.map((dynamic path) => XFile.fromPath(path as String)).toList();
   }
 
   @override
@@ -269,8 +269,9 @@ class MethodChannelImagePicker extends ImagePickerPlatform {
     final List<XFile>? paths = await _channel
         .invokeMethod<List<dynamic>?>('pickMedia', args)
         .then(
-          (List<dynamic>? paths) =>
-              paths?.map((dynamic path) => XFile(path as String)).toList(),
+          (List<dynamic>? paths) => paths
+              ?.map((dynamic path) => XFile.fromPath(path as String))
+              .toList(),
         );
 
     return paths ?? <XFile>[];
@@ -287,7 +288,7 @@ class MethodChannelImagePicker extends ImagePickerPlatform {
       maxDuration: maxDuration,
       preferredCameraDevice: preferredCameraDevice,
     );
-    return path != null ? XFile(path) : null;
+    return path != null ? XFile.fromPath(path) : null;
   }
 
   @override
@@ -331,12 +332,12 @@ class MethodChannelImagePicker extends ImagePickerPlatform {
     if (pathList != null) {
       pickedFileList = <XFile>[];
       for (final String path in pathList) {
-        pickedFileList.add(XFile(path));
+        pickedFileList.add(XFile.fromPath(path));
       }
     }
 
     return LostDataResponse(
-      file: path != null ? XFile(path) : null,
+      file: path != null ? XFile.fromPath(path) : null,
       exception: exception,
       type: retrieveType,
       files: pickedFileList,

@@ -84,7 +84,7 @@ class ImagePickerIOS extends ImagePickerPlatform {
       source: source,
       options: options,
     );
-    return path != null ? XFile(path) : null;
+    return path != null ? XFile.fromPath(path) : null;
   }
 
   @override
@@ -116,7 +116,7 @@ class ImagePickerIOS extends ImagePickerPlatform {
     MultiImagePickerOptions options = const MultiImagePickerOptions(),
   }) async {
     final List<String> paths = await _pickMultiImageAsPath(options: options);
-    return paths.map((String path) => XFile(path)).toList();
+    return paths.map((String path) => XFile.fromPath(path)).toList();
   }
 
   Future<List<String>> _pickMultiImageAsPath({
@@ -195,7 +195,7 @@ class ImagePickerIOS extends ImagePickerPlatform {
 
     return (await _hostApi.pickMedia(
       mediaSelectionOptions,
-    )).map((String? path) => XFile(path!)).toList();
+    )).map((String? path) => XFile.fromPath(path!)).toList();
   }
 
   MaxSize _imageOptionsToMaxSizeWithValidation(ImageOptions imageOptions) {
@@ -298,7 +298,7 @@ class ImagePickerIOS extends ImagePickerPlatform {
         preferredCameraDevice: preferredCameraDevice,
       ),
     );
-    return path != null ? XFile(path) : null;
+    return path != null ? XFile.fromPath(path) : null;
   }
 
   @override
@@ -322,7 +322,7 @@ class ImagePickerIOS extends ImagePickerPlatform {
       return null;
     }
 
-    return paths.map((String path) => XFile(path)).toList();
+    return paths.map((String path) => XFile.fromPath(path)).toList();
   }
 
   @override
@@ -336,7 +336,7 @@ class ImagePickerIOS extends ImagePickerPlatform {
       maxDuration: maxDuration,
       preferredCameraDevice: preferredCameraDevice,
     );
-    return path != null ? XFile(path) : null;
+    return path != null ? XFile.fromPath(path) : null;
   }
 
   @override
@@ -346,6 +346,6 @@ class ImagePickerIOS extends ImagePickerPlatform {
     return (await _hostApi.pickMultiVideo(
       options.maxDuration?.inSeconds,
       options.limit,
-    )).map((String path) => XFile(path)).toList();
+    )).map((String path) => XFile.fromPath(path)).toList();
   }
 }

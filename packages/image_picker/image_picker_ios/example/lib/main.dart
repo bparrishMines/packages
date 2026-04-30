@@ -10,7 +10,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker_platform_interface/image_picker_platform_interface.dart';
 import 'package:mime/mime.dart';
-import 'package:video_player/video_player.dart';
+// import 'package:video_player/video_player.dart';
 
 void main() {
   runApp(const MyApp());
@@ -47,8 +47,8 @@ class _MyHomePageState extends State<MyHomePage> {
   dynamic _pickImageError;
   bool _isVideo = false;
 
-  VideoPlayerController? _controller;
-  VideoPlayerController? _toBeDisposed;
+  // VideoPlayerController? _controller;
+  // VideoPlayerController? _toBeDisposed;
   String? _retrieveDataError;
 
   final ImagePickerPlatform _picker = ImagePickerPlatform.instance;
@@ -57,18 +57,18 @@ class _MyHomePageState extends State<MyHomePage> {
   final TextEditingController qualityController = TextEditingController();
   final TextEditingController limitController = TextEditingController();
 
-  Future<void> _playVideo(XFile? file) async {
-    if (file != null && mounted) {
-      await _disposeVideoController();
-      final controller = VideoPlayerController.file(File(file.path));
-      _controller = controller;
-      await controller.setVolume(1.0);
-      await controller.initialize();
-      await controller.setLooping(true);
-      await controller.play();
-      setState(() {});
-    }
-  }
+  // Future<void> _playVideo(XFile? file) async {
+  //   if (file != null && mounted) {
+  //     await _disposeVideoController();
+  //     // final controller = VideoPlayerController.file(File(file.path));
+  //     // _controller = controller;
+  //     await controller.setVolume(1.0);
+  //     await controller.initialize();
+  //     await controller.setLooping(true);
+  //     await controller.play();
+  //     setState(() {});
+  //   }
+  // }
 
   Future<void> _onImageButtonPressed(
     ImageSource source, {
@@ -76,9 +76,9 @@ class _MyHomePageState extends State<MyHomePage> {
     bool allowMultiple = false,
     bool isMedia = false,
   }) async {
-    if (_controller != null) {
-      await _controller!.setVolume(0.0);
-    }
+    // if (_controller != null) {
+    //   await _controller!.setVolume(0.0);
+    // }
     if (context.mounted) {
       if (_isVideo) {
         final List<XFile> files;
@@ -94,7 +94,7 @@ class _MyHomePageState extends State<MyHomePage> {
         if (files.isNotEmpty && context.mounted) {
           _showPickedSnackBar(context, files);
           // Just play the first file, to keep the example simple.
-          await _playVideo(files.first);
+          // await _playVideo(files.first);
         }
       } else if (allowMultiple) {
         await _displayPickImageDialog(context, true, (
@@ -197,10 +197,10 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   void deactivate() {
-    if (_controller != null) {
-      _controller!.setVolume(0.0);
-      _controller!.pause();
-    }
+    // if (_controller != null) {
+    //   _controller!.setVolume(0.0);
+    //   _controller!.pause();
+    // }
     super.deactivate();
   }
 
@@ -214,11 +214,11 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Future<void> _disposeVideoController() async {
-    if (_toBeDisposed != null) {
-      await _toBeDisposed!.dispose();
-    }
-    _toBeDisposed = _controller;
-    _controller = null;
+    // if (_toBeDisposed != null) {
+    //   await _toBeDisposed!.dispose();
+    // }
+    // _toBeDisposed = _controller;
+    // _controller = null;
   }
 
   Widget _previewVideo() {
@@ -226,16 +226,17 @@ class _MyHomePageState extends State<MyHomePage> {
     if (retrieveError != null) {
       return retrieveError;
     }
-    if (_controller == null) {
-      return const Text(
-        'You have not yet picked a video',
-        textAlign: TextAlign.center,
-      );
-    }
-    return Padding(
-      padding: const EdgeInsets.all(10.0),
-      child: AspectRatioVideo(_controller),
-    );
+    // if (_controller == null) {
+    //   return const Text(
+    //     'You have not yet picked a video',
+    //     textAlign: TextAlign.center,
+    //   );
+    // }
+    // return Padding(
+    //   padding: const EdgeInsets.all(10.0),
+    //   child: AspectRatioVideo(_controller),
+    // );
+    return Container();
   }
 
   Widget _previewImages() {
@@ -250,12 +251,13 @@ class _MyHomePageState extends State<MyHomePage> {
           key: UniqueKey(),
           itemBuilder: (BuildContext context, int index) {
             final XFile image = _mediaFileList![index];
-            final String? mime = lookupMimeType(image.path);
+            final String? mime = lookupMimeType(Uri.parse(image.uri).path);
+            print(image.uri);
             return Semantics(
               label: 'image_picker_example_picked_image',
               child: mime == null || mime.startsWith('image/')
                   ? Image.file(
-                      File(image.path),
+                      File.fromUri(Uri.parse(image.uri)),
                       errorBuilder:
                           (
                             BuildContext context,
@@ -267,7 +269,7 @@ class _MyHomePageState extends State<MyHomePage> {
                             );
                           },
                     )
-                  : _buildInlineVideoPlayer(index),
+                  : Container(), //_buildInlineVideoPlayer(index),
             );
           },
           itemCount: _mediaFileList!.length,
@@ -286,16 +288,16 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
-  Widget _buildInlineVideoPlayer(int index) {
-    final controller = VideoPlayerController.file(
-      File(_mediaFileList![index].path),
-    );
-    controller.setVolume(1.0);
-    controller.initialize();
-    controller.setLooping(true);
-    controller.play();
-    return Center(child: AspectRatioVideo(controller));
-  }
+  // Widget _buildInlineVideoPlayer(int index) {
+  //   final controller = VideoPlayerController.file(
+  //     File(_mediaFileList![index].path),
+  //   );
+  //   controller.setVolume(1.0);
+  //   controller.initialize();
+  //   controller.setLooping(true);
+  //   controller.play();
+  //   return Center(child: AspectRatioVideo(controller));
+  // }
 
   Widget _handlePreview() {
     if (_isVideo) {
@@ -549,55 +551,55 @@ typedef OnPickImageCallback =
       int? limit,
     );
 
-class AspectRatioVideo extends StatefulWidget {
-  const AspectRatioVideo(this.controller, {super.key});
+// class AspectRatioVideo extends StatefulWidget {
+//   const AspectRatioVideo(this.controller, {super.key});
+//
+//   final VideoPlayerController? controller;
+//
+//   @override
+//   AspectRatioVideoState createState() => AspectRatioVideoState();
+// }
 
-  final VideoPlayerController? controller;
-
-  @override
-  AspectRatioVideoState createState() => AspectRatioVideoState();
-}
-
-class AspectRatioVideoState extends State<AspectRatioVideo> {
-  VideoPlayerController? get controller => widget.controller;
-  bool initialized = false;
-
-  void _onVideoControllerUpdate() {
-    if (!mounted) {
-      return;
-    }
-    if (initialized != controller!.value.isInitialized) {
-      initialized = controller!.value.isInitialized;
-      setState(() {});
-    }
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    controller!.addListener(_onVideoControllerUpdate);
-  }
-
-  @override
-  void dispose() {
-    controller!.removeListener(_onVideoControllerUpdate);
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    if (initialized) {
-      return Center(
-        child: AspectRatio(
-          aspectRatio: controller!.value.aspectRatio,
-          child: VideoPlayer(controller!),
-        ),
-      );
-    } else {
-      return Container();
-    }
-  }
-}
+// class AspectRatioVideoState extends State<AspectRatioVideo> {
+//   // VideoPlayerController? get controller => widget.controller;
+//   bool initialized = false;
+//
+//   void _onVideoControllerUpdate() {
+//     if (!mounted) {
+//       return;
+//     }
+//     if (initialized != controller!.value.isInitialized) {
+//       initialized = controller!.value.isInitialized;
+//       setState(() {});
+//     }
+//   }
+//
+//   @override
+//   void initState() {
+//     super.initState();
+//     controller!.addListener(_onVideoControllerUpdate);
+//   }
+//
+//   @override
+//   void dispose() {
+//     controller!.removeListener(_onVideoControllerUpdate);
+//     super.dispose();
+//   }
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     if (initialized) {
+//       return Center(
+//         child: AspectRatio(
+//           aspectRatio: controller!.value.aspectRatio,
+//           child: VideoPlayer(controller!),
+//         ),
+//       );
+//     } else {
+//       return Container();
+//     }
+//   }
+// }
 
 T? _firstOrNull<T>(List<T> list) {
   return list.isEmpty ? null : list.first;
