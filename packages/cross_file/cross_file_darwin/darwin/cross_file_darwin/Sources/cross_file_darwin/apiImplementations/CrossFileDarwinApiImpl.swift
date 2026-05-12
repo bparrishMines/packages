@@ -31,7 +31,7 @@ class CrossFileDarwinApiImpl: CrossFileDarwinApi {
     let fetchResult = PHAsset.fetchAssets(withLocalIdentifiers: [identifier], options: nil)
     if let asset = fetchResult.firstObject {
       if let modificationDate = asset.modificationDate {
-        completion(.success(Int64(asset.modificationDate.timeIntervalSince1970 * 1000.0).rounded()))
+        completion(.success(Int64(modificationDate.timeIntervalSince1970 * 1000.0)))
       } else {
         completion(.success(nil))
       }
@@ -52,16 +52,16 @@ class CrossFileDarwinApiImpl: CrossFileDarwinApi {
 
       manager.requestImageDataAndOrientation(
         for: asset, options: options,
-      ) { imageData, orientation, info in
+      ) { imageData, dataUTI, orientation, info in
 
-        if let imageData = image {
+        if let imageData = imageData {
           completion(.success(FlutterStandardTypedData(bytes: imageData)))
         } else {
-          completion(.success(nil))
+          completion(.failure(NSError()))
         }
       }
     } else {
-      completion(.success(nil))
+      completion(.failure(NSError()))
     }
   }
 

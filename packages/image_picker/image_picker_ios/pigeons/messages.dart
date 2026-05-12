@@ -61,6 +61,7 @@ abstract class ImagePickerApi {
     int? imageQuality,
     bool requestFullMetadata,
   );
+
   @async
   @ObjCSelector('pickMultiImageWithMaxSize:quality:fullMetadata:limit:')
   List<String> pickMultiImage(
@@ -80,4 +81,6 @@ abstract class ImagePickerApi {
   @async
   @ObjCSelector('pickMediaWithMediaSelectionOptions:')
   List<String> pickMedia(MediaSelectionOptions mediaSelectionOptions);
+
+
 }

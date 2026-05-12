@@ -93,20 +93,21 @@ API_AVAILABLE(ios(14))
     // This includes UTTypeHEIC, UTTypeHEIF, UTTypeLivePhoto, UTTypeICO, UTTypeICNS, UTTypePNG
     // UTTypeGIF, UTTypeJPEG, UTTypeWebP, UTTypeTIFF, UTTypeBMP, UTTypeSVG, UTTypeRAWImage
     if ([self.result.itemProvider hasItemConformingToTypeIdentifier:UTTypeImage.identifier]) {
-      [self.result.itemProvider
-          loadDataRepresentationForTypeIdentifier:UTTypeImage.identifier
-                                completionHandler:^(NSData *_Nullable data,
-                                                    NSError *_Nullable error) {
-                                  if (data != nil) {
-                                    [self processImage:data];
-                                  } else {
-                                    FlutterError *flutterError =
-                                        [FlutterError errorWithCode:@"invalid_image"
-                                                            message:error.localizedDescription
-                                                            details:error.domain];
-                                    [self completeOperationWithPath:nil error:flutterError];
-                                  }
-                                }];
+      [self completeOperationWithPath:self.result.assetIdentifier error:nil];
+//      [self.result.itemProvider
+//          loadDataRepresentationForTypeIdentifier:UTTypeImage.identifier
+//                                completionHandler:^(NSData *_Nullable data,
+//                                                    NSError *_Nullable error) {
+//                                  if (data != nil) {
+//                                    [self processImage:data];
+//                                  } else {
+//                                    FlutterError *flutterError =
+//                                        [FlutterError errorWithCode:@"invalid_image"
+//                                                            message:error.localizedDescription
+//                                                            details:error.domain];
+//                                    [self completeOperationWithPath:nil error:flutterError];
+//                                  }
+//                                }];
     } else if ([self.result.itemProvider
                    // This supports uniform types that conform to UTTypeMovie.
                    // This includes kUTTypeVideo, kUTTypeMPEG4, public.3gpp, kUTTypeMPEG,

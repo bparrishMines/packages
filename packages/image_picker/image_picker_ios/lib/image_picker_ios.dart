@@ -80,11 +80,20 @@ class ImagePickerIOS extends ImagePickerPlatform {
     required ImageSource source,
     ImagePickerOptions options = const ImagePickerOptions(),
   }) async {
+    print('OIJWEOFIJ:IJ');
     final String? path = await _pickImageAsPath(
       source: source,
       options: options,
     );
-    return path != null ? XFile.fromPath(path) : null;
+    print('path');
+    print(path);
+    if (path == null) {
+      return null;
+    }
+    final file = ScopedStorageXFile(uri: path);
+    print(file.platform);
+    //print(await file.name());
+    return file;
   }
 
   @override

@@ -83,7 +83,7 @@ sealed class DarwinScopedStorageXFile extends PlatformScopedStorageXFile {
         SecurityScopedDarwinScopedStorageXFile(securityScopedParams),
       final PhotoKitDarwinScopedStorageXFileCreationParams photoKitParams =>
         PhotoKitDarwinScopedStorageXFile(photoKitParams),
-      _ => SecurityScopedDarwinScopedStorageXFile(params),
+      _ => PhotoKitDarwinScopedStorageXFile(params),
     };
   }
 
@@ -113,7 +113,9 @@ base class SecurityScopedDarwinScopedStorageXFile
   late final SecurityScopedDarwinScopedStorageXFileCreationParams params =
       super.params is SecurityScopedDarwinScopedStorageXFileCreationParams
       ? super.params as SecurityScopedDarwinScopedStorageXFileCreationParams
-      : SecurityScopedDarwinScopedStorageXFileCreationParams(uri: params.uri);
+      : SecurityScopedDarwinScopedStorageXFileCreationParams(
+          uri: super.params.uri,
+        );
 
   @override
   SecurityScopedDarwinScopedStorageXFileExtension? get extension => this;
@@ -180,7 +182,7 @@ base class PhotoKitDarwinScopedStorageXFile extends DarwinScopedStorageXFile
       super.params is PhotoKitDarwinScopedStorageXFileCreationParams
       ? super.params as PhotoKitDarwinScopedStorageXFileCreationParams
       : PhotoKitDarwinScopedStorageXFileCreationParams(
-          localIdentifier: params.uri,
+          localIdentifier: super.params.uri,
         );
 
   @override
@@ -188,7 +190,11 @@ base class PhotoKitDarwinScopedStorageXFile extends DarwinScopedStorageXFile
 
   @override
   Future<DateTime?> lastModified() async {
-    throw UnsupportedError('');
+    final int? value = await params.api.lastModified(params.uri);
+    if (value == null) {
+      return null;
+    }
+    return DateTime.fromMillisecondsSinceEpoch(value);
   }
 
   @override
@@ -205,7 +211,7 @@ base class PhotoKitDarwinScopedStorageXFile extends DarwinScopedStorageXFile
       throw UnsupportedError('');
 
   @override
-  Future<Uint8List> readAsBytes() => throw UnsupportedError('');
+  Future<Uint8List> readAsBytes() => params.api.readAsBytes(params.uri);
 
   @override
   Future<String> readAsString({Encoding encoding = utf8}) =>
@@ -220,7 +226,7 @@ base class PhotoKitDarwinScopedStorageXFile extends DarwinScopedStorageXFile
   Future<bool> exists() async => throw UnsupportedError('');
 
   @override
-  Future<String?> name() async => throw UnsupportedError('');
+  Future<String?> name() async => params.api.name(params.uri);
 }
 
 /// Provides platform specific features for

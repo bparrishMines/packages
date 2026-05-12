@@ -6,6 +6,7 @@
 
 import 'dart:async';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:image_picker_platform_interface/image_picker_platform_interface.dart';
@@ -174,7 +175,7 @@ class _MyHomePageState extends State<MyHomePage> {
           int? quality,
           int? limit,
         ) async {
-          try {
+          // try {
             final XFile? pickedFile = await _picker.getImageFromSource(
               source: source,
               options: ImagePickerOptions(
@@ -187,9 +188,9 @@ class _MyHomePageState extends State<MyHomePage> {
               _showPickedSnackBar(context, <XFile>[pickedFile]);
             }
             setState(() => _setImageFileListFromFile(pickedFile));
-          } catch (e) {
-            setState(() => _pickImageError = e);
-          }
+          // } catch (e) {
+          //   setState(() => _pickImageError = e);
+          // }
         });
       }
     }
@@ -251,24 +252,46 @@ class _MyHomePageState extends State<MyHomePage> {
           key: UniqueKey(),
           itemBuilder: (BuildContext context, int index) {
             final XFile image = _mediaFileList![index];
-            final String? mime = lookupMimeType(Uri.parse(image.uri).path);
+            //final String? mime = lookupMimeType(Uri.parse(image.uri).path);
+            print('hola');
             print(image.uri);
+            image.name().then((value) => print('value: $value'));
+            //return Container();
             return Semantics(
               label: 'image_picker_example_picked_image',
-              child: mime == null || mime.startsWith('image/')
-                  ? Image.file(
-                      File.fromUri(Uri.parse(image.uri)),
-                      errorBuilder:
+              child: true
+                  ? FutureBuilder<Uint8List>(
+                      future: image.readAsBytes(),
+                      builder:
                           (
                             BuildContext context,
-                            Object error,
-                            StackTrace? stackTrace,
+                            AsyncSnapshot<Uint8List> snapshot,
                           ) {
-                            return const Center(
-                              child: Text('This image type is not supported'),
-                            );
+                            switch (snapshot.connectionState) {
+                              case ConnectionState.done:
+                                print(snapshot.data == null);
+                                print(snapshot.data!.length);
+                                return Image.memory(snapshot.data!);
+                              case ConnectionState.none:
+                              case ConnectionState.waiting:
+                              case ConnectionState.active:
+                                return Container();
+                            }
                           },
                     )
+                  // ? Image.file(
+                  //     File.fromUri(Uri.parse(image.uri)),
+                  //     errorBuilder:
+                  //         (
+                  //           BuildContext context,
+                  //           Object error,
+                  //           StackTrace? stackTrace,
+                  //         ) {
+                  //           return const Center(
+                  //             child: Text('This image type is not supported'),
+                  //           );
+                  //         },
+                  //   )
                   : Container(), //_buildInlineVideoPlayer(index),
             );
           },
