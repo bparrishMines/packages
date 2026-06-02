@@ -39,7 +39,7 @@ class FileSelectorIOS extends FileSelectorPlatform {
 
     final file = ScopedStorageXFile(uri: Uri.file(paths.single).toString());
     await file
-        .getExtension<DarwinScopedStorageXFileExtension>()
+        .getExtension<SecurityScopedDarwinScopedStorageXFileExtension>()
         .startAccessingSecurityScopedResource();
     return file;
   }
@@ -61,7 +61,7 @@ class FileSelectorIOS extends FileSelectorPlatform {
     for (final path in pathList) {
       final file = ScopedStorageXFile(uri: Uri.file(path).toString());
       await file
-          .getExtension<DarwinScopedStorageXFileExtension>()
+          .getExtension<SecurityScopedDarwinScopedStorageXFileExtension>()
           .startAccessingSecurityScopedResource();
       files.add(file);
     }
@@ -111,9 +111,9 @@ class FileSelectorIOS extends FileSelectorPlatform {
     final directory = ScopedStorageXDirectory(
       uri: Uri.directory(paths.single).toString(),
     );
-    await directory
-        .getExtension<DarwinScopedStorageXDirectoryExtension>()
-        .startAccessingSecurityScopedResource();
+    // await directory
+    //     .getExtension<DarwinScopedStorageXDirectoryExtension>()
+    //     .startAccessingSecurityScopedResource();
     return directory;
   }
 }
