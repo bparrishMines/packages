@@ -5,6 +5,7 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart' show visibleForTesting;
 import 'package:image_picker_platform_interface/image_picker_platform_interface.dart';
+import 'package:cross_file_darwin/cross_file_darwin.dart';
 
 import 'src/messages.g.dart';
 
@@ -90,7 +91,11 @@ class ImagePickerIOS extends ImagePickerPlatform {
     if (path == null) {
       return null;
     }
-    final file = ScopedStorageXFile(uri: path);
+    final file = ScopedStorageXFile.fromCreationParams(
+      DarwinScopedStorageXFileCreationParams.photoKit(localIdentifier: path),
+    );
+    print('LENGTH');
+    //await file.length();
     print(file.platform);
     //print(await file.name());
     return file;

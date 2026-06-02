@@ -30,6 +30,6 @@ dev_dependencies:
 flutter:
   uses-material-design: true
 
-dependency_overrides:
-  cross_file_darwin:
-    path: ../../../cross_file/cross_file_darwin
+#dependency_overrides:
+#  cross_file_darwin:
+#    path: ../../../cross_file/cross_file_darwin
