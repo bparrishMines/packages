@@ -255,7 +255,7 @@ class _MyHomePageState extends State<MyHomePage> {
             //final String? mime = lookupMimeType(Uri.parse(image.uri).path);
             print('hola');
             print(image.uri);
-            image.name().then((value) => print('value: $value'));
+            image.length().then((value) => print('value: $value'));
             //return Container();
             return Semantics(
               label: 'image_picker_example_picked_image',
