@@ -11,6 +11,7 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:image_picker_platform_interface/image_picker_platform_interface.dart';
 import 'package:mime/mime.dart';
+
 // import 'package:video_player/video_player.dart';
 
 void main() {
@@ -176,18 +177,18 @@ class _MyHomePageState extends State<MyHomePage> {
           int? limit,
         ) async {
           // try {
-            final XFile? pickedFile = await _picker.getImageFromSource(
-              source: source,
-              options: ImagePickerOptions(
-                maxWidth: maxWidth,
-                maxHeight: maxHeight,
-                imageQuality: quality,
-              ),
-            );
-            if (pickedFile != null && context.mounted) {
-              _showPickedSnackBar(context, <XFile>[pickedFile]);
-            }
-            setState(() => _setImageFileListFromFile(pickedFile));
+          final XFile? pickedFile = await _picker.getImageFromSource(
+            source: source,
+            options: ImagePickerOptions(
+              maxWidth: maxWidth,
+              maxHeight: maxHeight,
+              imageQuality: quality,
+            ),
+          );
+          if (pickedFile != null && context.mounted) {
+            _showPickedSnackBar(context, <XFile>[pickedFile]);
+          }
+          setState(() => _setImageFileListFromFile(pickedFile));
           // } catch (e) {
           //   setState(() => _pickImageError = e);
           // }
@@ -261,7 +262,9 @@ class _MyHomePageState extends State<MyHomePage> {
               label: 'image_picker_example_picked_image',
               child: true
                   ? FutureBuilder<Uint8List>(
-                      future: image.readAsBytes(),
+                      future: image.openRead().reduce(
+                        (a, b) => Uint8List.fromList(<int>[...a, ...b]),
+                      ),
                       builder:
                           (
                             BuildContext context,
