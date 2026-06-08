@@ -256,15 +256,19 @@ class _MyHomePageState extends State<MyHomePage> {
 
             image
                 .openRead()
-                .reduce((a, b) => Uint8List.fromList(<int>[...b, ...a]))
+                .reduce((a, b) {
+                  print('ttp first: ${a[0]}');
+                  return Uint8List.fromList(<int>[...a, ...b]);
+                })
                 .then((Uint8List bytes) {
                   print('openRead length: ${bytes.length}');
                   print(bytes[0]);
                   print(bytes[1]);
                 });
-            image
-                .readAsBytes()
-                .then((Uint8List bytes) {
+            image.openRead().forEach((Uint8List bytes) {
+              print('partial first: ${bytes.first}');
+            });
+            image.readAsBytes().then((Uint8List bytes) {
               print('readBytes length: ${bytes.length}');
               print(bytes[0]);
               print(bytes[1]);
@@ -274,9 +278,9 @@ class _MyHomePageState extends State<MyHomePage> {
               label: 'image_picker_example_picked_image',
               child: true
                   ? FutureBuilder<Uint8List>(
-                      future: image
-                          .openRead()
-                          .reduce((a, b) => Uint8List.fromList(<int>[...a, ...b])),
+                      future: image.openRead().reduce(
+                        (a, b) => Uint8List.fromList(<int>[...a, ...b]),
+                      ),
                       builder:
                           (
                             BuildContext context,
@@ -284,7 +288,9 @@ class _MyHomePageState extends State<MyHomePage> {
                           ) {
                             switch (snapshot.connectionState) {
                               case ConnectionState.done:
-                                print('snapshot length: ${snapshot.data!.length}');
+                                print(
+                                  'snapshot length: ${snapshot.data!.length}',
+                                );
                                 print(snapshot.data!.first);
                                 print(snapshot.data![1]);
                                 return Image.memory(snapshot.data!);
