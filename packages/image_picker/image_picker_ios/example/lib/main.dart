@@ -253,18 +253,23 @@ class _MyHomePageState extends State<MyHomePage> {
           key: UniqueKey(),
           itemBuilder: (BuildContext context, int index) {
             final XFile image = _mediaFileList![index];
-            //final String? mime = lookupMimeType(Uri.parse(image.uri).path);
-            print('hola');
-            print(image.uri);
-            image.length().then((value) => print('value: $value'));
+
+            image
+                .openRead()
+                .reduce((a, b) => Uint8List.fromList(<int>[...a, ...b]))
+                .then((Uint8List bytes) {
+                  print('openRead length: ${bytes.length}');
+                  print(bytes[0]);
+                  print(bytes[1]);
+                });
             //return Container();
             return Semantics(
               label: 'image_picker_example_picked_image',
               child: true
                   ? FutureBuilder<Uint8List>(
-                      future: image.openRead().reduce(
-                        (a, b) => Uint8List.fromList(<int>[...a, ...b]),
-                      ),
+                      future: image
+                          .openRead()
+                          .reduce((a, b) => Uint8List.fromList(<int>[...a, ...b])),
                       builder:
                           (
                             BuildContext context,
@@ -272,8 +277,9 @@ class _MyHomePageState extends State<MyHomePage> {
                           ) {
                             switch (snapshot.connectionState) {
                               case ConnectionState.done:
-                                print(snapshot.data == null);
-                                print(snapshot.data!.length);
+                                print('snapshot length: ${snapshot.data!.length}');
+                                print(snapshot.data!.first);
+                                print(snapshot.data![2]);
                                 return Image.memory(snapshot.data!);
                               case ConnectionState.none:
                               case ConnectionState.waiting:
