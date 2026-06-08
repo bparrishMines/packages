@@ -254,24 +254,24 @@ class _MyHomePageState extends State<MyHomePage> {
           itemBuilder: (BuildContext context, int index) {
             final XFile image = _mediaFileList![index];
 
-            image
-                .openRead()
-                .reduce((a, b) {
-                  print('ttp first: ${a[0]}');
-                  return Uint8List.fromList(<int>[...a, ...b]);
-                })
-                .then((Uint8List bytes) {
-                  print('openRead length: ${bytes.length}');
-                  print(bytes[0]);
-                  print(bytes[1]);
-                });
-            image.openRead().forEach((Uint8List bytes) {
-              print('partial first: ${bytes.first}');
-            });
+            // image
+            //     .openRead()
+            //     .reduce((a, b) {
+            //       print('ttp first: ${a[0]}');
+            //       return Uint8List.fromList(<int>[...a, ...b]);
+            //     })
+            //     .then((Uint8List bytes) {
+            //       print('openRead length: ${bytes.length}');
+            //       print(bytes[0]);
+            //       print(bytes[1]);
+            //     });
+            // image.openRead().forEach((Uint8List bytes) {
+            //   print('partial first: ${bytes.first}');
+            // });
             image.readAsBytes().then((Uint8List bytes) {
               print('readBytes length: ${bytes.length}');
-              print(bytes[0]);
-              print(bytes[1]);
+              print(bytes[bytes.length - 1]);
+              print(bytes[bytes.length - 2]);
             });
             //return Container();
             return Semantics(
@@ -291,8 +291,8 @@ class _MyHomePageState extends State<MyHomePage> {
                                 print(
                                   'snapshot length: ${snapshot.data!.length}',
                                 );
-                                print(snapshot.data!.first);
-                                print(snapshot.data![1]);
+                                print(snapshot.data![snapshot.data!.length - 1]);
+                                print(snapshot.data![snapshot.data!.length - 2]);
                                 return Image.memory(snapshot.data!);
                               case ConnectionState.none:
                               case ConnectionState.waiting:
