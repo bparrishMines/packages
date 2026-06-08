@@ -256,12 +256,19 @@ class _MyHomePageState extends State<MyHomePage> {
 
             image
                 .openRead()
-                .reduce((a, b) => Uint8List.fromList(<int>[...a, ...b]))
+                .reduce((a, b) => Uint8List.fromList(<int>[...b, ...a]))
                 .then((Uint8List bytes) {
                   print('openRead length: ${bytes.length}');
                   print(bytes[0]);
                   print(bytes[1]);
                 });
+            image
+                .readAsBytes()
+                .then((Uint8List bytes) {
+              print('readBytes length: ${bytes.length}');
+              print(bytes[0]);
+              print(bytes[1]);
+            });
             //return Container();
             return Semantics(
               label: 'image_picker_example_picked_image',
@@ -279,7 +286,7 @@ class _MyHomePageState extends State<MyHomePage> {
                               case ConnectionState.done:
                                 print('snapshot length: ${snapshot.data!.length}');
                                 print(snapshot.data!.first);
-                                print(snapshot.data![2]);
+                                print(snapshot.data![1]);
                                 return Image.memory(snapshot.data!);
                               case ConnectionState.none:
                               case ConnectionState.waiting:
