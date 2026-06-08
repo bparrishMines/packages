@@ -270,8 +270,10 @@ class _MyHomePageState extends State<MyHomePage> {
             // });
             image.readAsBytes().then((Uint8List bytes) {
               print('readBytes length: ${bytes.length}');
-              print(bytes[bytes.length - 1]);
-              print(bytes[bytes.length - 2]);
+              print(bytes[0]);
+              print(bytes[1]);
+              print(bytes[2]);
+              print(bytes[3]);
             });
             //return Container();
             return Semantics(
