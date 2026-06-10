@@ -254,17 +254,24 @@ class _MyHomePageState extends State<MyHomePage> {
           itemBuilder: (BuildContext context, int index) {
             final XFile image = _mediaFileList![index];
 
-            // image
-            //     .openRead()
-            //     .reduce((a, b) {
-            //       print('ttp first: ${a[0]}');
-            //       return Uint8List.fromList(<int>[...a, ...b]);
-            //     })
-            //     .then((Uint8List bytes) {
-            //       print('openRead length: ${bytes.length}');
-            //       print(bytes[0]);
-            //       print(bytes[1]);
-            //     });
+            image
+                .openRead()
+                .reduce((a, b) {
+                  int i = 0;
+                  int j = 0;
+                  while (i < a.length && j < b.length) {
+                    if (a[i] != b[j]) {
+                      break;
+                    }
+                    i++;
+                    j++;
+                  }
+                  print('matching: $i');
+                  return Uint8List.fromList(<int>[...a, ...b]);
+                })
+                .then((Uint8List bytes) {
+
+                });
             // image.openRead().forEach((Uint8List bytes) {
             //   print('partial first: ${bytes.first}');
             // });
