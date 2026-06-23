@@ -254,7 +254,6 @@ base class PhotoKitDarwinScopedStorageXFile extends DarwinScopedStorageXFile
             streamController.addError(Exception(error.localizedDescription.toDartString()));
           }
 
-          print('end stream');
           return streamController.close();
         });
       }
@@ -342,13 +341,6 @@ base class PhotoKitDarwinScopedStorageXFile extends DarwinScopedStorageXFile
       final NSArray resources = PHAssetResource.assetResourcesForAsset(asset);
       final ObjCObject? firstObject = resources.firstObject;
 
-      print('cfd: ${resources.count}');
-      for (var index = 0; index < resources.count; index++) {
-        final resource = PHAssetResource.as(resources.objectAtIndex(index));
-        print('cfd: ${resource.type}');
-        print('cfd: ${resource.contentType.preferredMIMEType}');
-      }
-
       if (firstObject != null) {
         return PHAssetResource.as(firstObject);
       }
@@ -365,9 +357,6 @@ base class PhotoKitDarwinScopedStorageXFile extends DarwinScopedStorageXFile
     final Pointer<Uint8> uint8Pointer = data.bytes.cast<Uint8>();
     final Uint8List byteView = uint8Pointer.asTypedList(data.length);
     final a = Uint8List.fromList(byteView);
-    print('extract: ${a[0]} ${a[1]} ${a[2]} ${a[3]} ${a[4]}');
-    print('extract: ${a[a.length - 1]}');
-    print('extract: ${a[a.length - 2]}');
     return a;
   }
 }
