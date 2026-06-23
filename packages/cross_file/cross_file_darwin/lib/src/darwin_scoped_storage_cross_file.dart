@@ -6,6 +6,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:ffi';
 import 'dart:io';
+import 'dart:isolate';
 import 'dart:math';
 import 'dart:ui';
 
@@ -251,7 +252,8 @@ base class PhotoKitDarwinScopedStorageXFile extends DarwinScopedStorageXFile
       void completionHandler(NSError? error) {
         runOnPlatformThread(() {
           if (error != null) {
-            streamController.addError(Exception(error.localizedDescription.toDartString()));
+            streamController.addError(
+                Exception(error.localizedDescription.toDartString()));
           }
 
           print('end stream');
@@ -259,11 +261,15 @@ base class PhotoKitDarwinScopedStorageXFile extends DarwinScopedStorageXFile
         });
       }
 
-      resourceManager.requestDataForAssetResource(
-        resource,
-        dataReceivedHandler: ObjCBlock_ffiVoid_NSData.listener(dataReceivedHandler),
-        completionHandler: ObjCBlock_ffiVoid_NSError.listener(completionHandler),
-      );
+      void go() {
+        resourceManager.requestDataForAssetResource(
+          resource,
+          dataReceivedHandler: ObjCBlock_ffiVoid_NSData.blocking(dataReceivedHandler),
+          completionHandler: ObjCBlock_ffiVoid_NSError.blocking(completionHandler),
+        );
+      }
+
+      Isolate.run(go);
 
       return streamController.stream;
     }
