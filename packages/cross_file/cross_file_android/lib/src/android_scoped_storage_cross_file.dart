@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import 'dart:convert';
-import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:cross_file_platform_interface/cross_file_platform_interface.dart';
@@ -16,16 +15,20 @@ base class AndroidScopedStorageXFile extends PlatformScopedStorageXFile {
   /// Constructs an [AndroidScopedStorageXFile].
   AndroidScopedStorageXFile(super.params) : super.implementation();
 
-  late final android.DocumentFile _documentFile =
-      android.DocumentFile.fromSingleUri(singleUri: params.uri);
+  late final android.DocumentFile _documentFile = android.DocumentFile.fromSingleUri(
+    singleUri: params.uri,
+  );
 
-  late final android.ContentResolver _contentResolver =
-      android.ContentResolver.instance;
+  late final android.ContentResolver _contentResolver = android.ContentResolver.instance;
 
   /// Maximum number of bytes to read at a time from the native Android
   /// InputStream.
   ///
   /// Only visible for testing.
+  ///
+  /// This can be set to any arbitrary size, but 4KB was chosen because it seems
+  /// like a good size that balances between minimizing disk size use and
+  /// minimizing I/O operations.
   @visibleForTesting
   static const int maxByteArrayLen = 4 * 1024;
 
@@ -51,42 +54,46 @@ base class AndroidScopedStorageXFile extends PlatformScopedStorageXFile {
 
   @override
   Stream<Uint8List> openRead([int? start, int? end]) async* {
-    final int? fileLength = await length();
-    if (fileLength == null) {
-      throw UnsupportedError('Cannot access file length.');
+    if (start != null && start < 0) {
+      throw ArgumentError('`start` must be greater than 0. start: $start');
+    } else if (end != null && end <= (start ?? 0)) {
+      throw ArgumentError(
+        '`end` must be greater than 0 and greater than `start`. start: $start, end: $end',
+      );
     }
 
-    int bytesToRead = (end ?? fileLength) - (start ?? 0);
-    assert(bytesToRead >= 0);
-
-    final android.InputStream? inputStream = await _contentResolver
-        .openInputStream(params.uri);
-
+    final android.InputStream? inputStream = await _contentResolver.openInputStream(params.uri);
     if (inputStream case final android.InputStream inputStream) {
-      if (start != null && start > 0) {
-        await inputStream.skip(start);
+      int currentByteIndex = start ?? 0;
+
+      if (currentByteIndex > 0) {
+        await inputStream.skip(currentByteIndex);
       }
 
-      late Uint8List bytes;
-      do {
-        bytes = await inputStream.readBytes(min(bytesToRead, maxByteArrayLen));
-        yield bytes;
-        bytesToRead -= bytes.length;
-      } while (bytesToRead > 0 && bytes.isNotEmpty);
+      Uint8List chunk = await inputStream.readBytes(maxByteArrayLen);
+      while (chunk.isNotEmpty && (end == null || currentByteIndex < end)) {
+        if (end == null) {
+          yield chunk;
+        } else {
+          yield Uint8List.sublistView(chunk, 0, end - currentByteIndex);
+        }
+        currentByteIndex += chunk.length;
+
+        chunk = await inputStream.readBytes(maxByteArrayLen);
+      }
     } else {
-      throw NullInputStreamError(params.uri);
+      throw NullInputStreamException(params.uri);
     }
   }
 
   @override
   Future<Uint8List> readAsBytes() async {
-    final android.InputStream? inputStream = await _contentResolver
-        .openInputStream(params.uri);
+    final android.InputStream? inputStream = await _contentResolver.openInputStream(params.uri);
     if (inputStream case final android.InputStream inputStream) {
       return inputStream.readAllBytes();
     }
 
-    throw NullInputStreamError(params.uri);
+    throw NullInputStreamException(params.uri);
   }
 
   @override
@@ -107,11 +114,16 @@ base class AndroidScopedStorageXFile extends PlatformScopedStorageXFile {
 }
 
 /// Error thrown when the native [android.InputStream] is not accessible.
-class NullInputStreamError extends UnsupportedError {
-  /// Constructs a [NullInputStreamError].
-  NullInputStreamError(String uri)
-    : super(
-        'Failed to get native InputStream from file with path: $uri. '
-        'App may not have permissions to access file.',
-      );
+final class NullInputStreamException implements Exception {
+  /// Constructs a [NullInputStreamException].
+  NullInputStreamException(this.uri);
+
+  /// The URI the input stream that was request for.
+  final String uri;
+
+  @override
+  String toString() {
+    return 'NullInputStreamException: Failed to get native InputStream from file with path: $uri. '
+        'App may not have permissions to access file.';
+  }
 }

@@ -9,20 +9,33 @@ import PackageDescription
 let package = Package(
   name: "cross_file_darwin",
   platforms: [
-    .iOS("13.0"),
-    .macOS("10.15"),
+    .iOS(.v13),
+    .macOS(.v10_15),
   ],
   products: [
     .library(name: "cross-file-darwin", targets: ["cross_file_darwin"])
   ],
-  dependencies: [],
+  dependencies: [
+    .package(name: "FlutterFramework", path: "../FlutterFramework")
+  ],
   targets: [
     .target(
       name: "cross_file_darwin",
-      dependencies: [],
+      dependencies: [
+        "cross_file_darwin_objc",
+        .product(name: "FlutterFramework", package: "FlutterFramework"),
+      ],
       resources: [
         .process("Resources")
       ]
-    )
+    ),
+    .target(
+      name: "cross_file_darwin_objc",
+      dependencies: [],
+      sources: [
+        "ffi_bindings.g.m"
+      ],
+      publicHeadersPath: "include",
+    ),
   ]
 )

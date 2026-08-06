@@ -14,16 +14,13 @@ import 'package:path/path.dart' as path;
 @immutable
 base class IOXFileCreationParams extends PlatformXFileCreationParams {
   /// Constructs an [IOXFileCreationParams].
-  IOXFileCreationParams({required String uri})
-    : this.fromFile(File.fromUri(Uri.parse(uri)));
+  IOXFileCreationParams({required String uri}) : this.fromFile(File.fromUri(Uri.parse(uri)));
 
   /// Constructs an [IOXFileCreationParams] from a [File].
   IOXFileCreationParams.fromFile(this.file) : super(uri: file.uri.toString());
 
   /// Constructs an [IOXFileCreationParams] from a [PlatformXFileCreationParams].
-  factory IOXFileCreationParams.fromCreationParams(
-    PlatformXFileCreationParams params,
-  ) {
+  factory IOXFileCreationParams.fromCreationParams(PlatformXFileCreationParams params) {
     return IOXFileCreationParams(uri: params.uri);
   }
 
@@ -37,8 +34,7 @@ base class IOXFile extends PlatformXFile with IOXFileExtension {
   IOXFile(super.params) : super.implementation();
 
   @override
-  late final IOXFileCreationParams params =
-      super.params is IOXFileCreationParams
+  late final IOXFileCreationParams params = super.params is IOXFileCreationParams
       ? super.params as IOXFileCreationParams
       : IOXFileCreationParams.fromCreationParams(super.params);
 
@@ -60,22 +56,20 @@ base class IOXFile extends PlatformXFile with IOXFileExtension {
   @override
   Future<int?> length() async {
     try {
-      return file.length();
+      return await file.length();
     } on FileSystemException {
       return null;
     }
   }
 
   @override
-  Stream<Uint8List> openRead([int? start, int? end]) =>
-      file.openRead(start, end).cast();
+  Stream<Uint8List> openRead([int? start, int? end]) => file.openRead(start, end).cast();
 
   @override
   Future<Uint8List> readAsBytes() => file.readAsBytes();
 
   @override
-  Future<String> readAsString({Encoding encoding = utf8}) =>
-      file.readAsString(encoding: encoding);
+  Future<String> readAsString({Encoding encoding = utf8}) => file.readAsString(encoding: encoding);
 
   @override
   Future<bool> exists() async => file.existsSync();
@@ -84,7 +78,7 @@ base class IOXFile extends PlatformXFile with IOXFileExtension {
   Future<String?> name() async => path.basename(file.path);
 }
 
-/// Provides platform specific features for [IOXFile].
+/// Provides platform-specific features for [IOXFile].
 mixin IOXFileExtension implements PlatformXFileExtension {
   /// The underlying file.
   File get file;

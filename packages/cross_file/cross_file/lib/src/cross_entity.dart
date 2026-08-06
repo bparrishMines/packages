@@ -17,7 +17,14 @@ base class XEntity {
   @internal
   final PlatformXEntity platform;
 
-  /// A string used to reference the resource's location.
+  /// Attempt to provide the platform class extension.
+  ///
+  /// Returns null if the specified platform extension cannot be retrieved.
+  S? getExtension<S extends PlatformXEntityExtension>() {
+    return platform.extension is S ? platform.extension! as S : null;
+  }
+
+  /// A unique string used to identify the resource.
   String get uri => platform.params.uri;
 
   /// Whether the resource represented by this reference exists.

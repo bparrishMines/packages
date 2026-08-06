@@ -1,6 +1,4 @@
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-
-group = "dev.flutter.packages.cross_file_android"
+group = "dev.flutter.packages.crossfileandroid"
 version = "1.0"
 
 buildscript {
@@ -25,17 +23,16 @@ allprojects {
 
 plugins {
     id("com.android.library")
-    id("kotlin-android")
 }
 
 kotlin {
     compilerOptions {
-        jvmTarget = JvmTarget.fromTarget(JavaVersion.VERSION_17.toString())
+        jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17
     }
 }
 
 android {
-    namespace = "dev.flutter.packages.cross_file_android"
+    namespace = "dev.flutter.packages.crossfileandroid"
     compileSdk = flutter.compileSdkVersion
 
     compileOptions {

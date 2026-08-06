@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import 'dart:convert';
-
 import 'dart:typed_data';
 
 import 'package:cross_file_platform_interface/cross_file_platform_interface.dart';
@@ -16,20 +15,14 @@ final class TestCrossFilePlatform extends CrossFilePlatform {
     this.onCreatePlatformScopedStorageXDirectory,
   });
 
-  PlatformXFile Function(PlatformXFileCreationParams params)?
-  onCreatePlatformXFile;
+  PlatformXFile Function(PlatformXFileCreationParams params)? onCreatePlatformXFile;
 
-  PlatformXDirectory Function(PlatformXDirectoryCreationParams params)?
-  onCreatePlatformXDirectory;
+  PlatformXDirectory Function(PlatformXDirectoryCreationParams params)? onCreatePlatformXDirectory;
 
-  PlatformScopedStorageXFile Function(
-    PlatformScopedStorageXFileCreationParams params,
-  )?
+  PlatformScopedStorageXFile Function(PlatformScopedStorageXFileCreationParams params)?
   onCreatePlatformScopedStorageXFile;
 
-  PlatformScopedStorageXDirectory Function(
-    PlatformScopedStorageXDirectoryCreationParams params,
-  )?
+  PlatformScopedStorageXDirectory Function(PlatformScopedStorageXDirectoryCreationParams params)?
   onCreatePlatformScopedStorageXDirectory;
 
   @override
@@ -38,9 +31,7 @@ final class TestCrossFilePlatform extends CrossFilePlatform {
   }
 
   @override
-  PlatformXDirectory createPlatformXDirectory(
-    PlatformXDirectoryCreationParams params,
-  ) {
+  PlatformXDirectory createPlatformXDirectory(PlatformXDirectoryCreationParams params) {
     return onCreatePlatformXDirectory?.call(params) ?? TestXDirectory(params);
   }
 
@@ -48,8 +39,7 @@ final class TestCrossFilePlatform extends CrossFilePlatform {
   PlatformScopedStorageXFile createPlatformScopedStorageXFile(
     PlatformScopedStorageXFileCreationParams params,
   ) {
-    return onCreatePlatformScopedStorageXFile?.call(params) ??
-        TestScopedStorageXFile(params);
+    return onCreatePlatformScopedStorageXFile?.call(params) ?? TestScopedStorageXFile(params);
   }
 
   @override
@@ -120,8 +110,7 @@ final class TestXFile extends PlatformXFile {
 }
 
 final class TestXDirectory extends PlatformXDirectory {
-  TestXDirectory(super.params, {this.onExists, this.onList})
-    : super.implementation();
+  TestXDirectory(super.params, {this.onExists, this.onList}) : super.implementation();
 
   Future<bool> Function()? onExists;
   Stream<PlatformXEntity> Function(ListParams params)? onList;
@@ -204,14 +193,9 @@ final class TestScopedStorageXFile extends PlatformScopedStorageXFile {
   }
 }
 
-final class TestScopedStorageXDirectory
-    extends PlatformScopedStorageXDirectory {
-  TestScopedStorageXDirectory(
-    super.params, {
-    this.onExists,
-    this.onList,
-    this.onCanRead,
-  }) : super.implementation();
+final class TestScopedStorageXDirectory extends PlatformScopedStorageXDirectory {
+  TestScopedStorageXDirectory(super.params, {this.onExists, this.onList, this.onCanRead})
+    : super.implementation();
 
   Future<bool> Function()? onExists;
   Stream<PlatformXEntity> Function(ListParams params)? onList;

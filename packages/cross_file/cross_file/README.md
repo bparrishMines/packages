@@ -14,8 +14,7 @@ A Flutter plugin that manages files and interactions with file dialogs.
 
 ## Usage
 
-Import `package:cross_file/cross_file.dart`, instantiate a `XFile`
-using a path or byte array and use its methods and properties to
+Instantiate a `XFile` using a uri or path and use its methods and properties to
 access the file and its metadata.
 
 Example:
@@ -34,7 +33,7 @@ if (await file.exists()) {
 }
 ```
 
-You will find links to the API docs on the [pub page](https://pub.dev/packages/cross_file).
+You can find links to the API docs on the [pub page](https://pub.dev/packages/cross_file).
 
 ### Implementation-Specific Features
 
@@ -75,25 +74,26 @@ Below is an example of using additional iOS/macOS and Web features for a `XFile`
 ```dart
 late final XFile file;
 
-if (CrossFileWeb.isCurrentImplementation()) {
-  final params = WebScopedStorageXFileCreationParams.fromObjectUrl(
-    objectUrl: 'blob:https://some/url:for/file',
-  );
-  file = XFile.fromCreationParams(params);
-} else if (CrossFileDarwin.isCurrentImplementation()) {
-  file = ScopedStorageXFile.fromUri(Uri.file('/my/file.txt'));
-} else {
-  file = XFile.fromUri(Uri.file('/my/file.txt'));
+switch (CrossFile.implementation) {
+  case CrossFileWeb():
+    final params = WebScopedStorageXFileCreationParams.fromObjectUrl(
+      objectUrl: 'blob:https://some/url:for/file',
+    );
+    file = XFile.fromCreationParams(params);
+  case CrossFileDarwin():
+    file = ScopedStorageXFile.fromUri(Uri.file('/my/file.txt'));
+  default:
+    file = XFile.fromUri(Uri.file('/my/file.txt'));
 }
 
 await file
-    .maybeGetExtension<DarwinScopedStorageXFileExtension>()
+    .getExtension<SecurityScopedDarwinScopedStorageXFileExtension>()
     ?.startAccessingSecurityScopedResource();
 
 debugPrint(await file.readAsString());
 
 await file
-    .maybeGetExtension<DarwinScopedStorageXFileExtension>()
+    .getExtension<SecurityScopedDarwinScopedStorageXFileExtension>()
     ?.stopAccessingSecurityScopedResource();
 ```
 

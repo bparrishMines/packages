@@ -14,22 +14,15 @@ import 'web_helpers.dart';
 
 /// Base implementation of [PlatformScopedStorageXFileCreationParams] for web.
 @immutable
-sealed class WebScopedStorageXFileCreationParams
-    extends PlatformScopedStorageXFileCreationParams {
+sealed class WebScopedStorageXFileCreationParams extends PlatformScopedStorageXFileCreationParams {
   /// Constructs a [WebScopedStorageXFileCreationParams].
-  const WebScopedStorageXFileCreationParams({
-    required super.uri,
-    this.testOverrides,
-  });
+  const WebScopedStorageXFileCreationParams({required super.uri, this.testOverrides});
 
   /// Constructs a [WebScopedStorageXFileCreationParams] with an object url.
   factory WebScopedStorageXFileCreationParams.fromObjectUrl({
     required String objectUrl,
     @visibleForTesting XFileTestOverrides? testOverrides,
-  }) => UrlWebScopedStorageXFileCreationParams(
-    objectUrl: objectUrl,
-    testOverrides: testOverrides,
-  );
+  }) => UrlWebScopedStorageXFileCreationParams(objectUrl: objectUrl, testOverrides: testOverrides);
 
   /// Constructs a [WebScopedStorageXFileCreationParams] with a [Blob].
   ///
@@ -55,8 +48,7 @@ sealed class WebScopedStorageXFileCreationParams
 
 /// Implementation of [WebScopedStorageXFileCreationParams] with an object url.
 @immutable
-base class UrlWebScopedStorageXFileCreationParams
-    extends WebScopedStorageXFileCreationParams {
+base class UrlWebScopedStorageXFileCreationParams extends WebScopedStorageXFileCreationParams {
   /// Constructs a [UrlWebScopedStorageXFileCreationParams].
   const UrlWebScopedStorageXFileCreationParams({
     required String objectUrl,
@@ -66,8 +58,7 @@ base class UrlWebScopedStorageXFileCreationParams
 
 /// Implementation of [WebScopedStorageXFileCreationParams] with a [Blob].
 @immutable
-base class BlobWebScopedStorageXFileCreationParams
-    extends WebScopedStorageXFileCreationParams {
+base class BlobWebScopedStorageXFileCreationParams extends WebScopedStorageXFileCreationParams {
   /// Constructs a [BlobWebScopedStorageXFileCreationParams].
   BlobWebScopedStorageXFileCreationParams(
     this.blob, {
@@ -148,7 +139,7 @@ base class WebScopedStorageXFile extends PlatformScopedStorageXFile
   Stream<Uint8List> openRead([int? start, int? end]) async* {
     final Blob blob = await getBlob();
     final Blob slice = blob.slice(start ?? 0, end ?? blob.size, blob.type);
-    yield await blobToBytes(slice);
+    yield* readableStreamToStream(slice.stream());
   }
 
   @override
@@ -182,9 +173,8 @@ base class WebScopedStorageXFile extends PlatformScopedStorageXFile
   }
 }
 
-/// Provides platform specific features for [WebScopedStorageXFile].
-mixin WebScopedStorageXFileExtension
-    implements PlatformScopedStorageXFileExtension {
+/// Provides platform-specific features for [WebScopedStorageXFile].
+mixin WebScopedStorageXFileExtension implements PlatformScopedStorageXFileExtension {
   /// The raw data represented by a [WebScopedStorageXFile].
   Future<Blob> getBlob();
 

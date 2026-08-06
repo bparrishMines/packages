@@ -41,11 +41,7 @@ Element ensureInitialized(String id) {
 /// the file to whatever they want before it's actually saved.
 ///
 /// Maybe some day: https://developer.mozilla.org/en-US/docs/Web/API/Window/showSaveFilePicker
-void downloadObjectUrl(
-  String objectUrl,
-  String? name, {
-  XFileTestOverrides? testOverrides,
-}) {
+void downloadObjectUrl(String objectUrl, String? name, {XFileTestOverrides? testOverrides}) {
   // Create a DOM container where the anchor can be injected.
   final Element target = ensureInitialized('__x_file_dom_element');
 
@@ -70,8 +66,7 @@ Future<Uint8List> blobToBytes(Blob blob) async {
   reader.readAsArrayBuffer(blob);
   await reader.onLoadEnd.first;
 
-  final Uint8List? result = (reader.result as JSArrayBuffer?)?.toDart
-      .asUint8List();
+  final Uint8List? result = (reader.result as JSArrayBuffer?)?.toDart.asUint8List();
   if (result == null) {
     throw Exception('Cannot read bytes from Blob. Is it still available?');
   }
@@ -81,19 +76,32 @@ Future<Uint8List> blobToBytes(Blob blob) async {
 
 /// Converts a bunch of [bytes] into a [Blob] and an optional [mimeType].
 Blob bytesToBlob(Uint8List bytes, String? mimeType) {
-  return Blob(
-    <JSUint8Array>[bytes.toJS].toJS,
-    BlobPropertyBag(type: mimeType ?? ''),
-  );
+  return Blob(<JSUint8Array>[bytes.toJS].toJS, BlobPropertyBag(type: mimeType ?? ''));
 }
 
 /// Retrieves a [Blob] by its [objectUrl].
 Future<Blob> fetchBlob(String objectUrl) async {
   try {
     final Response response = await window.fetch(objectUrl.toJS).toDart;
-    return response.blob().toDart;
+    return await response.blob().toDart;
   } catch (e) {
     throw Exception('Could not fetch Blob by URL: $objectUrl');
+  }
+}
+
+/// Converts a [ReadableStream] to a [Stream] of [Uint8List].
+Stream<Uint8List> readableStreamToStream(ReadableStream stream) async* {
+  // Always returns `ReadableStreamDefaultReader` if no options are passed to
+  // `getReader`.
+  final reader = stream.getReader() as ReadableStreamDefaultReader;
+  try {
+    ReadableStreamReadResult chunk = await reader.read().toDart;
+    while (!chunk.done) {
+      yield (chunk.value! as JSUint8Array).toDart;
+      chunk = await reader.read().toDart;
+    }
+  } finally {
+    reader.releaseLock();
   }
 }
 

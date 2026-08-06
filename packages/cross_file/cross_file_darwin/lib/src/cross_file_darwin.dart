@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'dart:ffi' as ffi;
+
 import 'package:cross_file_io/cross_file_io.dart';
 import 'package:cross_file_platform_interface/cross_file_platform_interface.dart';
 
@@ -13,11 +15,8 @@ base class CrossFileDarwin extends CrossFileIO {
   /// Registers this class as the default instance of [CrossFilePlatform].
   static void registerWith() {
     CrossFilePlatform.instance = CrossFileDarwin();
+    ffi.DynamicLibrary.open('/System/Library/Frameworks/Photos.framework/Photos');
   }
-
-  /// Whether the current implementation of `cross_file` is [CrossFileDarwin].
-  static bool isCurrentImplementation() =>
-      CrossFilePlatform.instance.runtimeType == CrossFileDarwin;
 
   @override
   DarwinScopedStorageXFile createPlatformScopedStorageXFile(

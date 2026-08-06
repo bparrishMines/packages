@@ -80,21 +80,6 @@ base class XDirectory extends XEntity {
   @override
   PlatformXDirectory get platform => super.platform as PlatformXDirectory;
 
-  /// Provides a nonnull platform class extension.
-  ///
-  /// Will throw an exception if the specified platform extension can not be
-  /// returned.
-  S getExtension<S extends PlatformXDirectoryExtension>() {
-    return platform.extension! as S;
-  }
-
-  /// Attempt to provide the platform class extension.
-  ///
-  /// Returns null if the specified platform extension cannot be retrieved.
-  S? maybeGetExtension<S extends PlatformXDirectoryExtension>() {
-    return platform.extension is S ? platform.extension! as S : null;
-  }
-
   /// Lists the sub-directories and files of this directory.
   Stream<XEntity> list() {
     // Converts PlatformXEntities to XEntities.

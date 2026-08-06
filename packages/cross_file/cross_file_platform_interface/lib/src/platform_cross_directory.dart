@@ -11,11 +11,11 @@ import 'platform_cross_entity.dart';
 
 /// Object specifying creation parameters for creating a [PlatformXDirectory].
 ///
-/// Platform specific implementations can add additional fields by extending
+/// Platform-specific implementations can add additional fields by extending
 /// this class.
 ///
 /// This example demonstrates how to extend the [PlatformXDirectoryCreationParams] to
-/// provide additional platform specific parameters.
+/// provide additional platform-specific parameters.
 ///
 /// When extending [PlatformXDirectoryCreationParams] additional parameters
 /// should always accept `null` or have a default value to prevent breaking
@@ -40,20 +40,20 @@ import 'platform_cross_entity.dart';
 /// }
 /// ```
 @immutable
-base class PlatformXDirectoryCreationParams
-    extends PlatformXEntityCreationParams {
+base class PlatformXDirectoryCreationParams extends PlatformXEntityCreationParams {
   /// Constructs a [PlatformXDirectoryCreationParams].
   const PlatformXDirectoryCreationParams({required super.uri});
 }
 
-/// Base mixin used to provide platform specific features for implementations of
+/// Base mixin used to provide platform-specific features for implementations of
 /// [PlatformXDirectory].
 ///
-/// Platform implementations are expected to declare a mixin that implements
-/// this mixin and return an instance with [PlatformXDirectory.extension].
+/// When providing platform specific features, platform implementations are
+/// expected to declare a mixin that implements this mixin and return an
+/// instance with [PlatformXDirectory.extension].
 ///
 /// ```dart
-/// base class AndroidXDirectory extends PlatformXDirectory with AndroidXFileExtension {
+/// base class AndroidXDirectory extends PlatformXDirectory with AndroidXDirectoryExtension {
 ///   // ...
 ///   @override
 ///   PlatformXDirectoryExtension? get extension => this;
@@ -63,7 +63,7 @@ base class PlatformXDirectoryCreationParams
 ///   }
 /// }
 ///
-/// mixin AndroidXFileExtension implements PlatformXDirectoryExtension {
+/// mixin AndroidXDirectoryExtension implements PlatformXDirectoryExtension {
 ///   Future<void> platformMethod();
 /// }
 /// ```
@@ -88,13 +88,10 @@ abstract base class PlatformXDirectory extends PlatformXEntity {
   /// Should only be used by platform implementations because they can't extend
   /// a class that only contains a factory constructor.
   @protected
-  PlatformXDirectory.implementation(
-    PlatformXDirectoryCreationParams super.params,
-  );
+  PlatformXDirectory.implementation(PlatformXDirectoryCreationParams super.params);
 
   @override
-  PlatformXDirectoryCreationParams get params =>
-      super.params as PlatformXDirectoryCreationParams;
+  PlatformXDirectoryCreationParams get params => super.params as PlatformXDirectoryCreationParams;
 
   /// Lists the sub-directories and files of this Directory.
   ///

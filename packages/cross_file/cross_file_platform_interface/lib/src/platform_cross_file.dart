@@ -12,11 +12,11 @@ import 'platform_cross_entity.dart';
 
 /// Object specifying creation parameters for creating a [PlatformXFile].
 ///
-/// Platform specific implementations can add additional fields by extending
+/// Platform-specific implementations can add additional fields by extending
 /// this class.
 ///
 /// This example demonstrates how to extend the [PlatformXFileCreationParams] to
-/// provide additional platform specific parameters.
+/// provide additional platform-specific parameters.
 ///
 /// When extending [PlatformXFileCreationParams] additional parameters
 /// should always accept `null` or have a default value to prevent breaking
@@ -46,11 +46,12 @@ base class PlatformXFileCreationParams extends PlatformXEntityCreationParams {
   const PlatformXFileCreationParams({required super.uri});
 }
 
-/// Base mixin used to provide platform specific features for implementations of
+/// Base mixin used to provide platform-specific features for implementations of
 /// [PlatformXFile].
 ///
-/// Platform implementations are expected to declare a mixin that implements
-/// this mixin and return an instance with [PlatformXFile.extension].
+/// When providing platform specific features, platform implementations are
+/// expected to declare a mixin that implements this mixin and return an
+/// instance with [PlatformXFile.extension].
 ///
 /// ```dart
 /// base class AndroidXFile extends PlatformXFile with AndroidXFileExtension {
@@ -91,8 +92,7 @@ abstract base class PlatformXFile extends PlatformXEntity {
   PlatformXFile.implementation(PlatformXFileCreationParams super.params);
 
   @override
-  PlatformXFileCreationParams get params =>
-      super.params as PlatformXFileCreationParams;
+  PlatformXFileCreationParams get params => super.params as PlatformXFileCreationParams;
 
   /// Date and time when the resource was last modified, if the information is
   /// available.
@@ -129,10 +129,10 @@ abstract base class PlatformXFile extends PlatformXEntity {
   /// the resource.
   Future<String> readAsString({Encoding encoding = utf8});
 
-  /// The name of the resource represented by this object.
+  /// The name of the resource represented by this object or null if the file
+  /// doesn't exist or information is not available.
   ///
-  /// The path is excluded from this value.
-  ///
-  /// Returns null if file doesn't exist or information is not available.
+  /// If the file is identified by a path, only the base name of the file will
+  /// be included in the name.
   Future<String?> name();
 }

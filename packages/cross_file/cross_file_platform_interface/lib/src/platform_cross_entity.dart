@@ -11,7 +11,7 @@ abstract base class PlatformXEntityCreationParams {
   /// Constructs a [PlatformXEntityCreationParams].
   const PlatformXEntityCreationParams({required this.uri});
 
-  /// A string used to reference the resource's location.
+  /// A unique string used to identify the resource.
   final String uri;
 }
 
@@ -27,7 +27,7 @@ abstract base class PlatformXEntity {
   /// The parameters used to initialize the [PlatformXEntity].
   final PlatformXEntityCreationParams params;
 
-  /// Extension for providing platform specific features.
+  /// Extension for providing platform-specific features.
   PlatformXEntityExtension? get extension => null;
 
   /// Whether the resource represented by this reference exists.

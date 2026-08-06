@@ -14,19 +14,13 @@ base class CrossFileIO extends CrossFilePlatform {
     CrossFilePlatform.instance = CrossFileIO();
   }
 
-  /// Whether the current implementation of `cross_file` is [CrossFileIO].
-  static bool isCurrentImplementation() =>
-      CrossFilePlatform.instance.runtimeType == CrossFileIO;
-
   @override
   IOXFile createPlatformXFile(PlatformXFileCreationParams params) {
     return IOXFile(params);
   }
 
   @override
-  IOXDirectory createPlatformXDirectory(
-    PlatformXDirectoryCreationParams params,
-  ) {
+  IOXDirectory createPlatformXDirectory(PlatformXDirectoryCreationParams params) {
     return IOXDirectory(params);
   }
 }

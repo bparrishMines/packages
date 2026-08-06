@@ -1,7 +1,24 @@
 ## 0.4.0
 
-* Updates `cross_file` to a package separated federated plugin.
-* Updates minimum supported SDK version to Flutter 3.35/Dart 3.9.
+* Updates `cross_file` to a package-separated federated plugin.
+* Adds `XDirectory` to access file containers.
+* Adds file implementation for scoped storage APIs that use ephemeral URLS. See `ScopedStorageXFile`
+  and `ScopedStorageXDirector`.
+* **Breaking Change** Replaces `XFile(String path)` with `XFile.fromPath(String path)`.
+* **Breaking Change** Removes `XFile.fromDatag`.
+* **Breaking Change** Removes `XFile.saveTo`.
+* **Breaking Change** Removes `mimeType` and `path`.
+* **Breaking Change** Changes `XFile.name` to return `Future<String>` rather than `String`.
+
+## 0.3.5+4
+
+* Adds a runnable `main` entry point and an additional `XFile.fromData`
+  demonstration to the example.
+
+## 0.3.5+3
+
+* Clarifies native XFile.mimeType documentation.
+* Updates minimum supported SDK version to Flutter 3.38/Dart 3.10.
 
 ## 0.3.5+2
 

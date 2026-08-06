@@ -36,8 +36,7 @@ base class XFile extends XEntity {
   ///
   /// See [XFile.fromCreationParams] for setting parameters for a specific
   /// platform.
-  XFile({required String uri})
-    : this.fromCreationParams(PlatformXFileCreationParams(uri: uri));
+  XFile({required String uri}) : this.fromCreationParams(PlatformXFileCreationParams(uri: uri));
 
   /// Constructs a [XFile] from a [Uri].
   XFile.fromUri(Uri uri) : this(uri: uri.toString());
@@ -75,21 +74,6 @@ base class XFile extends XEntity {
   @override
   PlatformXFile get platform => super.platform as PlatformXFile;
 
-  /// Provides a nonnull platform class extension.
-  ///
-  /// Will throw an exception if the specified platform extension can not be
-  /// returned.
-  S getExtension<S extends PlatformXFileExtension>() {
-    return platform.extension! as S;
-  }
-
-  /// Attempt to provide the platform class extension.
-  ///
-  /// Returns null if the specified platform extension cannot be retrieved.
-  S? maybeGetExtension<S extends PlatformXFileExtension>() {
-    return platform.extension is S ? platform.extension! as S : null;
-  }
-
   /// Date and time when the resource was last modified, if the information is
   /// available.
   Future<DateTime?> lastModified() => platform.lastModified();
@@ -109,8 +93,16 @@ base class XFile extends XEntity {
   ///
   /// Platforms may throw an exception if there is an error opening or reading
   /// the resource.
-  Stream<Uint8List> openRead([int? start, int? end]) =>
-      platform.openRead(start, end);
+  Stream<Uint8List> openRead([int? start, int? end]) {
+    if (start != null && start < 0) {
+      throw ArgumentError('`start` must be greater than 0. start: $start');
+    } else if (end != null && end <= (start ?? 0)) {
+      throw ArgumentError(
+        '`end` must be greater than 0 and greater than `start`. start: $start, end: $end',
+      );
+    }
+    return platform.openRead(start, end);
+  }
 
   /// Reads the entire resource contents as a list of bytes.
   ///
@@ -118,15 +110,17 @@ base class XFile extends XEntity {
   /// the resource.
   Future<Uint8List> readAsBytes() => platform.readAsBytes();
 
-  /// Reads the entire resource contents as a string using the given Encoding.
+  /// Reads the entire resource contents as a string using the given [Encoding].
   ///
   /// Platforms may throw an exception if there is an error opening or reading
   /// the resource.
   Future<String> readAsString({Encoding encoding = utf8}) =>
       platform.readAsString(encoding: encoding);
 
-  /// The name of the resource represented by this object.
+  /// The name of the resource represented by this object or null if the file
+  /// doesn't exist or information is not available.
   ///
-  /// The path is excluded from this value.
+  /// If the file is identified by a path, only the base name of the file will
+  /// be included in the name.
   Future<String?> name() => platform.name();
 }

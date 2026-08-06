@@ -9,11 +9,11 @@ import '../platform_cross_directory.dart';
 
 /// Object specifying creation parameters for creating a [PlatformScopedStorageXDirectory].
 ///
-/// Platform specific implementations can add additional fields by extending
+/// Platform-specific implementations can add additional fields by extending
 /// this class.
 ///
 /// This example demonstrates how to extend the [PlatformScopedStorageXDirectoryCreationParams] to
-/// provide additional platform specific parameters.
+/// provide additional platform-specific parameters.
 ///
 /// When extending [PlatformScopedStorageXDirectoryCreationParams] additional parameters
 /// should always accept `null` or have a default value to prevent breaking
@@ -38,20 +38,20 @@ import '../platform_cross_directory.dart';
 /// }
 /// ```
 @immutable
-base class PlatformScopedStorageXDirectoryCreationParams
-    extends PlatformXDirectoryCreationParams {
+base class PlatformScopedStorageXDirectoryCreationParams extends PlatformXDirectoryCreationParams {
   /// Constructs a [PlatformScopedStorageXDirectoryCreationParams].
   const PlatformScopedStorageXDirectoryCreationParams({required super.uri});
 }
 
-/// Base mixin used to provide platform specific features for implementations of
+/// Base mixin used to provide platform-specific features for implementations of
 /// [PlatformScopedStorageXDirectory].
 ///
-/// Platform implementations are expected to declare a mixin that implements
-/// this mixin and return an instance with [PlatformScopedStorageXDirectory.extension].
+/// When providing platform specific features, platform implementations are
+/// expected to declare a mixin that implements this mixin and return an
+/// instance with [PlatformScopedStorageXDirectory.extension].
 ///
 /// ```dart
-/// base class AndroidScopedStorageXDirectory extends PlatformScopedStorageXDirectory with AndroidXFileExtension {
+/// base class AndroidScopedStorageXDirectory extends PlatformScopedStorageXDirectory with AndroidScopedStorageXDirectoryExtension {
 ///   // ...
 ///   @override
 ///   PlatformScopedStorageXDirectoryExtension? get extension => this;
@@ -61,20 +61,17 @@ base class PlatformScopedStorageXDirectoryCreationParams
 ///   }
 /// }
 ///
-/// mixin AndroidXFileExtension implements PlatformScopedStorageXDirectoryExtension {
+/// mixin AndroidScopedStorageXDirectoryExtension implements PlatformScopedStorageXDirectoryExtension {
 ///   Future<void> platformMethod();
 /// }
 /// ```
-mixin PlatformScopedStorageXDirectoryExtension
-    implements PlatformXDirectoryExtension {}
+mixin PlatformScopedStorageXDirectoryExtension implements PlatformXDirectoryExtension {}
 
 /// A reference to a directory (or folder) on the file system within a device's
 /// scoped storage.
 abstract base class PlatformScopedStorageXDirectory extends PlatformXDirectory {
   /// Creates a new [PlatformScopedStorageXDirectory]
-  factory PlatformScopedStorageXDirectory(
-    PlatformScopedStorageXDirectoryCreationParams params,
-  ) {
+  factory PlatformScopedStorageXDirectory(PlatformScopedStorageXDirectoryCreationParams params) {
     assert(
       CrossFilePlatform.instance != null,
       'A platform implementation for `cross_file` has not been set. Please '
@@ -82,9 +79,7 @@ abstract base class PlatformScopedStorageXDirectory extends PlatformXDirectory {
       '`CrossFilePlatform.instance` before use. For unit testing, '
       '`CrossFilePlatform.instance` can be set with your own test implementation.',
     );
-    return CrossFilePlatform.instance!.createPlatformScopedStorageXDirectory(
-      params,
-    );
+    return CrossFilePlatform.instance!.createPlatformScopedStorageXDirectory(params);
   }
 
   /// Used by the platform implementation to create a new
@@ -100,6 +95,7 @@ abstract base class PlatformScopedStorageXDirectory extends PlatformXDirectory {
   PlatformScopedStorageXDirectoryCreationParams get params =>
       super.params as PlatformScopedStorageXDirectoryCreationParams;
 
-  /// Whether the directory represented by this reference can be read.
+  /// Whether the files in this directory represented by this reference can be
+  /// viewed.
   Future<bool> canRead();
 }

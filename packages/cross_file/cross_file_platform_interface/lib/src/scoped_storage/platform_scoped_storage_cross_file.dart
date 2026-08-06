@@ -9,11 +9,11 @@ import '../platform_cross_file.dart';
 
 /// Object specifying creation parameters for creating a [PlatformScopedStorageXFile].
 ///
-/// Platform specific implementations can add additional fields by extending
+/// Platform-specific implementations can add additional fields by extending
 /// this class.
 ///
 /// This example demonstrates how to extend the [PlatformScopedStorageXFileCreationParams] to
-/// provide additional platform specific parameters.
+/// provide additional platform-specific parameters.
 ///
 /// When extending [PlatformScopedStorageXFileCreationParams] additional parameters
 /// should always accept `null` or have a default value to prevent breaking
@@ -38,20 +38,20 @@ import '../platform_cross_file.dart';
 /// }
 /// ```
 @immutable
-base class PlatformScopedStorageXFileCreationParams
-    extends PlatformXFileCreationParams {
+base class PlatformScopedStorageXFileCreationParams extends PlatformXFileCreationParams {
   /// Constructs a [PlatformScopedStorageXFileCreationParams].
   const PlatformScopedStorageXFileCreationParams({required super.uri});
 }
 
-/// Base mixin used to provide platform specific features for implementations of
+/// Base mixin used to provide platform-specific features for implementations of
 /// [PlatformScopedStorageXFile].
 ///
-/// Platform implementations are expected to declare a mixin that implements
-/// this mixin and return an instance with [PlatformScopedStorageXFile.extension].
+/// When providing platform specific features, platform implementations are
+/// expected to declare a mixin that implements this mixin and return an
+/// instance with [PlatformScopedStorageXFile.extension].
 ///
 /// ```dart
-/// base class AndroidScopedStorageXFile extends PlatformScopedStorageXFile with AndroidXFileExtension {
+/// base class AndroidScopedStorageXFile extends PlatformScopedStorageXFile with AndroidScopedStorageXFileExtension {
 ///   // ...
 ///   @override
 ///   PlatformScopedStorageXFileExtension? get extension => this;
@@ -61,7 +61,7 @@ base class PlatformScopedStorageXFileCreationParams
 ///   }
 /// }
 ///
-/// mixin AndroidXFileExtension implements PlatformScopedStorageXFileExtension {
+/// mixin AndroidScopedStorageXFileExtension implements PlatformScopedStorageXFileExtension {
 ///   Future<void> platformMethod();
 /// }
 /// ```
@@ -71,9 +71,7 @@ mixin PlatformScopedStorageXFileExtension implements PlatformXFileExtension {}
 /// scoped storage.
 abstract base class PlatformScopedStorageXFile extends PlatformXFile {
   /// Creates a new [PlatformScopedStorageXFile]
-  factory PlatformScopedStorageXFile(
-    PlatformScopedStorageXFileCreationParams params,
-  ) {
+  factory PlatformScopedStorageXFile(PlatformScopedStorageXFileCreationParams params) {
     assert(
       CrossFilePlatform.instance != null,
       'A platform implementation for `cross_file` has not been set. Please '
@@ -90,9 +88,8 @@ abstract base class PlatformScopedStorageXFile extends PlatformXFile {
   /// Should only be used by platform implementations because they can't extend
   /// a class that only contains a factory constructor.
   @protected
-  PlatformScopedStorageXFile.implementation(
-    PlatformScopedStorageXFileCreationParams super.params,
-  ) : super.implementation();
+  PlatformScopedStorageXFile.implementation(PlatformScopedStorageXFileCreationParams super.params)
+    : super.implementation();
 
   @override
   PlatformScopedStorageXFileCreationParams get params =>
