@@ -5,6 +5,8 @@
 import 'package:cross_file_platform_interface/cross_file_platform_interface.dart';
 import 'package:flutter/material.dart';
 import 'package:mime/mime.dart' as mime;
+import 'package:image_picker_ios/image_picker_ios.dart';
+import 'package:cross_file/cross_file.dart';
 
 void main() {
   runApp(const MaterialApp(home: FileOpenScreen()));
@@ -16,7 +18,15 @@ class FileOpenScreen extends StatelessWidget {
   const FileOpenScreen({super.key});
 
   Future<PlatformXFile?> _getTextFile() async {
-    // Implement this method to retrieve a text file.
+    XFile? file = await ImagePickerIOS().getImageFromSource2();
+    if (file != null) {
+      print('FILE');
+      print(file.uri);
+      print(await file.exists());
+    } else {
+      print('no file');
+    }
+
     return null;
   }
 

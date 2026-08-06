@@ -94,6 +94,22 @@ class ImagePickerIOS extends ImagePickerPlatform {
     return file;
   }
 
+  Future<XFile?> getImageFromSource2({
+    ImagePickerOptions options = const ImagePickerOptions(),
+  }) async {
+    final String? path = await _pickImageAsPath(
+      source: ImageSource.gallery,
+      options: options,
+    );
+    if (path == null) {
+      return null;
+    }
+    final file = ScopedStorageXFile.fromCreationParams(
+      DarwinScopedStorageXFileCreationParams.photoKit(localIdentifier: path),
+    );
+    return file;
+  }
+
   @override
   Future<List<PickedFile>?> pickMultiImage({
     double? maxWidth,

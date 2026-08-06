@@ -18,10 +18,7 @@ flutter:
 
 dependencies:
   cross_file_darwin:
-    git:
-      url: https://github.com/bparrishMines/packages
-      ref: new_crossfile_image_picker
-      path: packages/cross_file/cross_file_darwin
+    path: ../../cross_file/cross_file_darwin
   flutter:
     sdk: flutter
   image_picker_platform_interface:

@@ -21,6 +21,8 @@ dependencies:
   cupertino_icons: ^1.0.8
   flutter:
     sdk: flutter
+  image_picker_ios:
+    path: ../../../image_picker/image_picker_ios
   mime: ^2.0.0
 
 dev_dependencies:
