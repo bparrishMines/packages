@@ -32,7 +32,7 @@ class MethodChannelFileSelector extends FileSelectorPlatform {
           'confirmButtonText': confirmButtonText,
           'multiple': false,
         });
-    return path == null ? null : XFile.fromUri(Uri.file(path.first));
+    return path == null ? null : FileSystemXFile.fromUri(Uri.file(path.first));
   }
 
   @override
@@ -51,7 +51,7 @@ class MethodChannelFileSelector extends FileSelectorPlatform {
           'multiple': true,
         });
     return pathList
-            ?.map((String path) => XFile.fromUri(Uri.file(path)))
+            ?.map((String path) => FileSystemXFile.fromUri(Uri.file(path)))
             .toList() ??
         <XFile>[];
   }
@@ -86,7 +86,7 @@ class MethodChannelFileSelector extends FileSelectorPlatform {
       },
     );
 
-    return path == null ? null : XDirectory.fromUri(Uri.directory(path));
+    return path == null ? null : FileSystemXDirectory.fromUri(Uri.directory(path));
   }
 
   @override

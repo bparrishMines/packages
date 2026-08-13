@@ -19,10 +19,7 @@ flutter:
 
 dependencies:
   file_selector_platform_interface:
-    git:
-      url: https://github.com/bparrishMines/packages
-      ref: new_file_selector
-      path: packages/file_selector/file_selector_platform_interface
+    path: ../../file_selector/file_selector_platform_interface
   flutter:
     sdk: flutter
   plugin_platform_interface: ^2.1.7

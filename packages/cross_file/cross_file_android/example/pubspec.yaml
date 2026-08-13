@@ -18,6 +18,8 @@ dependencies:
   # released.
   cross_file_platform_interface:
     path: ../../cross_file_platform_interface
+  file_selector_android:
+    path: ../../../file_selector/file_selector_android
   flutter:
     sdk: flutter
   mime: ^2.0.0

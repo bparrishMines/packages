@@ -33,7 +33,7 @@ class FileSelectorAndroid extends FileSelectorPlatform {
     );
 
     if (uri != null) {
-      return ScopedStorageXFile(uri: uri);
+      return XFile.scopedStorage(uri: uri);
     }
 
     return null;
@@ -50,7 +50,7 @@ class FileSelectorAndroid extends FileSelectorPlatform {
       _fileTypesFromTypeGroups(acceptedTypeGroups),
     );
     return uris.map<XFile>((String uri) {
-      return ScopedStorageXFile(uri: uri);
+      return XFile.scopedStorage(uri: uri);
     }).toList();
   }
 
@@ -61,7 +61,7 @@ class FileSelectorAndroid extends FileSelectorPlatform {
   }) async {
     final String? uri = await _api.getDirectoryPath(initialDirectory);
     if (uri != null) {
-      return ScopedStorageXDirectory(uri: uri);
+      return XDirectory.scopedStorage(uri: uri);
     } else {
       return null;
     }
