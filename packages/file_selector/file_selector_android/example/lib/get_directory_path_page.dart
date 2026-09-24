@@ -25,6 +25,10 @@ class GetDirectoryPathPage extends StatelessWidget {
         if (name != null) {
           entityNames.add(name);
         }
+      } else if (entity is XDirectory) {
+        // Getting a name for a directory is not supported, so this is a
+        // workaround to show just the directory name.
+        entityNames.add(entity.uri.split('%2F').last);
       } else {
         entityNames.add(entity.uri);
       }
