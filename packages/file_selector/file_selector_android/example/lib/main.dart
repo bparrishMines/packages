@@ -20,7 +20,6 @@ void integrationTestMain() {
 }
 
 void main() {
-  FileSelectorPlatform.instance = FileSelectorAndroid();
   runApp(const MyApp());
 }
 

@@ -11,7 +11,7 @@ import 'file_selector_api.g.dart';
 import 'types/native_illegal_argument_exception.dart';
 
 /// An implementation of [FileSelectorPlatform] for Android.
-class FileSelectorAndroid extends FileSelectorPlatform {
+base class FileSelectorAndroid extends FileSelectorPlatform {
   FileSelectorAndroid({@visibleForTesting FileSelectorApi? api}) : _api = api ?? FileSelectorApi();
 
   final FileSelectorApi _api;
@@ -22,49 +22,42 @@ class FileSelectorAndroid extends FileSelectorPlatform {
   }
 
   @override
-  Future<XFile?> openFile({
-    List<XTypeGroup>? acceptedTypeGroups,
-    String? initialDirectory,
-    String? confirmButtonText,
-  }) async {
+  Future<XFile?> openFile([OpenDialogOptions options = const OpenDialogOptions()]) async {
     final FileResponse? file = await _api.openFile(
-      initialDirectory,
-      _fileTypesFromTypeGroups(acceptedTypeGroups),
+      options.initialDirectory,
+      _fileTypesFromTypeGroups(options.acceptedTypeGroups),
     );
     return file == null ? null : _xFileFromFileResponse(file);
   }
 
   @override
-  Future<List<XFile>> openFiles({
-    List<XTypeGroup>? acceptedTypeGroups,
-    String? initialDirectory,
-    String? confirmButtonText,
-  }) async {
+  Future<List<XFile>> openFiles([OpenDialogOptions options = const OpenDialogOptions()]) async {
     final List<FileResponse> files = await _api.openFiles(
-      initialDirectory,
-      _fileTypesFromTypeGroups(acceptedTypeGroups),
+      options.initialDirectory,
+      _fileTypesFromTypeGroups(options.acceptedTypeGroups),
     );
     return files.map<XFile>(_xFileFromFileResponse).toList();
   }
 
   @override
-  Future<String?> getDirectoryPath({String? initialDirectory, String? confirmButtonText}) async {
-    return _api.getDirectoryPath(initialDirectory);
+  Future<String?> getDirectoryPath([FileDialogOptions options = const FileDialogOptions()]) async {
+    return _api.getDirectoryPath(options.initialDirectory);
   }
 
   XFile _xFileFromFileResponse(FileResponse file) {
     if (file.fileSelectorNativeException != null) {
       _resolveErrorCodeAndMaybeThrow(file.fileSelectorNativeException!);
     }
-    return XFile.fromData(
-      file.bytes,
-      // Note: The name parameter is not used by XFile. The XFile.name returns
-      // the extracted file name from XFile.path.
-      name: file.name,
-      length: file.size,
-      mimeType: file.mimeType,
-      path: file.path,
-    );
+    return XFile.fileSystem(path: file.path);
+    // return XFile.fromData(
+    //   file.bytes,
+    //   // Note: The name parameter is not used by XFile. The XFile.name returns
+    //   // the extracted file name from XFile.path.
+    //   name: file.name,
+    //   length: file.size,
+    //   mimeType: file.mimeType,
+    //   path: file.path,
+    // );
   }
 
   FileTypes _fileTypesFromTypeGroups(List<XTypeGroup>? typeGroups) {

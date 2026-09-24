@@ -4,6 +4,7 @@
 
 import 'dart:typed_data';
 
+import 'package:cross_file_platform_interface/cross_file_platform_interface.dart';
 import 'package:file_selector_android/src/file_selector_android.dart';
 import 'package:file_selector_android/src/file_selector_api.g.dart';
 import 'package:file_selector_platform_interface/file_selector_platform_interface.dart';
@@ -17,6 +18,8 @@ import 'file_selector_android_test.mocks.dart';
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
+  CrossFilePlatform.instance = CrossFileTest();
+
   late FileSelectorAndroid plugin;
   late MockFileSelectorApi mockApi;
 
@@ -27,6 +30,7 @@ void main() {
 
   test('registered instance', () {
     FileSelectorAndroid.registerWith();
+
     expect(FileSelectorPlatform.instance, isA<FileSelectorAndroid>());
   });
 
@@ -64,14 +68,13 @@ void main() {
       const group2 = XTypeGroup(extensions: <String>['jpg'], mimeTypes: <String>['image/jpg']);
 
       final XFile? file = await plugin.openFile(
-        acceptedTypeGroups: <XTypeGroup>[group, group2],
-        initialDirectory: 'some/path/',
+        const OpenDialogOptions(
+          acceptedTypeGroups: <XTypeGroup>[group, group2],
+          initialDirectory: 'some/path/',
+        ),
       );
 
-      expect(file?.path, 'some/path.txt');
-      expect(file?.mimeType, 'text/plain');
-      expect(await file?.length(), 30);
-      expect(await file?.readAsBytes(), Uint8List(0));
+      expect(file?.uri, 'some/path.txt');
     });
   });
 
@@ -110,19 +113,15 @@ void main() {
       const group2 = XTypeGroup(extensions: <String>['jpg'], mimeTypes: <String>['image/jpg']);
 
       final List<XFile> files = await plugin.openFiles(
-        acceptedTypeGroups: <XTypeGroup>[group, group2],
-        initialDirectory: 'some/path/',
+        const OpenDialogOptions(
+          acceptedTypeGroups: <XTypeGroup>[group, group2],
+          initialDirectory: 'some/path/',
+        ),
       );
 
-      expect(files[0].path, 'some/path.txt');
-      expect(files[0].mimeType, 'text/plain');
-      expect(await files[0].length(), 30);
-      expect(await files[0].readAsBytes(), Uint8List(0));
+      expect(files[0].uri, 'some/path.txt');
 
-      expect(files[1].path, 'other/dir.jpg');
-      expect(files[1].mimeType, 'image/jpg');
-      expect(await files[1].length(), 40);
-      expect(await files[1].readAsBytes(), Uint8List(0));
+      expect(files[1].uri, 'other/dir.jpg');
     });
   });
 
@@ -131,8 +130,12 @@ void main() {
       mockApi.getDirectoryPath('some/path'),
     ).thenAnswer((_) => Future<String?>.value('some/path/chosen/'));
 
-    final String? path = await plugin.getDirectoryPath(initialDirectory: 'some/path');
+    final String? path = await plugin.getDirectoryPath(
+      const FileDialogOptions(initialDirectory: 'some/path'),
+    );
 
     expect(path, 'some/path/chosen/');
   });
 }
+
+final class CrossFileTest extends CrossFilePlatform {}
