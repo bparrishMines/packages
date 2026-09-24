@@ -28,12 +28,12 @@ class OpenImagePage extends StatelessWidget {
       return;
     }
     final String? fileName = await file.name();
-    final String fileUri = file.uri;
+    final String filePath = (file as FileSystemXFile).path;
 
     if (context.mounted) {
       await showDialog<void>(
         context: context,
-        builder: (BuildContext context) => ImageDisplay(fileName ?? 'Unknown Filename', fileUri),
+        builder: (BuildContext context) => ImageDisplay(fileName ?? 'Unknown Filename', filePath),
       );
     }
   }
