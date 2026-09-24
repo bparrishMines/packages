@@ -45,21 +45,6 @@ class OpenDialogOptions extends FileDialogOptions {
   final List<XTypeGroup>? acceptedTypeGroups;
 }
 
-/// Configuration options for a save dialog.
-@immutable
-class SaveDialogOptions extends FileDialogOptions {
-  /// Creates a new options set with the given settings.
-  const SaveDialogOptions({
-    super.initialDirectory,
-    super.confirmButtonText,
-    super.canCreateDirectories,
-    this.suggestedName,
-  });
-
-  /// The suggested name of the file to save or open.
-  final String? suggestedName;
-}
-
 /// Configuration options for a save location.
 @immutable
 class SaveLocationOptions extends FileDialogOptions {
@@ -69,8 +54,12 @@ class SaveLocationOptions extends FileDialogOptions {
     super.confirmButtonText,
     super.canCreateDirectories,
     this.acceptedTypeGroups,
+    this.suggestedName,
   });
 
   /// A set of allowed XTypes.
   final List<XTypeGroup>? acceptedTypeGroups;
+
+  /// The suggested name of the file to save or open.
+  final String? suggestedName;
 }
