@@ -42,8 +42,8 @@ base class FileSelectorAndroid extends FileSelectorPlatform {
   Future<XDirectory?> getDirectoryPath([
     FileDialogOptions options = const FileDialogOptions(),
   ]) async {
-    final String? path = await _api.getDirectoryPath(options.initialDirectory);
-    return path == null ? null : XDirectory.fileSystem(path: path);
+    final String? uri = await _api.getDirectoryPath(options.initialDirectory);
+    return uri == null ? null : XDirectory.scopedStorage(uri: uri);
   }
 
   FileTypes _fileTypesFromTypeGroups(List<XTypeGroup>? typeGroups) {

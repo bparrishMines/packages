@@ -6,23 +6,18 @@ package dev.flutter.packages.file_selector_android;
 
 import android.app.Activity;
 import android.content.ClipData;
-import android.content.ContentResolver;
 import android.content.Intent;
-import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.DocumentsContract;
-import android.provider.OpenableColumns;
 import android.util.Log;
 import android.webkit.MimeTypeMap;
-import androidx.annotation.ChecksSdkIntAtLeast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding;
 import io.flutter.plugin.common.PluginRegistry;
 import java.io.DataInputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -44,7 +39,7 @@ public class FileSelectorApiImpl implements FileSelectorApi {
   private static final int OPEN_DIR = 223;
 
   private final @NonNull NativeObjectFactory objectFactory;
-  private final @NonNull AndroidSdkChecker sdkChecker;
+
   @Nullable ActivityPluginBinding activityPluginBinding;
 
   private abstract static class OnResultListener {
@@ -66,28 +61,18 @@ public class FileSelectorApiImpl implements FileSelectorApi {
     }
   }
 
-  // Interface for an injectable SDK version checker.
-  @VisibleForTesting
-  interface AndroidSdkChecker {
-    @ChecksSdkIntAtLeast(parameter = 0)
-    boolean sdkIsAtLeast(int version);
-  }
-
   public FileSelectorApiImpl(@NonNull ActivityPluginBinding activityPluginBinding) {
     this(
         activityPluginBinding,
-        new NativeObjectFactory(),
-        (int version) -> Build.VERSION.SDK_INT >= version);
+        new NativeObjectFactory());
   }
 
   @VisibleForTesting
   FileSelectorApiImpl(
       @NonNull ActivityPluginBinding activityPluginBinding,
-      @NonNull NativeObjectFactory objectFactory,
-      @NonNull AndroidSdkChecker sdkChecker) {
+      @NonNull NativeObjectFactory objectFactory) {
     this.activityPluginBinding = activityPluginBinding;
     this.objectFactory = objectFactory;
-    this.sdkChecker = sdkChecker;
   }
 
   @Override
@@ -192,22 +177,12 @@ public class FileSelectorApiImpl implements FileSelectorApi {
             public void onResult(int resultCode, @Nullable Intent data) {
               if (resultCode == Activity.RESULT_OK && data != null) {
                 final Uri uri = data.getData();
-                if (uri == null) {
+                if (uri != null) {
+                  ResultUtilsKt.completeWithValue(callback, uri.toString());
+                } else {
                   // No data retrieved from opening directory.
                   ResultUtilsKt.completeWithError(
                       callback, new Exception("Failed to retrieve data from opening directory."));
-                  return;
-                }
-
-                final Uri docUri =
-                    DocumentsContract.buildDocumentUriUsingTree(
-                        uri, DocumentsContract.getTreeDocumentId(uri));
-                try {
-                  final String path =
-                      FileUtils.getPathFromUri(activityPluginBinding.getActivity(), docUri);
-                  ResultUtilsKt.completeWithValue(callback, path);
-                } catch (UnsupportedOperationException exception) {
-                  ResultUtilsKt.completeWithError(callback, exception);
                 }
               } else {
                 ResultUtilsKt.completeWithValue(callback, null);
