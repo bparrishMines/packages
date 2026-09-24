@@ -18,7 +18,7 @@ class OpenTextPage extends StatelessWidget {
       uniformTypeIdentifiers: <String>['public.text'],
     );
     final XFile? file = await FileSelectorPlatform.instance!.openFile(
-      const OpenDialogOptions(acceptedTypeGroups: <XTypeGroup>[typeGroup])
+      const OpenDialogOptions(acceptedTypeGroups: <XTypeGroup>[typeGroup]),
     );
     if (file == null) {
       // Operation was canceled by the user.

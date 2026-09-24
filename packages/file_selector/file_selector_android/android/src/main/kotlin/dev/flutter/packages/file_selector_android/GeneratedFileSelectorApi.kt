@@ -10,12 +10,11 @@ package dev.flutter.packages.file_selector_android
 import android.util.Log
 import io.flutter.plugin.common.BasicMessageChannel
 import io.flutter.plugin.common.BinaryMessenger
-import io.flutter.plugin.common.EventChannel
 import io.flutter.plugin.common.MessageCodec
-import io.flutter.plugin.common.StandardMethodCodec
 import io.flutter.plugin.common.StandardMessageCodec
 import java.io.ByteArrayOutputStream
 import java.nio.ByteBuffer
+
 private object GeneratedFileSelectorApiPigeonUtils {
 
   fun wrapResult(result: Any?): List<Any?> {
@@ -24,19 +23,15 @@ private object GeneratedFileSelectorApiPigeonUtils {
 
   fun wrapError(exception: Throwable): List<Any?> {
     return if (exception is FlutterError) {
-      listOf(
-        exception.code,
-        exception.message,
-        exception.details
-      )
+      listOf(exception.code, exception.message, exception.details)
     } else {
       listOf(
-        exception.javaClass.simpleName,
-        exception.toString(),
-        "Cause: " + exception.cause + ", Stacktrace: " + Log.getStackTraceString(exception)
-      )
+          exception.javaClass.simpleName,
+          exception.toString(),
+          "Cause: " + exception.cause + ", Stacktrace: " + Log.getStackTraceString(exception))
     }
   }
+
   fun doubleEquals(a: Double, b: Double): Boolean {
     // Normalize -0.0 to 0.0 and handle NaN equality.
     return (if (a == 0.0) 0.0 else a) == (if (b == 0.0) 0.0 else b) || (a.isNaN() && b.isNaN())
@@ -180,27 +175,23 @@ private object GeneratedFileSelectorApiPigeonUtils {
       else -> value.hashCode()
     }
   }
-
 }
 
 /**
  * Error class for passing custom error details to Flutter via a thrown PlatformException.
+ *
  * @property code The error code.
  * @property message The error message.
  * @property details The error details. Must be a datatype supported by the api codec.
  */
-class FlutterError (
-  val code: String,
-  override val message: String? = null,
-  val details: Any? = null
+class FlutterError(
+    val code: String,
+    override val message: String? = null,
+    val details: Any? = null
 ) : RuntimeException()
 
 /** Generated class from Pigeon that represents data sent in messages. */
-data class FileTypes (
-  val mimeTypes: List<String>,
-  val extensions: List<String>
-)
- {
+data class FileTypes(val mimeTypes: List<String>, val extensions: List<String>) {
   companion object {
     fun fromList(pigeonVar_list: List<Any?>): FileTypes {
       val mimeTypes = pigeonVar_list[0] as List<String>
@@ -208,12 +199,14 @@ data class FileTypes (
       return FileTypes(mimeTypes, extensions)
     }
   }
+
   fun toList(): List<Any?> {
     return listOf(
-      mimeTypes,
-      extensions,
+        mimeTypes,
+        extensions,
     )
   }
+
   override fun equals(other: Any?): Boolean {
     if (other == null || other.javaClass != javaClass) {
       return false
@@ -222,7 +215,8 @@ data class FileTypes (
       return true
     }
     val other = other as FileTypes
-    return GeneratedFileSelectorApiPigeonUtils.deepEquals(this.mimeTypes, other.mimeTypes) && GeneratedFileSelectorApiPigeonUtils.deepEquals(this.extensions, other.extensions)
+    return GeneratedFileSelectorApiPigeonUtils.deepEquals(this.mimeTypes, other.mimeTypes) &&
+        GeneratedFileSelectorApiPigeonUtils.deepEquals(this.extensions, other.extensions)
   }
 
   override fun hashCode(): Int {
@@ -231,22 +225,23 @@ data class FileTypes (
     result = 31 * result + GeneratedFileSelectorApiPigeonUtils.deepHash(this.extensions)
     return result
   }
+
   override fun toString(): String {
     return "FileTypes(mimeTypes=$mimeTypes, extensions=$extensions)"
   }
 }
+
 private open class GeneratedFileSelectorApiPigeonCodec : StandardMessageCodec() {
   override fun readValueOfType(type: Byte, buffer: ByteBuffer): Any? {
     return when (type) {
       129.toByte() -> {
-        return (readValue(buffer) as? List<Any?>)?.let {
-          FileTypes.fromList(it)
-        }
+        return (readValue(buffer) as? List<Any?>)?.let { FileTypes.fromList(it) }
       }
       else -> super.readValueOfType(type, buffer)
     }
   }
-  override fun writeValue(stream: ByteArrayOutputStream, value: Any?)   {
+
+  override fun writeValue(stream: ByteArrayOutputStream, value: Any?) {
     when (value) {
       is FileTypes -> {
         stream.write(129)
@@ -256,7 +251,6 @@ private open class GeneratedFileSelectorApiPigeonCodec : StandardMessageCodec() 
     }
   }
 }
-
 
 /**
  * An API to call to native code to select files or directories.
@@ -269,12 +263,19 @@ interface FileSelectorApi {
    *
    * Returns `null` if user cancels the operation.
    */
-  fun openFile(initialDirectory: String?, allowedTypes: FileTypes, callback: (Result<String?>) -> Unit)
+  fun openFile(
+      initialDirectory: String?,
+      allowedTypes: FileTypes,
+      callback: (Result<String?>) -> Unit
+  )
   /**
-   * Opens a file dialog for loading files and returns a list of file responses
-   * chosen by the user.
+   * Opens a file dialog for loading files and returns a list of file responses chosen by the user.
    */
-  fun openFiles(initialDirectory: String?, allowedTypes: FileTypes, callback: (Result<List<String>>) -> Unit)
+  fun openFiles(
+      initialDirectory: String?,
+      allowedTypes: FileTypes,
+      callback: (Result<List<String>>) -> Unit
+  )
   /**
    * Opens a file dialog for loading directories and returns a directory path.
    *
@@ -284,15 +285,24 @@ interface FileSelectorApi {
 
   companion object {
     /** The codec used by FileSelectorApi. */
-    val codec: MessageCodec<Any?> by lazy {
-      GeneratedFileSelectorApiPigeonCodec()
-    }
-    /** Sets up an instance of `FileSelectorApi` to handle messages through the `binaryMessenger`. */
+    val codec: MessageCodec<Any?> by lazy { GeneratedFileSelectorApiPigeonCodec() }
+    /**
+     * Sets up an instance of `FileSelectorApi` to handle messages through the `binaryMessenger`.
+     */
     @JvmOverloads
-    fun setUp(binaryMessenger: BinaryMessenger, api: FileSelectorApi?, messageChannelSuffix: String = "") {
-      val separatedMessageChannelSuffix = if (messageChannelSuffix.isNotEmpty()) ".$messageChannelSuffix" else ""
+    fun setUp(
+        binaryMessenger: BinaryMessenger,
+        api: FileSelectorApi?,
+        messageChannelSuffix: String = ""
+    ) {
+      val separatedMessageChannelSuffix =
+          if (messageChannelSuffix.isNotEmpty()) ".$messageChannelSuffix" else ""
       run {
-        val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.file_selector_android.FileSelectorApi.openFile$separatedMessageChannelSuffix", codec)
+        val channel =
+            BasicMessageChannel<Any?>(
+                binaryMessenger,
+                "dev.flutter.pigeon.file_selector_android.FileSelectorApi.openFile$separatedMessageChannelSuffix",
+                codec)
         if (api != null) {
           channel.setMessageHandler { message, reply ->
             val args = message as List<Any?>
@@ -313,7 +323,11 @@ interface FileSelectorApi {
         }
       }
       run {
-        val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.file_selector_android.FileSelectorApi.openFiles$separatedMessageChannelSuffix", codec)
+        val channel =
+            BasicMessageChannel<Any?>(
+                binaryMessenger,
+                "dev.flutter.pigeon.file_selector_android.FileSelectorApi.openFiles$separatedMessageChannelSuffix",
+                codec)
         if (api != null) {
           channel.setMessageHandler { message, reply ->
             val args = message as List<Any?>
@@ -334,7 +348,11 @@ interface FileSelectorApi {
         }
       }
       run {
-        val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.file_selector_android.FileSelectorApi.getDirectoryPath$separatedMessageChannelSuffix", codec)
+        val channel =
+            BasicMessageChannel<Any?>(
+                binaryMessenger,
+                "dev.flutter.pigeon.file_selector_android.FileSelectorApi.getDirectoryPath$separatedMessageChannelSuffix",
+                codec)
         if (api != null) {
           channel.setMessageHandler { message, reply ->
             val args = message as List<Any?>

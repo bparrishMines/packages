@@ -62,9 +62,7 @@ public class FileSelectorApiImpl implements FileSelectorApi {
   }
 
   public FileSelectorApiImpl(@NonNull ActivityPluginBinding activityPluginBinding) {
-    this(
-        activityPluginBinding,
-        new NativeObjectFactory());
+    this(activityPluginBinding, new NativeObjectFactory());
   }
 
   @VisibleForTesting
@@ -117,8 +115,7 @@ public class FileSelectorApiImpl implements FileSelectorApi {
       @NonNull FileTypes allowedTypes,
       @NonNull
           Function1<
-                  ? super @NotNull Result<? extends @NotNull List<@NotNull String>>,
-                  @NotNull Unit>
+                  ? super @NotNull Result<? extends @NotNull List<@NotNull String>>, @NotNull Unit>
               callback) {
     final Intent intent = objectFactory.newIntent(Intent.ACTION_OPEN_DOCUMENT);
     intent.addCategory(Intent.CATEGORY_OPENABLE);
@@ -138,7 +135,8 @@ public class FileSelectorApiImpl implements FileSelectorApi {
                 // Only one file was returned.
                 final Uri uri = data.getData();
                 if (uri != null) {
-                  ResultUtilsKt.completeWithValue(callback, Collections.singletonList(uri.toString()));
+                  ResultUtilsKt.completeWithValue(
+                      callback, Collections.singletonList(uri.toString()));
                 }
 
                 // Multiple files were returned.
