@@ -3,11 +3,10 @@ description: Implementation of cross_file_platform_interface for iOS and macOS.
 repository: https://github.com/flutter/packages/tree/main/packages/cross_file/cross_file_darwin
 issue_tracker: https://github.com/flutter/flutter/issues?q=is%3Aissue+is%3Aopen+label%3A%22p%3A+cross_file%22
 version: 1.0.0
-publish_to: none
 
 environment:
-  sdk: ^3.10.0
-  flutter: ">=3.38.0"
+  sdk: ^3.11.0
+  flutter: ">=3.41.0"
 
 flutter:
   plugin:
@@ -23,16 +22,12 @@ flutter:
         sharedDarwinSource: true
 
 dependencies:
-  # TODO(bparrishMines): Change this to hosted dependency once `cross_file_io` is released.
-  cross_file_io:
-    path: ../cross_file_io
-  # TODO(bparrishMines): Change this to hosted dependency once `cross_file_platform_interface` is
-  # released.
-  cross_file_platform_interface:
-    path: ../cross_file_platform_interface
+  cross_file_io: ^1.0.0
+  cross_file_platform_interface: ^1.0.0
   ffi: ^2.2.0
   flutter:
     sdk: flutter
+  meta: ^1.17.0
   objective_c: ^9.5.0
   path: ^1.9.1
 
@@ -42,7 +37,7 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   mockito: ^5.6.4
-  pigeon: ^27.3.0
+  pigeon: ^27.3.2
 
 topics:
   - file

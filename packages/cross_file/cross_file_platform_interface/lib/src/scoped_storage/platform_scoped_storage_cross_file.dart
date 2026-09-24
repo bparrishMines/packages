@@ -67,8 +67,8 @@ base class PlatformScopedStorageXFileCreationParams extends PlatformXFileCreatio
 /// ```
 mixin PlatformScopedStorageXFileExtension implements PlatformXFileExtension {}
 
-/// Interface for a reference to a local data resource within a device's
-/// scoped storage.
+/// Interface for a reference to a data resource within a device's scoped
+/// storage.
 abstract base class PlatformScopedStorageXFile extends PlatformXFile {
   /// Creates a new [PlatformScopedStorageXFile]
   factory PlatformScopedStorageXFile(PlatformScopedStorageXFileCreationParams params) {
@@ -89,6 +89,10 @@ abstract base class PlatformScopedStorageXFile extends PlatformXFile {
   /// a class that only contains a factory constructor.
   @protected
   PlatformScopedStorageXFile.implementation(PlatformScopedStorageXFileCreationParams super.params);
+
+  /// Extension for providing platform-specific features.
+  @override
+  PlatformScopedStorageXFileExtension? get extension => null;
 
   @override
   PlatformScopedStorageXFileCreationParams get params =>

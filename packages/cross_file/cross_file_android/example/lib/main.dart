@@ -3,8 +3,6 @@
 // found in the LICENSE file.
 
 import 'package:cross_file_platform_interface/cross_file_platform_interface.dart';
-import 'package:file_selector_platform_interface/file_selector_platform_interface.dart';
-import 'package:file_selector_android/file_selector_android.dart';
 import 'package:flutter/material.dart';
 import 'package:mime/mime.dart' as mime;
 
@@ -18,13 +16,13 @@ class FileOpenScreen extends StatelessWidget {
   const FileOpenScreen({super.key});
 
   Future<PlatformXFile?> _getTextFile() async {
-    final XFile? file = await FileSelectorAndroid().openFile();
-    return file?.platform;
+    // Implement this method to retrieve a text file.
+    return null;
   }
 
   Future<PlatformXDirectory?> _getDirectory() async {
-    final XDirectory? dir = await FileSelectorAndroid().getDirectoryPath();
-    return dir?.platform;
+    // Implement this method to retrieve a directory.
+    return null;
   }
 
   Future<void> _openTextFile(BuildContext context) async {

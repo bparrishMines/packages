@@ -11,7 +11,7 @@ import 'file_system/file_system_cross_file.dart';
 import 'scoped_storage/scoped_storage_cross_directory.dart';
 import 'scoped_storage/scoped_storage_cross_file.dart';
 
-/// A reference to a container of local data resources.
+/// A reference to a container of data resources.
 ///
 /// Note: Not all platforms support accessing directories.
 @immutable
@@ -28,7 +28,7 @@ abstract base class XDirectory extends XEntity {
   }
 
   /// Instantiates a [ScopedStorageXFile] as a reference to a directory
-  /// (or folder) on the file system within a devices scoped storage.
+  /// (or folder) on the file system within a device's scoped storage.
   factory XDirectory.scopedStorage({required String uri}) {
     return ScopedStorageXDirectory(uri: uri);
   }

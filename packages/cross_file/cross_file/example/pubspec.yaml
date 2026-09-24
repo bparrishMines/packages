@@ -3,8 +3,8 @@ description: Demonstrates how to use cross files.
 publish_to: none
 
 environment:
-  sdk: ^3.10.0
-  flutter: ">=3.38.0"
+  sdk: ^3.11.0
+  flutter: ">=3.41.0"
 
 dependencies:
   cross_file:
@@ -14,18 +14,10 @@ dependencies:
     # The example app is bundled with the plugin so we use a path dependency on
     # the parent directory to use the current plugin's version.
     path: ../
-  # TODO(bparrishMines): Change this to hosted dependency once `cross_file_android` is released.
-  cross_file_android:
-    path: ../../cross_file_android
-  # TODO(bparrishMines): Change this to hosted dependency once `cross_file_darwin` is released.
-  cross_file_darwin:
-    path: ../../cross_file_darwin
-  # TODO(bparrishMines): Change this to hosted dependency once `cross_file_io` is released.
-  cross_file_io:
-    path: ../../cross_file_io
-  # TODO(bparrishMines): Change this to hosted dependency once `cross_file_web` is released.
-  cross_file_web:
-    path: ../../cross_file_web
+  cross_file_android: ^1.0.0
+  cross_file_darwin: ^1.0.0
+  cross_file_io: ^1.0.0
+  cross_file_web: ^1.0.0
   flutter:
     sdk: flutter
   mime: ^2.0.0

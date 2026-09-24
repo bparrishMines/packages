@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import Foundation
+
 #if os(iOS)
   import Flutter
 #elseif os(macOS)
@@ -26,6 +28,8 @@ public class CrossFileDarwinPlugin: NSObject, FlutterPlugin {
 
     let plugin = CrossFileDarwinPlugin(binaryMessenger: messenger)
 
+    // The plugin is only published so that `detachFromEngine` is called when the plugin is removed
+    // from the engine.
     registrar.publish(plugin)
   }
 

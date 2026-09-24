@@ -82,9 +82,7 @@ base class SecurityScopedDarwinScopedStorageXFile extends DarwinScopedStorageXFi
     // Check that this is not called during a unit test.
     if (Platform.environment['FLUTTER_TEST'] != 'true') {
       final NSURL? url = NSURL.URLWithString(uri.toNSString());
-      if (url != null) {
-        url.stopAccessingSecurityScopedResource();
-      }
+      url?.stopAccessingSecurityScopedResource();
     }
   });
 
@@ -129,7 +127,7 @@ base class SecurityScopedDarwinScopedStorageXFile extends DarwinScopedStorageXFi
   @override
   Future<bool> canRead() async {
     return NSFileManager.getDefaultManager().isReadableFileAtPath(
-      Uri.file(params.uri).path.toNSString(),
+      Uri.parse(params.uri).toFilePath().toNSString(),
     );
   }
 
@@ -151,9 +149,7 @@ base class SecurityScopedDarwinScopedStorageXFile extends DarwinScopedStorageXFi
   @override
   Future<void> stopAccessingSecurityScopedResource() async {
     final NSURL? url = NSURL.URLWithString(params.uri.toNSString());
-    if (url != null) {
-      url.stopAccessingSecurityScopedResource();
-    }
+    url?.stopAccessingSecurityScopedResource();
   }
 
   @override
@@ -164,7 +160,7 @@ base class SecurityScopedDarwinScopedStorageXFile extends DarwinScopedStorageXFi
 /// image, video, or Live Photo in the Photos library.
 base class PhotoKitDarwinScopedStorageXFile extends DarwinScopedStorageXFile
     with PhotoKitDarwinScopedStorageXFileExtension {
-  /// Constructs a [SecurityScopedDarwinScopedStorageXFile].
+  /// Constructs a [PhotoKitDarwinScopedStorageXFile].
   PhotoKitDarwinScopedStorageXFile(super.params) : super._();
 
   @override
@@ -181,7 +177,7 @@ base class PhotoKitDarwinScopedStorageXFile extends DarwinScopedStorageXFile
     if (_tryGetAsset(identifier: params.uri) case final PHAsset asset) {
       final NSDate? date = asset.modificationDate;
       if (date != null) {
-        DateTime.fromMillisecondsSinceEpoch((date.timeIntervalSince1970 * 1000).round());
+        return DateTime.fromMillisecondsSinceEpoch((date.timeIntervalSince1970 * 1000).round());
       }
     }
 
@@ -191,6 +187,9 @@ base class PhotoKitDarwinScopedStorageXFile extends DarwinScopedStorageXFile
   @override
   Future<int?> length() async {
     if (_tryGetAssetResource(identifier: params.uri) case final PHAssetResource resource) {
+      // This is a workaround to access file size in bytes. See
+      // https://stackoverflow.com/questions/45110720/get-file-size-of-phasset-without-loading-in-the-resource.
+      // Note that this may not be guaranteed to work in future versions.
       final ObjCObject? fileSize = resource.valueForKey('fileSize'.toNSString());
 
       if (fileSize != null) {
@@ -204,7 +203,7 @@ base class PhotoKitDarwinScopedStorageXFile extends DarwinScopedStorageXFile
   @override
   Stream<Uint8List> openRead([int? start, int? end]) {
     if (start != null && start < 0) {
-      return Stream.error(RangeError('`start` must be greater than 0. start: $start'));
+      return Stream.error(RangeError('`start` must be >= 0. start: $start'));
     } else if (end != null && end <= (start ?? 0)) {
       return Stream.error(
         RangeError(
@@ -213,9 +212,11 @@ base class PhotoKitDarwinScopedStorageXFile extends DarwinScopedStorageXFile
       );
     }
 
-    // TODO(bparrishMines): Thread merging is optional on macOS, so the FFI
-    // implementation is not guaranteed to work when it needs to switch to the
-    // platform thread from a native callback.
+    // TODO(bparrishMines): Remove pigeon implementation once
+    // https://github.com/flutter/flutter/issues/181874 lands in stable. Thread
+    // merging is optional on macOS, so the FFI implementation is not guaranteed
+    // to work when it needs to switch to the platform thread from a native
+    // callback. See https://github.com/flutter/flutter/issues/181874
     if (defaultTargetPlatform == TargetPlatform.macOS) {
       return _openReadWithPigeon(start, end);
     }
@@ -225,9 +226,11 @@ base class PhotoKitDarwinScopedStorageXFile extends DarwinScopedStorageXFile
 
   @override
   Future<Uint8List> readAsBytes() {
-    // TODO(bparrishMines): Thread merging is optional on macOS, so the FFI
-    // implementation is not guaranteed to work when it needs to switch to the
-    // platform thread from a native callback.
+    // TODO(bparrishMines): Remove pigeon implementation once
+    // https://github.com/flutter/flutter/issues/181874 lands in stable. Thread
+    // merging is optional on macOS, so the FFI implementation is not guaranteed
+    // to work when it needs to switch to the platform thread from a native
+    // callback.
     if (defaultTargetPlatform == TargetPlatform.macOS) {
       return _readBytesWithPigeon();
     }
@@ -260,7 +263,7 @@ base class PhotoKitDarwinScopedStorageXFile extends DarwinScopedStorageXFile
 
   PHAsset? _tryGetAsset({required String identifier}) {
     final PHFetchResult result = PHAsset.fetchAssetsWithLocalIdentifiers(
-      <String>[params.uri].toNSArray(),
+      <String>[identifier].toNSArray(),
     );
     final ObjCObject? firstObject = result.firstObject;
     if (firstObject != null) {
@@ -271,7 +274,7 @@ base class PhotoKitDarwinScopedStorageXFile extends DarwinScopedStorageXFile
   }
 
   PHAssetResource? _tryGetAssetResource({required String identifier}) {
-    if (_tryGetAsset(identifier: params.uri) case final PHAsset asset) {
+    if (_tryGetAsset(identifier: identifier) case final PHAsset asset) {
       final NSArray resources = PHAssetResource.assetResourcesForAsset(asset);
       final ObjCObject? firstObject = resources.firstObject;
 
@@ -344,19 +347,20 @@ base class PhotoKitDarwinScopedStorageXFile extends DarwinScopedStorageXFile
     final streamController = StreamController<Uint8List>();
     final filter = ByteRangeFilter(start: start ?? 0, end: end);
 
+    final weakStream = WeakReference<StreamController<Uint8List>>(streamController);
     final delegate = AssetResourceReaderDelegate(
       onDataReceived: (_, Uint8List bytes) {
         final Uint8List inRangeBytes = filter.addBytes(bytes);
         if (inRangeBytes.isNotEmpty) {
-          streamController.add(inRangeBytes);
+          weakStream.target?.add(inRangeBytes);
         }
       },
       onCompletion: (_, String? error) {
         if (error != null) {
-          streamController.addError(Exception(error));
+          weakStream.target?.addError(Exception(error));
         }
 
-        streamController.close();
+        weakStream.target?.close();
       },
     );
 

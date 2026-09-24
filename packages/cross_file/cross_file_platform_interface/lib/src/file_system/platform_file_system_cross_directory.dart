@@ -40,7 +40,8 @@ import '../platform_cross_directory.dart';
 @immutable
 base class PlatformFileSystemXDirectoryCreationParams extends PlatformXDirectoryCreationParams {
   /// Constructs a [PlatformFileSystemXDirectoryCreationParams].
-  PlatformFileSystemXDirectoryCreationParams(this.path) : super(uri: Uri.file(path).toString());
+  PlatformFileSystemXDirectoryCreationParams(this.path)
+    : super(uri: Uri.directory(path).toString());
 
   /// The path of the directory.
   final String path;
@@ -89,6 +90,7 @@ abstract base class PlatformFileSystemXDirectory extends PlatformXDirectory {
   ///
   /// Should only be used by platform implementations because they can't extend
   /// a class that only contains a factory constructor.
+  @protected
   PlatformFileSystemXDirectory.implementation(
     PlatformFileSystemXDirectoryCreationParams super.params,
   );
@@ -96,4 +98,8 @@ abstract base class PlatformFileSystemXDirectory extends PlatformXDirectory {
   @override
   PlatformFileSystemXDirectoryCreationParams get params =>
       super.params as PlatformFileSystemXDirectoryCreationParams;
+
+  /// Extension for providing platform-specific features.
+  @override
+  PlatformFileSystemXDirectoryExtension? get extension => null;
 }

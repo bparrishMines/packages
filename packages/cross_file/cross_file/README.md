@@ -10,6 +10,32 @@ An abstraction to allow working with files across multiple platforms.
 |-------------|---------|---------|-------|--------|-----|-------------|
 | **Support** | SDK 24+ | iOS 13+ | Any   | 10.15+ | Any | Windows 10+ |
 
+## Overview
+
+This package provides a unified API for interacting with resources across platforms through two
+primary implementation types:
+
+### FileSystem
+
+The `FileSystem` implementation represents resources on a traditional file system. It is used when
+resources are identified by standard file paths or `file://` URIs.
+
+* **Classes**: `FileSystemXFile`, `FileSystemXDirectory`.
+* **Use Cases**: Desktop applications, app-private storage on mobile, or any environment where
+  direct file system access is available.
+
+### ScopedStorage
+
+The `ScopedStorage` implementation represents resources that are managed or restricted by the
+platform. These resources are typically identified by platform-specific URIs rather than direct
+paths.
+
+* **Classes**: `ScopedStorageXFile`, `ScopedStorageXDirectory`.
+* **Use Cases**: Android Content URIs, iOS Security-Scoped bookmarks, Web Object URLs, or Photo
+  Library assets.
+* **Key Characteristic**: Access to these resources may be ephemeral or requires explicit lifecycle
+  management (e.g., using `dispose()` or specific platform extensions).
+
 ## Usage
 
 Instantiate a `XFile` using a uri or path and use its methods and properties to access the file and
@@ -31,7 +57,7 @@ if (await file.exists()) {
 }
 ```
 
-You can find links to the API docs on the [pub page](https://pub.dev/packages/cross_file).
+You can find links to the API docs on the [pub page](https://pub.dev/documentation/cross_file/latest/).
 
 ### Implementation-Specific Features
 
@@ -57,12 +83,13 @@ import 'package:cross_file_web/cross_file_web.dart';
 ```
 
 Now, additional features can be accessed through the platform implementations. Classes
-[FileSystemXFile], [FileSystemXDirectory], [ScopedStorageXFile], and [ScopedStorageXDirectory] pass
+`FileSystemXFile`, `FileSystemXDirectory`, `ScopedStorageXFile`, and `ScopedStorageXDirectory` pass
 their functionality to a class provided by the current platform. Below are a couple of ways to
 access additional functionality provided by the platform and is followed by an example.
 
 1. Pass a creation params class provided by a platform implementation to a `fromCreationParams`
-   constructor (e.g. `XFile.fromCreationParams`, `XDirectory.fromCreationParams`, etc.).
+   constructor (e.g. `FileSystemXFile.fromCreationParams`, `ScopedStorageXFile.fromCreationParams`,
+   etc.).
 2. Call methods on an implementation of a class by using `getExtension` method (e.g.
    `XFile.getExtension`, `XDirectory.getExtension`, etc.).
 
@@ -90,9 +117,9 @@ await file
 
 debugPrint(await file.readAsString());
 
-await file
-    .getExtension<SecurityScopedDarwinScopedStorageXFileExtension>()
-    ?.stopAccessingSecurityScopedResource();
+if (file is ScopedStorageXFile) {
+  await file.dispose();
+}
 ```
 
 See https://pub.dev/documentation/cross_file_darwin/latest/cross_file_darwin/cross_file_darwin-library.html

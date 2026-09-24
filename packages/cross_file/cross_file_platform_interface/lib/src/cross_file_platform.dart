@@ -9,7 +9,6 @@ import 'file_system/platform_file_system_cross_directory.dart';
 import 'file_system/platform_file_system_cross_file.dart';
 import 'platform_cross_directory.dart';
 import 'platform_cross_entity.dart';
-import 'platform_cross_file.dart';
 import 'scoped_storage/platform_scoped_storage_cross_directory.dart';
 import 'scoped_storage/platform_scoped_storage_cross_file.dart';
 
@@ -21,7 +20,7 @@ abstract base class CrossFilePlatform {
   /// implementation of [CrossFilePlatform] when they register themselves.
   static CrossFilePlatform? instance;
 
-  /// Creates a new [PlatformXFile].
+  /// Creates a new [PlatformFileSystemXFile].
   PlatformFileSystemXFile createPlatformFileSystemXFile(
     PlatformFileSystemXFileCreationParams params,
   ) {
@@ -35,7 +34,7 @@ abstract base class CrossFilePlatform {
     return _DefaultFileSystemXDirectory(params);
   }
 
-  /// Creates a new [PlatformScopedStorageXDirectory].
+  /// Creates a new [PlatformScopedStorageXFile].
   PlatformScopedStorageXFile createPlatformScopedStorageXFile(
     PlatformScopedStorageXFileCreationParams params,
   ) {
@@ -50,7 +49,7 @@ abstract base class CrossFilePlatform {
   }
 }
 
-/// Implementation of [PlatformFileSystemXFile} that represents a resource that
+/// Implementation of [PlatformFileSystemXFile] that represents a resource that
 /// does not exist.
 final class _DefaultFileSystemXFile extends PlatformFileSystemXFile {
   _DefaultFileSystemXFile(super.params) : super.implementation();
@@ -88,7 +87,7 @@ final class _DefaultFileSystemXFile extends PlatformFileSystemXFile {
   }
 }
 
-/// Implementation of [PlatformFileSystemXDirectory} that represents a directory
+/// Implementation of [PlatformFileSystemXDirectory] that represents a directory
 /// that does not exist.
 final class _DefaultFileSystemXDirectory extends PlatformFileSystemXDirectory {
   _DefaultFileSystemXDirectory(super.params) : super.implementation();
@@ -102,7 +101,7 @@ final class _DefaultFileSystemXDirectory extends PlatformFileSystemXDirectory {
   }
 }
 
-/// Implementation of [PlatformScopedStorageXFile} that represents a resource
+/// Implementation of [PlatformScopedStorageXFile] that represents a resource
 /// that does not exist.
 final class _DefaultScopedStorageXFile extends PlatformScopedStorageXFile {
   _DefaultScopedStorageXFile(super.params) : super.implementation();
@@ -141,7 +140,7 @@ final class _DefaultScopedStorageXFile extends PlatformScopedStorageXFile {
   Future<void> dispose() async {}
 }
 
-/// Implementation of [PlatformScopedStorageXDirectory} that represents a
+/// Implementation of [PlatformScopedStorageXDirectory] that represents a
 /// directory that does not exist.
 final class _DefaultScopedStorageXDirectory extends PlatformScopedStorageXDirectory {
   _DefaultScopedStorageXDirectory(super.params) : super.implementation();
