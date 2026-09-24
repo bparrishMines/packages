@@ -8,7 +8,7 @@ import 'package:flutter/foundation.dart' show visibleForTesting;
 import 'src/messages.g.dart';
 
 /// An implementation of [FileSelectorPlatform] for iOS.
-class FileSelectorIOS extends FileSelectorPlatform {
+base class FileSelectorIOS extends FileSelectorPlatform {
   /// Creates a new plugin implementation instance.
   FileSelectorIOS({@visibleForTesting FileSelectorApi? api}) : _hostApi = api ?? FileSelectorApi();
 
@@ -20,30 +20,22 @@ class FileSelectorIOS extends FileSelectorPlatform {
   }
 
   @override
-  Future<XFile?> openFile({
-    List<XTypeGroup>? acceptedTypeGroups,
-    String? initialDirectory,
-    String? confirmButtonText,
-  }) async {
+  Future<XFile?> openFile([OpenDialogOptions options = const OpenDialogOptions()]) async {
     final List<String> path = await _hostApi.openFile(
-      FileSelectorConfig(utis: _allowedUtiListFromTypeGroups(acceptedTypeGroups)),
+      FileSelectorConfig(utis: _allowedUtiListFromTypeGroups(options.acceptedTypeGroups)),
     );
-    return path.isEmpty ? null : XFile(path.first);
+    return path.isEmpty ? null : XFile.fileSystem(path: path.first);
   }
 
   @override
-  Future<List<XFile>> openFiles({
-    List<XTypeGroup>? acceptedTypeGroups,
-    String? initialDirectory,
-    String? confirmButtonText,
-  }) async {
+  Future<List<XFile>> openFiles([OpenDialogOptions options = const OpenDialogOptions()]) async {
     final List<String> pathList = await _hostApi.openFile(
       FileSelectorConfig(
-        utis: _allowedUtiListFromTypeGroups(acceptedTypeGroups),
+        utis: _allowedUtiListFromTypeGroups(options.acceptedTypeGroups),
         allowMultiSelection: true,
       ),
     );
-    return pathList.map((String path) => XFile(path)).toList();
+    return pathList.map((String path) => XFile.fileSystem(path: path)).toList();
   }
 
   // Converts the type group list into a list of all allowed UTIs, since
