@@ -1,5 +1,8 @@
-## NEXT
+## 3.0.0
 
+* New Selector
+* **Breaking Changes**
+  * A Thing
 * Updates minimum supported SDK version to Flutter 3.41/Dart 3.11.
 
 ## 2.7.0

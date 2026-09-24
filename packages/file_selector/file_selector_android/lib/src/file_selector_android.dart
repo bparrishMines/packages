@@ -8,7 +8,6 @@ import 'package:file_selector_platform_interface/file_selector_platform_interfac
 import 'package:flutter/cupertino.dart';
 
 import 'file_selector_api.g.dart';
-import 'types/native_illegal_argument_exception.dart';
 
 /// An implementation of [FileSelectorPlatform] for Android.
 base class FileSelectorAndroid extends FileSelectorPlatform {
@@ -23,41 +22,28 @@ base class FileSelectorAndroid extends FileSelectorPlatform {
 
   @override
   Future<XFile?> openFile([OpenDialogOptions options = const OpenDialogOptions()]) async {
-    final FileResponse? file = await _api.openFile(
+    final String? uri = await _api.openFile(
       options.initialDirectory,
       _fileTypesFromTypeGroups(options.acceptedTypeGroups),
     );
-    return file == null ? null : _xFileFromFileResponse(file);
+    return uri == null ? null : XFile.scopedStorage(uri: uri);
   }
 
   @override
   Future<List<XFile>> openFiles([OpenDialogOptions options = const OpenDialogOptions()]) async {
-    final List<FileResponse> files = await _api.openFiles(
+    final List<String> files = await _api.openFiles(
       options.initialDirectory,
       _fileTypesFromTypeGroups(options.acceptedTypeGroups),
     );
-    return files.map<XFile>(_xFileFromFileResponse).toList();
+    return files.map<XFile>((String uri) => XFile.scopedStorage(uri: uri)).toList();
   }
 
   @override
-  Future<String?> getDirectoryPath([FileDialogOptions options = const FileDialogOptions()]) async {
-    return _api.getDirectoryPath(options.initialDirectory);
-  }
-
-  XFile _xFileFromFileResponse(FileResponse file) {
-    if (file.fileSelectorNativeException != null) {
-      _resolveErrorCodeAndMaybeThrow(file.fileSelectorNativeException!);
-    }
-    return XFile.fileSystem(path: file.path);
-    // return XFile.fromData(
-    //   file.bytes,
-    //   // Note: The name parameter is not used by XFile. The XFile.name returns
-    //   // the extracted file name from XFile.path.
-    //   name: file.name,
-    //   length: file.size,
-    //   mimeType: file.mimeType,
-    //   path: file.path,
-    // );
+  Future<XDirectory?> getDirectoryPath([
+    FileDialogOptions options = const FileDialogOptions(),
+  ]) async {
+    final String? path = await _api.getDirectoryPath(options.initialDirectory);
+    return path == null ? null : XDirectory.fileSystem(path: path);
   }
 
   FileTypes _fileTypesFromTypeGroups(List<XTypeGroup>? typeGroups) {
@@ -82,18 +68,5 @@ base class FileSelectorAndroid extends FileSelectorPlatform {
     }
 
     return FileTypes(mimeTypes: mimeTypes.toList(), extensions: extensions.toList());
-  }
-
-  /// Translates a [FileSelectorExceptionCode] to its corresponding error and
-  /// handles throwing.
-  void _resolveErrorCodeAndMaybeThrow(FileSelectorNativeException fileSelectorNativeException) {
-    switch (fileSelectorNativeException.fileSelectorExceptionCode) {
-      case FileSelectorExceptionCode.illegalArgumentException:
-        throw NativeIllegalArgumentException(fileSelectorNativeException.message);
-      case (FileSelectorExceptionCode.illegalStateException ||
-          FileSelectorExceptionCode.ioException ||
-          FileSelectorExceptionCode.securityException):
-      // unused for now
-    }
   }
 }

@@ -45,10 +45,6 @@ class XTypeGroup {
       'mimeTypes': mimeTypes,
       'uniformTypeIdentifiers': uniformTypeIdentifiers,
       'webWildCards': webWildCards,
-      // This is kept for backwards compatibility with anything that was
-      // relying on it, including implementers of `MethodChannelFileSelector`
-      // (since toJSON is used in the method channel parameter serialization).
-      'macUTIs': uniformTypeIdentifiers,
     };
   }
 
