@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'dart:typed_data';
-
 import 'package:cross_file_platform_interface/cross_file_platform_interface.dart';
 import 'package:file_selector_android/src/file_selector_android.dart';
 import 'package:file_selector_android/src/file_selector_api.g.dart';
@@ -51,17 +49,7 @@ void main() {
                 ]),
           ),
         ),
-      ).thenAnswer(
-        (_) => Future<FileResponse?>.value(
-          FileResponse(
-            path: 'some/path.txt',
-            size: 30,
-            bytes: Uint8List(0),
-            name: 'name',
-            mimeType: 'text/plain',
-          ),
-        ),
-      );
+      ).thenAnswer((_) => Future<String?>.value('some/path.txt'));
 
       const group = XTypeGroup(extensions: <String>['txt'], mimeTypes: <String>['text/plain']);
 
@@ -95,18 +83,7 @@ void main() {
                 ]),
           ),
         ),
-      ).thenAnswer(
-        (_) => Future<List<FileResponse>>.value(<FileResponse>[
-          FileResponse(
-            path: 'some/path.txt',
-            size: 30,
-            bytes: Uint8List(0),
-            name: 'name',
-            mimeType: 'text/plain',
-          ),
-          FileResponse(path: 'other/dir.jpg', size: 40, bytes: Uint8List(0), mimeType: 'image/jpg'),
-        ]),
-      );
+      ).thenAnswer((_) => Future<List<String>>.value(<String>['some/path.txt', 'other/dir.jpg']));
 
       const group = XTypeGroup(extensions: <String>['txt'], mimeTypes: <String>['text/plain']);
 
@@ -130,11 +107,11 @@ void main() {
       mockApi.getDirectoryPath('some/path'),
     ).thenAnswer((_) => Future<String?>.value('some/path/chosen/'));
 
-    final String? path = await plugin.getDirectoryPath(
+    final XDirectory? dir = await plugin.getDirectoryPath(
       const FileDialogOptions(initialDirectory: 'some/path'),
     );
 
-    expect(path, 'some/path/chosen/');
+    expect(dir?.uri, 'some/path/chosen/');
   });
 }
 

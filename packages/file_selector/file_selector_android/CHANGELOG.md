@@ -1,6 +1,8 @@
 ## 0.6.0
 
 * Updates minimum supported SDK version to Flutter 3.41/Dart 3.11.
+* #TODO: getDirectoryPath no longer returns a file path that is usable with dart io. You can now access other files in
+* in dir now.
 
 ## 0.5.2+11
 
