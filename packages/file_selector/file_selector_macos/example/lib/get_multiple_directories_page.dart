@@ -13,18 +13,18 @@ class GetMultipleDirectoriesPage extends StatelessWidget {
 
   Future<void> _getDirectoryPaths(BuildContext context) async {
     const confirmButtonText = 'Choose';
-    final List<String?> directoriesPaths = await FileSelectorPlatform.instance
-        .getDirectoryPathsWithOptions(
-          const FileDialogOptions(confirmButtonText: confirmButtonText, canCreateDirectories: true),
-        );
-    if (directoriesPaths.isEmpty) {
+    final List<XDirectory> directories = await FileSelectorPlatform.instance!.getDirectoryPaths(
+      const FileDialogOptions(confirmButtonText: confirmButtonText, canCreateDirectories: true),
+    );
+    if (directories.isEmpty) {
       // Operation was canceled by the user.
       return;
     }
     if (context.mounted) {
       await showDialog<void>(
         context: context,
-        builder: (BuildContext context) => TextDisplay(directoriesPaths.join('\n')),
+        builder: (BuildContext context) =>
+            TextDisplay(directories.map((XDirectory dir) => dir.uri).join('\n')),
       );
     }
   }
