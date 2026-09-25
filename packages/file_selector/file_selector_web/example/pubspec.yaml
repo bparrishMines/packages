@@ -14,6 +14,7 @@ dependencies:
   web: ^1.0.0
 
 dev_dependencies:
+  cross_file_web: ^1.0.0
   flutter_test:
     sdk: flutter
   integration_test:
