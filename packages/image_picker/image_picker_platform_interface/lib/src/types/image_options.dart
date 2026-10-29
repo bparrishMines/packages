@@ -2,41 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'types.dart';
-
-/// Specifies options for picking a single image from the device's camera or gallery.
-///
-/// This class inheritance is a byproduct of the api changing over time.
-/// It exists solely to avoid breaking changes.
-base class ImagePickerOptions extends ImageOptions {
-  /// Creates an instance with the given [maxHeight], [maxWidth], [imageQuality],
-  /// [referredCameraDevice] and [requestFullMetadata].
-  const ImagePickerOptions({
-    super.maxHeight,
-    super.maxWidth,
-    super.imageQuality,
-    super.requestFullMetadata,
-    this.preferredCameraDevice = CameraDevice.rear,
-  }) : super();
-
-  /// Creates an instance with the given [maxHeight], [maxWidth], [imageQuality],
-  /// [referredCameraDevice] and [requestFullMetadata].
-  ImagePickerOptions.createAndValidate({
-    super.maxHeight,
-    super.maxWidth,
-    super.imageQuality,
-    super.requestFullMetadata,
-    this.preferredCameraDevice = CameraDevice.rear,
-  }) : super.createAndValidate();
-
-  /// Used to specify the camera to use when the `source` is [ImageSource.camera].
-  ///
-  /// Ignored if the source is not [ImageSource.camera], or the chosen camera is not
-  /// supported on the device. Defaults to [CameraDevice.rear].
-  final CameraDevice preferredCameraDevice;
-}
+import 'package:flutter/foundation.dart' show immutable;
 
 /// Specifies image-specific options for picking.
+@immutable
 base class ImageOptions {
   /// Creates an instance with the given [maxHeight], [maxWidth], [imageQuality]
   /// and [requestFullMetadata].
@@ -48,7 +17,9 @@ base class ImageOptions {
   });
 
   /// Creates an instance with the given [maxHeight], [maxWidth], [imageQuality]
-  /// and [requestFullMetadata]. Throws if options are not valid.
+  /// and [requestFullMetadata].
+  ///
+  /// Throws if options are not valid.
   ImageOptions.createAndValidate({
     this.maxHeight,
     this.maxWidth,

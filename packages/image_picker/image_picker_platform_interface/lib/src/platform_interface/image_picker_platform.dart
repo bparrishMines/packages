@@ -25,7 +25,7 @@ abstract base class ImagePickerPlatform {
   /// call [getLostData] when your app relaunches to retrieve the lost data.
   ///
   /// If no images or videos were picked, the return value is an empty list.
-  Future<List<XFile>> pickMedia({required MediaOptions options}) {
+  Future<List<XFile>> pickMedia({required MediaPickerOptions options}) {
     throw UnimplementedError('pickMedia() has not been implemented.');
   }
 
@@ -47,8 +47,7 @@ abstract base class ImagePickerPlatform {
   /// If no images were picked, the return value is null.
   Future<XFile?> pickVideo({
     required ImageSource source,
-    CameraDevice preferredCameraDevice = CameraDevice.rear,
-    Duration? maxDuration,
+    VideoPickerOptions options = const VideoPickerOptions(),
   }) {
     throw UnimplementedError('pickVideo() has not been implemented.');
   }
@@ -167,11 +166,7 @@ abstract base class CameraDelegatingImagePickerPlatform extends ImagePickerPlatf
           '"cameraDelegate" in order to use ImageSource.camera',
         );
       }
-      return delegate.takePhoto(
-        options: ImagePickerCameraDelegateOptions(
-          preferredCameraDevice: options.preferredCameraDevice,
-        ),
-      );
+      return delegate.takePhoto(options: options);
     }
     return super.pickImage(source: source, options: options);
   }
@@ -179,8 +174,7 @@ abstract base class CameraDelegatingImagePickerPlatform extends ImagePickerPlatf
   @override
   Future<XFile?> pickVideo({
     required ImageSource source,
-    CameraDevice preferredCameraDevice = CameraDevice.rear,
-    Duration? maxDuration,
+    VideoPickerOptions options = const VideoPickerOptions(),
   }) async {
     if (source == ImageSource.camera) {
       final ImagePickerCameraDelegate? delegate = cameraDelegate;
@@ -190,17 +184,8 @@ abstract base class CameraDelegatingImagePickerPlatform extends ImagePickerPlatf
           '"cameraDelegate" in order to use ImageSource.camera',
         );
       }
-      return delegate.takeVideo(
-        options: ImagePickerCameraDelegateOptions(
-          preferredCameraDevice: preferredCameraDevice,
-          maxVideoDuration: maxDuration,
-        ),
-      );
+      return delegate.takeVideo(options: options);
     }
-    return super.pickVideo(
-      source: source,
-      preferredCameraDevice: preferredCameraDevice,
-      maxDuration: maxDuration,
-    );
+    return super.pickVideo(source: source, options: options);
   }
 }

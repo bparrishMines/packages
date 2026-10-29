@@ -73,7 +73,7 @@ void main() {
     final implementation = FakeCameraDelegatingImagePickerPlatform();
 
     expect(
-      () => implementation.pickMedia(options: const MediaOptions(allowMultiple: false)),
+      () => implementation.pickMedia(options: const MediaPickerOptions(allowMultiple: false)),
       throwsUnimplementedError,
     );
   });
@@ -118,22 +118,18 @@ final class FakeImagePickerPlatform extends ImagePickerPlatform {}
 
 final class FakeCameraDelegatingImagePickerPlatform extends CameraDelegatingImagePickerPlatform {}
 
-class FakeCameraDelegate extends ImagePickerCameraDelegate {
+final class FakeCameraDelegate extends ImagePickerCameraDelegate {
   FakeCameraDelegate({this.result});
 
   XFile? result;
 
   @override
-  Future<XFile?> takePhoto({
-    ImagePickerCameraDelegateOptions options = const ImagePickerCameraDelegateOptions(),
-  }) async {
+  Future<XFile?> takePhoto({ImagePickerOptions options = const ImagePickerOptions()}) async {
     return result;
   }
 
   @override
-  Future<XFile?> takeVideo({
-    ImagePickerCameraDelegateOptions options = const ImagePickerCameraDelegateOptions(),
-  }) async {
+  Future<XFile?> takeVideo({VideoPickerOptions options = const VideoPickerOptions()}) async {
     return result;
   }
 }

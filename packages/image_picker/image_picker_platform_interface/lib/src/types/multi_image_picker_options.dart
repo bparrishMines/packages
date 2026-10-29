@@ -2,9 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'package:flutter/foundation.dart' show immutable;
+
 import 'image_options.dart';
 
 /// Specifies options for picking multiple images from the device's gallery.
+@immutable
 base class MultiImagePickerOptions {
   /// Creates an instance with the given [imageOptions] and [limit].
   const MultiImagePickerOptions({this.imageOptions = const ImageOptions(), this.limit});
