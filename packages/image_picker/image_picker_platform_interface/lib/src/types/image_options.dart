@@ -8,7 +8,7 @@ import 'types.dart';
 ///
 /// This class inheritance is a byproduct of the api changing over time.
 /// It exists solely to avoid breaking changes.
-class ImagePickerOptions extends ImageOptions {
+base class ImagePickerOptions extends ImageOptions {
   /// Creates an instance with the given [maxHeight], [maxWidth], [imageQuality],
   /// [referredCameraDevice] and [requestFullMetadata].
   const ImagePickerOptions({
@@ -37,7 +37,7 @@ class ImagePickerOptions extends ImageOptions {
 }
 
 /// Specifies image-specific options for picking.
-class ImageOptions {
+base class ImageOptions {
   /// Creates an instance with the given [maxHeight], [maxWidth], [imageQuality]
   /// and [requestFullMetadata].
   const ImageOptions({

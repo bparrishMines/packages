@@ -8,7 +8,7 @@ import '../../image_picker_platform_interface.dart';
 
 /// Specifies options for selecting items when using [ImagePickerPlatform.getMedia].
 @immutable
-class MediaOptions {
+base class MediaOptions {
   /// Construct a new MediaOptions instance.
   const MediaOptions({
     this.imageOptions = const ImageOptions(),

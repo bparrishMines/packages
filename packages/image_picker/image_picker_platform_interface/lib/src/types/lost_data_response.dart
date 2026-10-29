@@ -7,11 +7,11 @@ import 'package:flutter/services.dart';
 
 import 'types.dart';
 
-/// The response object of [ImagePicker.getLostData].
+/// The response object of [ImagePickerPlatform.getLostData].
 ///
 /// Only applies to Android.
 /// See also:
-/// * [ImagePicker.getLostData] for more details on retrieving lost data.
+/// * [ImagePickerPlatform.getLostData] for more details on retrieving lost data.
 class LostDataResponse {
   /// Creates an instance with the given [file], [exception], and [type]. Any of
   /// the params may be null, but this is never considered to be empty.

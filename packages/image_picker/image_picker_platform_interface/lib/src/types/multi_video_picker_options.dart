@@ -6,7 +6,7 @@ import 'package:flutter/foundation.dart';
 
 /// Specifies options for picking multiple videos.
 @immutable
-class MultiVideoPickerOptions {
+base class MultiVideoPickerOptions {
   /// Creates an instance with the given options.
   const MultiVideoPickerOptions({this.maxDuration, this.limit});
 

@@ -68,6 +68,16 @@ void main() {
     });
   });
 
+  test('Default implementation of pickMedia should throw '
+      'unimplemented error', () {
+    final implementation = FakeCameraDelegatingImagePickerPlatform();
+
+    expect(
+      () => implementation.pickMedia(options: const MediaOptions(allowMultiple: false)),
+      throwsUnimplementedError,
+    );
+  });
+
   test('Default implementation of pickImage should throw '
       'unimplemented error', () {
     final implementation = FakeCameraDelegatingImagePickerPlatform();
