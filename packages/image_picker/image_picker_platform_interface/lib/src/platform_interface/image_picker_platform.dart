@@ -13,177 +13,177 @@ abstract base class ImagePickerPlatform {
   /// The default instance of [ImagePickerPlatform] to use.
   static ImagePickerPlatform? instance;
 
-  /// Returns a [PickedFile] with the image that was picked.
-  ///
-  /// The `source` argument controls where the image comes from. This can
-  /// be either [ImageSource.camera] or [ImageSource.gallery].
-  ///
-  /// Where iOS supports HEIC images, Android 8 and below doesn't. Android 9 and above only support HEIC images if used
-  /// in addition to a size modification, of which the usage is explained below.
-  ///
-  /// If specified, the image will be at most `maxWidth` wide and
-  /// `maxHeight` tall. Otherwise the image will be returned at it's
-  /// original width and height.
-  ///
-  /// The `imageQuality` argument modifies the quality of the image, ranging from 0-100
-  /// where 100 is the original/max quality. If `imageQuality` is null, the image with
-  /// the original quality will be returned. Compression is only supported for certain
-  /// image types such as JPEG. If compression is not supported for the image that is picked,
-  /// a warning message will be logged.
-  ///
-  /// Use `preferredCameraDevice` to specify the camera to use when the `source` is [ImageSource.camera].
-  /// The `preferredCameraDevice` is ignored when `source` is [ImageSource.gallery]. It is also ignored if the chosen camera is not supported on the device.
-  /// Defaults to [CameraDevice.rear]. Note that Android has no documented parameter for an intent to specify if
-  /// the front or rear camera should be opened, this function is not guaranteed
-  /// to work on an Android device.
-  ///
-  /// In Android, the MainActivity can be destroyed for various reasons. If that happens, the result will be lost
-  /// in this call. You can then call [retrieveLostData] when your app relaunches to retrieve the lost data.
-  ///
-  /// If no images were picked, the return value is null.
-  @Deprecated('Use getImageFromSource instead.')
-  Future<PickedFile?> pickImage({
-    required ImageSource source,
-    double? maxWidth,
-    double? maxHeight,
-    int? imageQuality,
-    CameraDevice preferredCameraDevice = CameraDevice.rear,
-  }) {
-    throw UnimplementedError('pickImage() has not been implemented.');
-  }
+  // /// Returns a [PickedFile] with the image that was picked.
+  // ///
+  // /// The `source` argument controls where the image comes from. This can
+  // /// be either [ImageSource.camera] or [ImageSource.gallery].
+  // ///
+  // /// Where iOS supports HEIC images, Android 8 and below doesn't. Android 9 and above only support HEIC images if used
+  // /// in addition to a size modification, of which the usage is explained below.
+  // ///
+  // /// If specified, the image will be at most `maxWidth` wide and
+  // /// `maxHeight` tall. Otherwise the image will be returned at it's
+  // /// original width and height.
+  // ///
+  // /// The `imageQuality` argument modifies the quality of the image, ranging from 0-100
+  // /// where 100 is the original/max quality. If `imageQuality` is null, the image with
+  // /// the original quality will be returned. Compression is only supported for certain
+  // /// image types such as JPEG. If compression is not supported for the image that is picked,
+  // /// a warning message will be logged.
+  // ///
+  // /// Use `preferredCameraDevice` to specify the camera to use when the `source` is [ImageSource.camera].
+  // /// The `preferredCameraDevice` is ignored when `source` is [ImageSource.gallery]. It is also ignored if the chosen camera is not supported on the device.
+  // /// Defaults to [CameraDevice.rear]. Note that Android has no documented parameter for an intent to specify if
+  // /// the front or rear camera should be opened, this function is not guaranteed
+  // /// to work on an Android device.
+  // ///
+  // /// In Android, the MainActivity can be destroyed for various reasons. If that happens, the result will be lost
+  // /// in this call. You can then call [retrieveLostData] when your app relaunches to retrieve the lost data.
+  // ///
+  // /// If no images were picked, the return value is null.
+  // @Deprecated('Use getImageFromSource instead.')
+  // Future<PickedFile?> pickImage({
+  //   required ImageSource source,
+  //   double? maxWidth,
+  //   double? maxHeight,
+  //   int? imageQuality,
+  //   CameraDevice preferredCameraDevice = CameraDevice.rear,
+  // }) {
+  //   throw UnimplementedError('pickImage() has not been implemented.');
+  // }
 
-  /// Returns a [List<PickedFile>] with the images that were picked.
-  ///
-  /// The images come from the [ImageSource.gallery].
-  ///
-  /// Where iOS supports HEIC images, Android 8 and below doesn't. Android 9 and above only support HEIC images if used
-  /// in addition to a size modification, of which the usage is explained below.
-  ///
-  /// If specified, the image will be at most `maxWidth` wide and
-  /// `maxHeight` tall. Otherwise the image will be returned at it's
-  /// original width and height.
-  ///
-  /// The `imageQuality` argument modifies the quality of the images, ranging from 0-100
-  /// where 100 is the original/max quality. If `imageQuality` is null, the images with
-  /// the original quality will be returned. Compression is only supported for certain
-  /// image types such as JPEG. If compression is not supported for the image that is picked,
-  /// a warning message will be logged.
-  ///
-  /// If no images were picked, the return value is null.
-  @Deprecated('Use getMultiImageWithOptions instead.')
-  Future<List<PickedFile>?> pickMultiImage({
-    double? maxWidth,
-    double? maxHeight,
-    int? imageQuality,
-  }) {
-    throw UnimplementedError('pickMultiImage() has not been implemented.');
-  }
+  // /// Returns a [List<PickedFile>] with the images that were picked.
+  // ///
+  // /// The images come from the [ImageSource.gallery].
+  // ///
+  // /// Where iOS supports HEIC images, Android 8 and below doesn't. Android 9 and above only support HEIC images if used
+  // /// in addition to a size modification, of which the usage is explained below.
+  // ///
+  // /// If specified, the image will be at most `maxWidth` wide and
+  // /// `maxHeight` tall. Otherwise the image will be returned at it's
+  // /// original width and height.
+  // ///
+  // /// The `imageQuality` argument modifies the quality of the images, ranging from 0-100
+  // /// where 100 is the original/max quality. If `imageQuality` is null, the images with
+  // /// the original quality will be returned. Compression is only supported for certain
+  // /// image types such as JPEG. If compression is not supported for the image that is picked,
+  // /// a warning message will be logged.
+  // ///
+  // /// If no images were picked, the return value is null.
+  // @Deprecated('Use getMultiImageWithOptions instead.')
+  // Future<List<PickedFile>?> pickMultiImage({
+  //   double? maxWidth,
+  //   double? maxHeight,
+  //   int? imageQuality,
+  // }) {
+  //   throw UnimplementedError('pickMultiImage() has not been implemented.');
+  // }
 
-  /// Returns a [PickedFile] containing the video that was picked.
-  ///
-  /// The [source] argument controls where the video comes from. This can
-  /// be either [ImageSource.camera] or [ImageSource.gallery].
-  ///
-  /// The [maxDuration] argument specifies the maximum duration of the captured video. If no [maxDuration] is specified,
-  /// the maximum duration will be infinite.
-  ///
-  /// Use `preferredCameraDevice` to specify the camera to use when the `source` is [ImageSource.camera].
-  /// The `preferredCameraDevice` is ignored when `source` is [ImageSource.gallery]. It is also ignored if the chosen camera is not supported on the device.
-  /// Defaults to [CameraDevice.rear].
-  ///
-  /// In Android, the MainActivity can be destroyed for various reasons. If that happens, the result will be lost
-  /// in this call. You can then call [retrieveLostData] when your app relaunches to retrieve the lost data.
-  ///
-  /// If no images were picked, the return value is null.
-  @Deprecated('Use getVideo instead.')
-  Future<PickedFile?> pickVideo({
-    required ImageSource source,
-    CameraDevice preferredCameraDevice = CameraDevice.rear,
-    Duration? maxDuration,
-  }) {
-    throw UnimplementedError('pickVideo() has not been implemented.');
-  }
+  // /// Returns a [PickedFile] containing the video that was picked.
+  // ///
+  // /// The [source] argument controls where the video comes from. This can
+  // /// be either [ImageSource.camera] or [ImageSource.gallery].
+  // ///
+  // /// The [maxDuration] argument specifies the maximum duration of the captured video. If no [maxDuration] is specified,
+  // /// the maximum duration will be infinite.
+  // ///
+  // /// Use `preferredCameraDevice` to specify the camera to use when the `source` is [ImageSource.camera].
+  // /// The `preferredCameraDevice` is ignored when `source` is [ImageSource.gallery]. It is also ignored if the chosen camera is not supported on the device.
+  // /// Defaults to [CameraDevice.rear].
+  // ///
+  // /// In Android, the MainActivity can be destroyed for various reasons. If that happens, the result will be lost
+  // /// in this call. You can then call [retrieveLostData] when your app relaunches to retrieve the lost data.
+  // ///
+  // /// If no images were picked, the return value is null.
+  // @Deprecated('Use getVideo instead.')
+  // Future<PickedFile?> pickVideo({
+  //   required ImageSource source,
+  //   CameraDevice preferredCameraDevice = CameraDevice.rear,
+  //   Duration? maxDuration,
+  // }) {
+  //   throw UnimplementedError('pickVideo() has not been implemented.');
+  // }
 
-  /// Retrieves any previously picked file, that was lost due to the MainActivity being destroyed.
-  /// In case multiple files were lost, only the last file will be recovered. (Android only).
-  ///
-  /// Image or video can be lost if the MainActivity is destroyed. And there is no guarantee that the MainActivity is always alive.
-  /// Call this method to retrieve the lost data and process the data according to your APP's business logic.
-  ///
-  /// Returns a [LostData] object if successfully retrieved the lost data. The [LostData] object can represent either a
-  /// successful image/video selection, or a failure.
-  ///
-  /// Calling this on a non-Android platform will throw [UnimplementedError] exception.
-  ///
-  /// See also:
-  /// * [LostData], for what's included in the response.
-  /// * [Android Activity Lifecycle](https://developer.android.com/reference/android/app/Activity.html), for more information on MainActivity destruction.
-  @Deprecated('Use getLostData instead.')
-  Future<LostData> retrieveLostData() {
-    throw UnimplementedError('retrieveLostData() has not been implemented.');
-  }
+  // /// Retrieves any previously picked file, that was lost due to the MainActivity being destroyed.
+  // /// In case multiple files were lost, only the last file will be recovered. (Android only).
+  // ///
+  // /// Image or video can be lost if the MainActivity is destroyed. And there is no guarantee that the MainActivity is always alive.
+  // /// Call this method to retrieve the lost data and process the data according to your APP's business logic.
+  // ///
+  // /// Returns a [LostData] object if successfully retrieved the lost data. The [LostData] object can represent either a
+  // /// successful image/video selection, or a failure.
+  // ///
+  // /// Calling this on a non-Android platform will throw [UnimplementedError] exception.
+  // ///
+  // /// See also:
+  // /// * [LostData], for what's included in the response.
+  // /// * [Android Activity Lifecycle](https://developer.android.com/reference/android/app/Activity.html), for more information on MainActivity destruction.
+  // @Deprecated('Use getLostData instead.')
+  // Future<LostData> retrieveLostData() {
+  //   throw UnimplementedError('retrieveLostData() has not been implemented.');
+  // }
 
-  /// Returns an [XFile] with the image that was picked.
-  ///
-  /// The `source` argument controls where the image comes from. This can
-  /// be either [ImageSource.camera] or [ImageSource.gallery].
-  ///
-  /// Where iOS supports HEIC images, Android 8 and below doesn't. Android 9 and above only support HEIC images if used
-  /// in addition to a size modification, of which the usage is explained below.
-  ///
-  /// If specified, the image will be at most `maxWidth` wide and
-  /// `maxHeight` tall. Otherwise the image will be returned at it's
-  /// original width and height.
-  ///
-  /// The `imageQuality` argument modifies the quality of the image, ranging from 0-100
-  /// where 100 is the original/max quality. If `imageQuality` is null, the image with
-  /// the original quality will be returned. Compression is only supported for certain
-  /// image types such as JPEG. If compression is not supported for the image that is picked,
-  /// a warning message will be logged.
-  ///
-  /// Use `preferredCameraDevice` to specify the camera to use when the `source` is [ImageSource.camera].
-  /// The `preferredCameraDevice` is ignored when `source` is [ImageSource.gallery]. It is also ignored if the chosen camera is not supported on the device.
-  /// Defaults to [CameraDevice.rear]. Note that Android has no documented parameter for an intent to specify if
-  /// the front or rear camera should be opened, this function is not guaranteed
-  /// to work on an Android device.
-  ///
-  /// In Android, the MainActivity can be destroyed for various reasons. If that happens, the result will be lost
-  /// in this call. You can then call [getLostData] when your app relaunches to retrieve the lost data.
-  ///
-  /// If no images were picked, the return value is null.
-  @Deprecated('Use getImageFromSource instead.')
-  Future<XFile?> getImage({
-    required ImageSource source,
-    double? maxWidth,
-    double? maxHeight,
-    int? imageQuality,
-    CameraDevice preferredCameraDevice = CameraDevice.rear,
-  }) {
-    throw UnimplementedError('getImage() has not been implemented.');
-  }
+  // /// Returns an [XFile] with the image that was picked.
+  // ///
+  // /// The `source` argument controls where the image comes from. This can
+  // /// be either [ImageSource.camera] or [ImageSource.gallery].
+  // ///
+  // /// Where iOS supports HEIC images, Android 8 and below doesn't. Android 9 and above only support HEIC images if used
+  // /// in addition to a size modification, of which the usage is explained below.
+  // ///
+  // /// If specified, the image will be at most `maxWidth` wide and
+  // /// `maxHeight` tall. Otherwise the image will be returned at it's
+  // /// original width and height.
+  // ///
+  // /// The `imageQuality` argument modifies the quality of the image, ranging from 0-100
+  // /// where 100 is the original/max quality. If `imageQuality` is null, the image with
+  // /// the original quality will be returned. Compression is only supported for certain
+  // /// image types such as JPEG. If compression is not supported for the image that is picked,
+  // /// a warning message will be logged.
+  // ///
+  // /// Use `preferredCameraDevice` to specify the camera to use when the `source` is [ImageSource.camera].
+  // /// The `preferredCameraDevice` is ignored when `source` is [ImageSource.gallery]. It is also ignored if the chosen camera is not supported on the device.
+  // /// Defaults to [CameraDevice.rear]. Note that Android has no documented parameter for an intent to specify if
+  // /// the front or rear camera should be opened, this function is not guaranteed
+  // /// to work on an Android device.
+  // ///
+  // /// In Android, the MainActivity can be destroyed for various reasons. If that happens, the result will be lost
+  // /// in this call. You can then call [getLostData] when your app relaunches to retrieve the lost data.
+  // ///
+  // /// If no images were picked, the return value is null.
+  // @Deprecated('Use getImageFromSource instead.')
+  // Future<XFile?> getImage({
+  //   required ImageSource source,
+  //   double? maxWidth,
+  //   double? maxHeight,
+  //   int? imageQuality,
+  //   CameraDevice preferredCameraDevice = CameraDevice.rear,
+  // }) {
+  //   throw UnimplementedError('getImage() has not been implemented.');
+  // }
 
-  /// Returns a [List<XFile>] with the images that were picked.
-  ///
-  /// The images come from the [ImageSource.gallery].
-  ///
-  /// Where iOS supports HEIC images, Android 8 and below doesn't. Android 9 and above only support HEIC images if used
-  /// in addition to a size modification, of which the usage is explained below.
-  ///
-  /// If specified, the image will be at most `maxWidth` wide and
-  /// `maxHeight` tall. Otherwise the image will be returned at it's
-  /// original width and height.
-  ///
-  /// The `imageQuality` argument modifies the quality of the images, ranging from 0-100
-  /// where 100 is the original/max quality. If `imageQuality` is null, the images with
-  /// the original quality will be returned. Compression is only supported for certain
-  /// image types such as JPEG. If compression is not supported for the image that is picked,
-  /// a warning message will be logged.
-  ///
-  /// If no images were picked, the return value is null.
-  @Deprecated('Use getMultiImageWithOptions instead.')
-  Future<List<XFile>?> getMultiImage({double? maxWidth, double? maxHeight, int? imageQuality}) {
-    throw UnimplementedError('getMultiImage() has not been implemented.');
-  }
+  // /// Returns a [List<XFile>] with the images that were picked.
+  // ///
+  // /// The images come from the [ImageSource.gallery].
+  // ///
+  // /// Where iOS supports HEIC images, Android 8 and below doesn't. Android 9 and above only support HEIC images if used
+  // /// in addition to a size modification, of which the usage is explained below.
+  // ///
+  // /// If specified, the image will be at most `maxWidth` wide and
+  // /// `maxHeight` tall. Otherwise the image will be returned at it's
+  // /// original width and height.
+  // ///
+  // /// The `imageQuality` argument modifies the quality of the images, ranging from 0-100
+  // /// where 100 is the original/max quality. If `imageQuality` is null, the images with
+  // /// the original quality will be returned. Compression is only supported for certain
+  // /// image types such as JPEG. If compression is not supported for the image that is picked,
+  // /// a warning message will be logged.
+  // ///
+  // /// If no images were picked, the return value is null.
+  // @Deprecated('Use getMultiImageWithOptions instead.')
+  // Future<List<XFile>?> getMultiImage({double? maxWidth, double? maxHeight, int? imageQuality}) {
+  //   throw UnimplementedError('getMultiImage() has not been implemented.');
+  // }
 
   /// Returns a [List<XFile>] with the images and/or videos that were picked.
   /// The images and videos come from the gallery.
@@ -197,8 +197,8 @@ abstract base class ImagePickerPlatform {
   /// call [getLostData] when your app relaunches to retrieve the lost data.
   ///
   /// If no images or videos were picked, the return value is an empty list.
-  Future<List<XFile>> getMedia({required MediaOptions options}) {
-    throw UnimplementedError('getMedia() has not been implemented.');
+  Future<List<XFile>> pickMedia({required MediaOptions options}) {
+    throw UnimplementedError('pickMedia() has not been implemented.');
   }
 
   /// Returns a [XFile] containing the video that was picked.
@@ -217,12 +217,12 @@ abstract base class ImagePickerPlatform {
   /// in this call. You can then call [getLostData] when your app relaunches to retrieve the lost data.
   ///
   /// If no images were picked, the return value is null.
-  Future<XFile?> getVideo({
+  Future<XFile?> pickVideo({
     required ImageSource source,
     CameraDevice preferredCameraDevice = CameraDevice.rear,
     Duration? maxDuration,
   }) {
-    throw UnimplementedError('getVideo() has not been implemented.');
+    throw UnimplementedError('pickVideo() has not been implemented.');
   }
 
   /// Retrieves any previously picked files, that were lost due to the MainActivity being destroyed. (Android only)
@@ -264,17 +264,11 @@ abstract base class ImagePickerPlatform {
   /// when your app relaunches to retrieve the lost data.
   ///
   /// If no images were picked, the return value is null.
-  Future<XFile?> getImageFromSource({
+  Future<XFile?> pickImage({
     required ImageSource source,
     ImagePickerOptions options = const ImagePickerOptions(),
   }) {
-    return getImage(
-      source: source,
-      maxHeight: options.maxHeight,
-      maxWidth: options.maxWidth,
-      imageQuality: options.imageQuality,
-      preferredCameraDevice: options.preferredCameraDevice,
-    );
+    throw UnimplementedError('pickImage() has not been implemented.');
   }
 
   /// Returns a [List<XFile>] with the images that were picked.
@@ -285,15 +279,10 @@ abstract base class ImagePickerPlatform {
   /// picking an image. See [MultiImagePickerOptions] for more details.
   ///
   /// If no images were picked, returns an empty list.
-  Future<List<XFile>> getMultiImageWithOptions({
+  Future<List<XFile>> pickMultiImage({
     MultiImagePickerOptions options = const MultiImagePickerOptions(),
   }) async {
-    final List<XFile>? pickedImages = await getMultiImage(
-      maxWidth: options.imageOptions.maxWidth,
-      maxHeight: options.imageOptions.maxHeight,
-      imageQuality: options.imageOptions.imageQuality,
-    );
-    return pickedImages ?? <XFile>[];
+    throw UnimplementedError('pickMultiImage() has not been implemented.');
   }
 
   /// Returns a [List<XFile>] with the videos that were picked.
@@ -304,10 +293,10 @@ abstract base class ImagePickerPlatform {
   /// picking a video. See [MultiVideoPickerOptions] for more details.
   ///
   /// If no videos were picked, returns an empty list.
-  Future<List<XFile>> getMultiVideoWithOptions({
+  Future<List<XFile>> pickMultiVideo({
     MultiVideoPickerOptions options = const MultiVideoPickerOptions(),
   }) {
-    throw UnimplementedError('getMultiVideoWithOptions() has not been implemented.');
+    throw UnimplementedError('pickMultiVideo() has not been implemented.');
   }
 
   /// Returns true if the implementation supports [source].
@@ -322,7 +311,7 @@ abstract base class ImagePickerPlatform {
 /// A base class for an [ImagePickerPlatform] implementation that does not
 /// directly support [ImageSource.camera], but supports delegating to a
 /// provided [ImagePickerCameraDelegate].
-abstract class CameraDelegatingImagePickerPlatform extends ImagePickerPlatform {
+abstract base class CameraDelegatingImagePickerPlatform extends ImagePickerPlatform {
   /// A delegate to respond to calls that use [ImageSource.camera].
   ///
   /// When it is null, attempting to use [ImageSource.camera] will throw a
@@ -338,7 +327,7 @@ abstract class CameraDelegatingImagePickerPlatform extends ImagePickerPlatform {
   }
 
   @override
-  Future<XFile?> getImageFromSource({
+  Future<XFile?> pickImage({
     required ImageSource source,
     ImagePickerOptions options = const ImagePickerOptions(),
   }) async {
@@ -356,11 +345,11 @@ abstract class CameraDelegatingImagePickerPlatform extends ImagePickerPlatform {
         ),
       );
     }
-    return super.getImageFromSource(source: source, options: options);
+    return super.pickImage(source: source, options: options);
   }
 
   @override
-  Future<XFile?> getVideo({
+  Future<XFile?> pickVideo({
     required ImageSource source,
     CameraDevice preferredCameraDevice = CameraDevice.rear,
     Duration? maxDuration,
@@ -380,7 +369,7 @@ abstract class CameraDelegatingImagePickerPlatform extends ImagePickerPlatform {
         ),
       );
     }
-    return super.getVideo(
+    return super.pickVideo(
       source: source,
       preferredCameraDevice: preferredCameraDevice,
       maxDuration: maxDuration,

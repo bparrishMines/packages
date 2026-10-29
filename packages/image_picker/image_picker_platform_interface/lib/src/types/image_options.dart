@@ -80,8 +80,8 @@ class ImageOptions {
 
   /// If true, requests full image metadata, which may require extra permissions
   /// on some platforms, (e.g., NSPhotoLibraryUsageDescription on iOS).
-  //
-  // Defaults to true.
+  ///
+  /// Defaults to true.
   final bool requestFullMetadata;
 
   /// Validates that all values are within required ranges. Throws if not.
